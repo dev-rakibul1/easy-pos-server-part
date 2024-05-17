@@ -4,14 +4,14 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "ts-node-dev --respawn --transpile-only src/index.ts",
-    "dev": "node dist/index.ts",
     "build": "tsc",
+    "server-start": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "main": "dist/index.js",
+    "start": "node dist/index.js",
     "lint:check": "eslint --ignore-path .eslintignore --ext .js,.ts .",
     "lint-fix": "eslint --fix",
     "prettier:check": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\"",
-    "lint-prettier": "yarn lint:check && yarn prettier:check",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint-prettier": "yarn lint:check && yarn prettier:check"
   },
   "lint-staged": {
     "src/**/*.ts": "yarn lint-prettier"

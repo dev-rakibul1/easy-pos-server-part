@@ -15,8 +15,7 @@ app.use(cookieParser())
 // Application router or Application middleware
 app.use('/api/v1', router)
 
-const abc = 'a b c
-
+const abc = 'a b c'
 
 /**
  * GLOBAL ERROR HANDLING AND PRODUCTION LABEL
