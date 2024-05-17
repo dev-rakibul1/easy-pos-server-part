@@ -7,3 +7,8 @@ node_modules/
 # Ignore environment variables files
 .env
 env
+
+dist
+node_modules
+.env
+dist

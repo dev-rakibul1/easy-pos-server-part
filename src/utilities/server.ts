@@ -1,34 +1,34 @@
-import colors from "colors/safe";
-import { Server } from "http";
-import config from "../config/config";
-import { app } from "../index";
+import colors from 'colors/safe'
+import { Server } from 'http'
+import config from '../config/config'
+import { app } from '../index'
 
-let server: Server;
+let server: Server
 export const databaseConnect = async () => {
   try {
-    console.log(colors.bgMagenta("Database is connected!"));
+    console.log(colors.bgMagenta('Database is connected!'))
     server = app.listen(config.port, () => {
-      console.log(colors.bgGreen(`Our server listen port is: ${config.port}`));
-    });
+      console.log(colors.bgGreen(`Our server listen port is: ${config.port}`))
+    })
   } catch (error) {
-    console.log("Unable to connect to the database:", error);
+    console.log('Unable to connect to the database:', error)
   }
-};
+}
 
-process.on("unhandledRejection", (error) => {
+process.on('unhandledRejection', error => {
   if (server) {
     server.close(() => {
-      console.log(error);
-      process.exit(1);
-    });
+      console.log(error)
+      process.exit(1)
+    })
   } else {
-    process.exit(2);
+    process.exit(2)
   }
-});
+})
 
-process.on("SIGTERM", () => {
-  console.log("SIGTERM is received!");
+process.on('SIGTERM', () => {
+  console.log('SIGTERM is received!')
   if (server) {
-    server.close();
+    server.close()
   }
-});
+})
