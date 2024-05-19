@@ -15,23 +15,211 @@ datasource db {
 
 
 model User {
-  id                 String      @id @default(uuid())
-  firstName          String
-  middleName         String?
-  lastName           String
-  email              String      @unique
-  phoneNo            String      @unique
-  gender             String?
-  nid                String?
-  presentAddress     String?
-  permanentAddress   String?
-  profileImage       String?
-  role               String
-  password           String
-  userSellHistory    String[]
-  uniqueId           String      @unique
-  createdAt          DateTime    @default(now())
-  updatedAt          DateTime    @updatedAt
+  id                    String      @id @default(uuid())
+  firstName             String
+  middleName            String?
+  lastName              String
+  email                 String      @unique
+  phoneNo               String      @unique
+  gender                String?
+  nid                   String?
+  presentAddress        String?
+  permanentAddress      String?
+  profileImage          String?
+  role                  String
+  password              String
+  uniqueId              String      @unique
+
+  purchases             Purchase[]
+  sells                 Sells[]
+
+  supplierPayment       SupplierPayment?
+  
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
 
   @@map("users")
+}
+
+model Product {
+  id            String     @id @default(uuid())
+  productName   String
+  brandName     String
+  modelName     String
+  processor     String
+  unit          String
+  category      String
+  reOrderAlert  Int
+  productImage  String
+  description   String
+  uniqueId      String
+  productStock  Int
+  othersStock   Int
+  variants      Variants[]
+  purchases     Purchase[]
+  
+
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@map("products")
+}
+
+model Variants {
+  id            String     @id @default(uuid())
+  imeiNumber    String
+  ram           String
+  rom           String
+  color         String
+  purchaseRate  Int
+  sellingPrice  Int
+  vats          Int
+  discounts     Int
+
+
+  productId     String
+  product       Product    @relation(fields: [productId], references: [id])
+
+  // returnId      String
+  // return        Returns    @relation(fields: [returnId], references: [id])
+
+  // sellId        String
+  // sell          Sells    @relation(fields: [sellId], references: [id])
+
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  @@map("variants")
+}
+
+model SupplierPayment {
+  id                   String  @id @default(uuid())
+  totalPay             Int
+  totalSellPrice       Int
+
+  supplierId           String
+  supplier             Suppliers @relation(fields: [supplierId], references: [id])
+
+  userId               String   @unique
+  user                 User     @relation(fields: [userId], references: [id])
+
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
+
+  @@map("supplierPayments")
+}
+
+model Suppliers {
+  id                  String  @id @default(uuid())
+  firstName           String
+  middleName          String?
+  lastName            String
+  email               String      @unique
+  phoneNo             String      @unique
+  gender              String?
+  nid                 String?
+  presentAddress      String?
+  permanentAddress    String?
+  profileImage        String?
+  uniqueId            String
+  status              Boolean?     @default(false)
+  payments            SupplierPayment[]
+  purchase           Purchase[]
+  returnHistory       Returns[]
+
+
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+
+  @@map("suppliers")
+}
+
+model Returns {
+  id                    String  @id @default(uuid())
+  productName           String
+  modelName             String
+ 
+  // variants              Variants[]
+
+  supplierId            String?
+  supplier              Suppliers?  @relation(fields: [supplierId], references: [id])
+
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
+
+  @@map("returns")
+}
+
+model Purchase {
+  id                    String  @id @default(uuid())
+  purchaseRate          String
+  sellingPrice          String
+  discounts             Int
+  vats                  Int
+  totalPrice            Int
+  color                 String
+  totalStock            Int
+  uniqueId              String
+
+  supplierId            String
+  suppliers             Suppliers @relation(fields: [supplierId], references: [id])
+
+  userId                String
+  users                 User @relation(fields: [userId], references: [id])
+
+
+  productId             String
+  products              Product @relation(fields: [productId], references: [id])
+
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
+
+  @@map("purchases")
+}
+
+model Sells {
+  id                String  @id  @default(uuid())
+  productName       String
+  modelName         String
+  vats              Int
+  discounts         Int
+  sellingPrice      Int
+  paymentMethod     String
+  totalPay          Int
+  totalSellPrice    Int
+  uniqueId          String
+
+  
+  // variants          Variants[]
+  
+  userId            String
+  user              User @relation(fields: [userId], references: [id])
+
+  customerId        String
+  customer          Customers @relation(fields: [customerId], references: [id])
+
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+
+  @@map("sells")
+}
+
+model Customers {
+  id                  String  @id @default(uuid())
+  firstName           String
+  middleName          String?
+  lastName            String
+  email               String      @unique
+  phoneNo             String      @unique
+  nid                 String?
+  presentAddress      String?
+  permanentAddress    String?
+  profileImage        String?
+  uniqueId            String
+  purchaseHistory     Sells[]
+
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+
+  @@map("customers")
 }
