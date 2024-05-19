@@ -79,3 +79,25 @@ export async function generateUniqueSupplierId(code: string): Promise<string> {
     throw error
   }
 }
+
+// Generate supplierPayment id
+export async function generateUniqueSupplierPaymentId(
+  code: string,
+): Promise<string> {
+  try {
+    // Get the count of existing users
+    const userCount = await prisma.supplierPayment.count()
+    const codeUpperCase = code.toUpperCase()
+
+    // Generate the next unique user ID
+    const nextUserId = `${codeUpperCase}-${String(userCount + 1).padStart(
+      5,
+      '0',
+    )}`
+
+    return nextUserId
+  } catch (error) {
+    console.error('Error generating unique supplier payment ID:', error)
+    throw error
+  }
+}

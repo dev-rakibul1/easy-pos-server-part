@@ -2,6 +2,7 @@ import express from 'express'
 import { productRoutes } from '../modules/products/product.route'
 import { PurchaseRoutes } from '../modules/purchase/purchase.route'
 import { SupplierRoutes } from '../modules/supplier/supplier.route'
+import { SupplierPaymentRoutes } from '../modules/supplierPayments/supplierPayment.route'
 import { UserRoutes } from '../modules/users/user.route'
 import { VariantRoutes } from '../modules/variants/variants.route'
 
@@ -27,6 +28,10 @@ const modulesRouters = [
   {
     path: '/supplier',
     route: SupplierRoutes,
+  },
+  {
+    path: '/supplier-payment',
+    route: SupplierPaymentRoutes,
   },
 ]
 

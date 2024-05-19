@@ -96,6 +96,7 @@ model SupplierPayment {
   id                   String  @id @default(uuid())
   totalPay             Int
   totalSellPrice       Int
+  uniqueId             String
 
   supplierId           String
   supplier             Suppliers @relation(fields: [supplierId], references: [id])
@@ -124,7 +125,7 @@ model Suppliers {
   uniqueId            String
   status              Boolean?     @default(false)
   payments            SupplierPayment[]
-  purchase           Purchase[]
+  purchase            Purchase[]
   returnHistory       Returns[]
 
 
@@ -171,10 +172,23 @@ model Purchase {
   productId             String
   products              Product @relation(fields: [productId], references: [id])
 
+  additionalPurchaseId  String?
+  additionalPurchase    AdditionalProductPurchase? @relation(fields: [additionalPurchaseId], references: [id])
+
   createdAt             DateTime   @default(now())
   updatedAt             DateTime   @updatedAt
 
   @@map("purchases")
+}
+
+model AdditionalProductPurchase {
+  id                      String @id  @default(uuid())
+  additionalPurchase      Purchase[]
+
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  @@map("additionalProductPurchases")
 }
 
 model Sells {
