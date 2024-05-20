@@ -33,7 +33,22 @@ const GetAllProductsController = CatchAsync(
   },
 )
 
+// get single product
+const GetSingleProductsController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const result = await ProductsService.SingleProductGetService()
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Single product get successfully!',
+      data: result,
+    })
+  },
+)
+
 export const ProductsController = {
   CreateProductsController,
   GetAllProductsController,
+  GetSingleProductsController,
 }

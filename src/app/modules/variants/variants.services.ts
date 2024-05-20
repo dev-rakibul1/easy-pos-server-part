@@ -17,7 +17,14 @@ const GetAllCreateVariantService = async () => {
   return result
 }
 
+// get all user
+const DeleteSingleVariantService = async (id: string) => {
+  const result = await prisma.variants.delete({ where: { id: id } })
+  return result
+}
+
 export const VariantService = {
   CreateVariantService,
   GetAllCreateVariantService,
+  DeleteSingleVariantService,
 }

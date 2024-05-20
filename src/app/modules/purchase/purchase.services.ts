@@ -7,6 +7,8 @@ import { generateUniqueSupplierPaymentId } from '../../../utilities/uniqueIdGene
 const CreatePurchaseService = async (data: any) => {
   const { variants, purchase, supplierPayment } = data
 
+  console.log('purchase', purchase)
+
   // Initialize arrays to store updated and created purchases
   const updatedPurchases: any[] = []
   const createdPurchases: any[] = []
@@ -87,10 +89,19 @@ const CreatePurchaseService = async (data: any) => {
     // Check if the purchase already exists
     const isExistingSupplierAndUser = await tx.supplierPayment.findFirst({
       where: {
-        userId: purchase.userId,
-        supplierId: purchase.supplierId,
+        userId: supplierPayment.userId,
+        supplierId: supplierPayment.supplierId,
       },
     })
+
+    // const test = await tx.supplierPayment.findFirst({
+    //   where: {
+    //     userId: supplierPayment.userId,
+    //     supplierId: supplierPayment.supplierId,
+    //   },
+    // })
+
+    // console.log('__________________', test)
 
     const supplierPaymentInfo = {
       totalPay: supplierPayment.totalPay || 0,

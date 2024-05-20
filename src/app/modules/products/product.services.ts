@@ -26,7 +26,20 @@ const GetAllCreateUserService = async () => {
   return result
 }
 
+// get all product
+const SingleProductGetService = async () => {
+  const result = await prisma.product.findFirst({
+    include: {
+      variants: true,
+      purchases: true,
+    },
+  })
+  return result
+}
+
 export const ProductsService = {
   CreateUserService,
   GetAllCreateUserService,
+
+  SingleProductGetService,
 }

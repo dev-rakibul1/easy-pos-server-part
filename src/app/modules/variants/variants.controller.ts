@@ -33,7 +33,24 @@ const GetAllVariantsController = CatchAsync(
   },
 )
 
+// get all variant
+const DeleteSingleVariantsController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const { id } = req.params
+
+    const result = await VariantService.DeleteSingleVariantService(id)
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Variant delete successfully!',
+      data: result,
+    })
+  },
+)
+
 export const VariantsController = {
   CreateVariantsController,
   GetAllVariantsController,
+  DeleteSingleVariantsController,
 }

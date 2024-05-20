@@ -1,6 +1,9 @@
 import express from 'express'
+import { CustomerRoutes } from '../modules/customers/customers.route'
 import { productRoutes } from '../modules/products/product.route'
 import { PurchaseRoutes } from '../modules/purchase/purchase.route'
+import { SellRoutes } from '../modules/sell/sell.route'
+import { SellVariantRoutes } from '../modules/sellVariants/sellVariants.route'
 import { SupplierRoutes } from '../modules/supplier/supplier.route'
 import { SupplierPaymentRoutes } from '../modules/supplierPayments/supplierPayment.route'
 import { UserRoutes } from '../modules/users/user.route'
@@ -32,6 +35,18 @@ const modulesRouters = [
   {
     path: '/supplier-payment',
     route: SupplierPaymentRoutes,
+  },
+  {
+    path: '/customer',
+    route: CustomerRoutes,
+  },
+  {
+    path: '/sell',
+    route: SellRoutes,
+  },
+  {
+    path: '/sell-variant',
+    route: SellVariantRoutes,
   },
 ]
 

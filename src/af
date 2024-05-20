@@ -106,9 +106,6 @@ model SupplierPayment {
   createdAt            DateTime   @default(now())
   updatedAt            DateTime   @updatedAt
 
-   @@unique([userId, supplierId])
-   
-
   @@map("supplierPayments")
 }
 

@@ -1,9 +1,9 @@
-import { User } from '@prisma/client'
+import { Suppliers } from '@prisma/client'
 import prisma from '../../../shared/prisma'
 import { generateUniqueSupplierId } from '../../../utilities/uniqueIdGenerator'
 
-// Create user
-const CreateSupplierService = async (payload: User) => {
+// Create supplier
+const CreateSupplierService = async (payload: Suppliers) => {
   const supplierId = await generateUniqueSupplierId('S')
   payload.uniqueId = supplierId
 
@@ -11,7 +11,7 @@ const CreateSupplierService = async (payload: User) => {
   return result
 }
 
-// get all user
+// get all supplier
 const GetAllSupplierUserService = async () => {
   const result = await prisma.suppliers.findMany({
     include: {
