@@ -16,6 +16,7 @@ const GetAllCustomerService = async () => {
   const result = await prisma.customers.findMany({
     include: {
       purchaseHistory: true,
+      payments: true,
     },
   })
   return result

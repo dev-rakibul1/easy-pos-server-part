@@ -7,8 +7,6 @@ import { generateUniqueSupplierPaymentId } from '../../../utilities/uniqueIdGene
 const CreatePurchaseService = async (data: any) => {
   const { variants, purchase, supplierPayment } = data
 
-  console.log('purchase', purchase)
-
   // Initialize arrays to store updated and created purchases
   const updatedPurchases: any[] = []
   const createdPurchases: any[] = []
@@ -76,6 +74,7 @@ const CreatePurchaseService = async (data: any) => {
 
     // ------------SUPPLIER PAYMENT INFORMATION------------
     const supplierPaymentId = await generateUniqueSupplierPaymentId('spd')
+
     const totalPrice1 = updatedPurchases.reduce(
       (accumulator, item) => accumulator + item.totalPrice,
       0,
@@ -85,6 +84,8 @@ const CreatePurchaseService = async (data: any) => {
       0,
     )
     const subTotalPrice = totalPrice1 || 0 + totalPrice2 || 0
+    const totalDueBalance =
+      parseInt(subTotalPrice) - parseInt(supplierPayment.totalPay)
 
     // Check if the purchase already exists
     const isExistingSupplierAndUser = await tx.supplierPayment.findFirst({
@@ -94,22 +95,16 @@ const CreatePurchaseService = async (data: any) => {
       },
     })
 
-    // const test = await tx.supplierPayment.findFirst({
-    //   where: {
-    //     userId: supplierPayment.userId,
-    //     supplierId: supplierPayment.supplierId,
-    //   },
-    // })
-
-    // console.log('__________________', test)
-
     const supplierPaymentInfo = {
       totalPay: supplierPayment.totalPay || 0,
       totalSellPrice: subTotalPrice || 0,
+      totalDue: totalDueBalance,
       supplierId: supplierPayment.supplierId,
       userId: supplierPayment.userId,
       uniqueId: supplierPaymentId,
     }
+
+    // console.log(supplierPaymentInfo)
 
     // If the purchase exists, update it
     if (isExistingSupplierAndUser) {

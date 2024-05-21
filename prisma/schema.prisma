@@ -26,14 +26,14 @@ model User {
   presentAddress        String?
   permanentAddress      String?
   profileImage          String?
-  role                  String
+  role                  UserRole @default(USER)
   password              String
   uniqueId              String      @unique
 
   purchases             Purchase[]
   sells                 Sells[]
-
-  supplierPayment       SupplierPayment?
+  supplierPayment       SupplierPayment[]
+  customerPayment       CustomerPayments[]
   
   createdAt             DateTime    @default(now())
   updatedAt             DateTime    @updatedAt
@@ -80,11 +80,8 @@ model Variants {
   productId     String
   product       Product    @relation(fields: [productId], references: [id])
 
-   status        String     @default("available")
-
-  // returnId      String
-  // return        Returns    @relation(fields: [returnId], references: [id])
-
+  status        String     @default("available")
+  
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
 
@@ -94,20 +91,18 @@ model Variants {
 model SupplierPayment {
   id                   String  @id @default(uuid())
   totalPay             Int
+  totalDue             Int
   totalSellPrice       Int
   uniqueId             String
 
   supplierId           String
   supplier             Suppliers @relation(fields: [supplierId], references: [id])
 
-  userId               String   @unique
+  userId               String  
   user                 User     @relation(fields: [userId], references: [id])
 
   createdAt            DateTime   @default(now())
   updatedAt            DateTime   @updatedAt
-
-   @@unique([userId, supplierId])
-   
 
   @@map("supplierPayments")
 }
@@ -124,7 +119,7 @@ model Suppliers {
   presentAddress      String?
   permanentAddress    String?
   profileImage        String?
-  uniqueId            String
+  uniqueId            String      @unique
   status              Boolean?     @default(false)
   payments            SupplierPayment[]
   purchase            Purchase[]
@@ -141,11 +136,21 @@ model Returns {
   id                    String  @id @default(uuid())
   productName           String
   modelName             String
- 
-  // variants              Variants[]
+  uniqueId              String
+  imeiNumber            String
+  ram                   String
+  rom                   String
+  color                 String
+  purchaseRate          Int
+  sellingPrice          Int
+  vats                  Int
+  discounts             Int
+  variantId             String
+  userId                String
+  productId             String
 
-  supplierId            String?
-  supplier              Suppliers?  @relation(fields: [supplierId], references: [id])
+  supplierId            String
+  supplier              Suppliers  @relation(fields: [supplierId], references: [id])
 
   createdAt             DateTime   @default(now())
   updatedAt             DateTime   @updatedAt
@@ -155,13 +160,13 @@ model Returns {
 
 model Purchase {
   id                    String  @id @default(uuid())
-  purchaseRate          String
-  sellingPrice          String
+  purchaseRate          Int
+  sellingPrice          Int
   discounts             Int
   vats                  Int
   totalPrice            Int
-  color                 String
   totalStock            Int
+  color                 String
   uniqueId              String
 
   supplierId            String
@@ -254,9 +259,87 @@ model Customers {
   profileImage        String?
   uniqueId            String
   purchaseHistory     Sells[]
+  payments            CustomerPayments[]
 
   createdAt           DateTime   @default(now())
   updatedAt           DateTime   @updatedAt
 
   @@map("customers")
+}
+
+
+model CustomerPayments {
+  id                   String  @id @default(uuid())
+  totalPay             Int
+  totalDue             Int
+  totalSellPrice       Int
+  uniqueId             String
+
+  customerId           String
+  customer             Customers @relation(fields: [customerId], references: [id])
+
+  userId               String  
+  user                 User     @relation(fields: [userId], references: [id])
+
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
+
+  @@map("customerPayments")
+}
+
+model Vats {
+  id                   String  @id @default(uuid())
+
+  name                 Int
+  vatType              String
+
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
+
+  @@map("vats")
+}
+
+model Discounts {
+  id                   String  @id @default(uuid())
+
+  name                 Int
+  discountType         String
+
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
+
+  @@map("discounts")
+}
+
+model Colors {
+  id                   String  @id @default(uuid())
+
+  name                 String
+
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
+
+  @@map("colors")
+}
+
+model CurrencyType {
+  id                   String  @id @default(uuid())
+
+  currencyName                 String
+
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
+
+  @@map("currencyType")
+}
+
+
+// Enum value
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  USER
+  MODERATOR
+  CONTENT_MANAGER
+  MARKETING_MANAGER
 }

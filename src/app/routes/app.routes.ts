@@ -2,6 +2,7 @@ import express from 'express'
 import { CustomerRoutes } from '../modules/customers/customers.route'
 import { productRoutes } from '../modules/products/product.route'
 import { PurchaseRoutes } from '../modules/purchase/purchase.route'
+import { ReturnRoutes } from '../modules/returns/return.route'
 import { SellRoutes } from '../modules/sell/sell.route'
 import { SellVariantRoutes } from '../modules/sellVariants/sellVariants.route'
 import { SupplierRoutes } from '../modules/supplier/supplier.route'
@@ -47,6 +48,10 @@ const modulesRouters = [
   {
     path: '/sell-variant',
     route: SellVariantRoutes,
+  },
+  {
+    path: '/return',
+    route: ReturnRoutes,
   },
 ]
 

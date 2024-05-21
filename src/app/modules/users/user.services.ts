@@ -25,6 +25,8 @@ const GetAllCreateUserService = async () => {
     include: {
       purchases: true,
       sells: true,
+      customerPayment: true,
+      supplierPayment: true,
     },
   })
   return result

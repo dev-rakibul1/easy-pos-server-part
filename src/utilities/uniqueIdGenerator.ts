@@ -123,3 +123,38 @@ export async function generateUniqueSellId(code: string): Promise<string> {
     throw error
   }
 }
+
+// Generate return id
+export async function generateUniqueReturnId(code: string): Promise<string> {
+  try {
+    // Get the count of existing users
+    const count = await prisma.returns.count()
+    const codeUpperCase = code.toUpperCase()
+
+    // Generate the next unique user ID
+    const nextReturnId = `${codeUpperCase}-${String(count + 1).padStart(5, '0')}`
+
+    return nextReturnId
+  } catch (error) {
+    console.error('Error generating unique return ID:', error)
+    throw error
+  }
+}
+// Generate customer payment id
+export async function generateUniqueCustomerPaymentId(
+  code: string,
+): Promise<string> {
+  try {
+    // Get the count of existing users
+    const count = await prisma.returns.count()
+    const codeUpperCase = code.toUpperCase()
+
+    // Generate the next unique user ID
+    const nextCustomerPaymentId = `${codeUpperCase}-${String(count + 1).padStart(5, '0')}`
+
+    return nextCustomerPaymentId
+  } catch (error) {
+    console.error('Error generating unique customer payment ID:', error)
+    throw error
+  }
+}
