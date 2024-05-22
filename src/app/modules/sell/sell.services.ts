@@ -1,4 +1,6 @@
 import { Sells } from '@prisma/client'
+import httpStatus from 'http-status'
+import ApiError from '../../../errors/apiError'
 import prisma from '../../../shared/prisma'
 import {
   generateUniqueCustomerPaymentId,
@@ -34,7 +36,7 @@ const CreateSellService = async (payloads: any) => {
       })
 
       if (!isVariantExist) {
-        throw new Error('Product does not exist')
+        throw new ApiError(httpStatus.NOT_FOUND, 'Product does not exist')
       }
 
       // Create sell variant

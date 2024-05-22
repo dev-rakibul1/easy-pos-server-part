@@ -1,5 +1,5 @@
 Arguments: 
-  C:\Program Files\nodejs\node.exe C:\Program Files (x86)\Yarn\bin\yarn.js remove @prisma/client prisma
+  C:\Program Files\nodejs\node.exe C:\Program Files (x86)\Yarn\bin\yarn.js add zod
 
 PATH: 
   C:\Users\RAKIBUL\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\local\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Users\RAKIBUL\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0;C:\WINDOWS\System32\OpenSSH;C:\Program Files\Git\cmd;C:\Program Files (x86)\Yarn\bin;C:\Users\RAKIBUL\AppData\Roaming\nvm;C:\Program Files\nodejs;C:\Program Files\Redis;C:\Users\RAKIBUL\.console-ninja\.bin;C:\Users\RAKIBUL\AppData\Local\Microsoft\WindowsApps;C:\Users\RAKIBUL\AppData\Roaming\npm;C:\Users\RAKIBUL\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\RAKIBUL\AppData\Local\Yarn\bin;C:\Users\RAKIBUL\AppData\Roaming\nvm;C:\Program Files\nodejs;C:\Program Files (x86)\MongoDB Atlas CLI;C:\Program Files\heroku\bin;C:\Program Files\Git\usr\bin\vendor_perl;C:\Program Files\Git\usr\bin\core_perl
@@ -36,6 +36,7 @@ npm manifest:
       "src/**/*.ts": "yarn lint-prettier"
     },
     "dependencies": {
+      "@prisma/client": "^5.14.0",
       "@types/node": "^20.12.12",
       "@typescript-eslint/eslint-plugin": "^7.9.0",
       "@typescript-eslint/parser": "^7.9.0",
@@ -46,6 +47,7 @@ npm manifest:
       "eslint": "^9.2.0",
       "express": "^4.19.2",
       "http-status": "^1.7.4",
+      "prisma": "^5.14.0",
       "ts-node": "^10.9.2",
       "typescript": "^5.4.5"
     },

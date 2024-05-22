@@ -1,4 +1,6 @@
 import { Returns } from '@prisma/client'
+import httpStatus from 'http-status'
+import ApiError from '../../../errors/apiError'
 import prisma from '../../../shared/prisma'
 import { generateUniqueReturnId } from '../../../utilities/uniqueIdGenerator'
 
@@ -15,7 +17,7 @@ const CreateReturnService = async (payloads: Returns) => {
     })
 
     if (!isProductExist) {
-      throw new Error('Product does not exist.')
+      throw new ApiError(httpStatus.NOT_FOUND, 'Product does not exist.')
     }
 
     const returnProductInfo = {
@@ -48,7 +50,10 @@ const CreateReturnService = async (payloads: Returns) => {
     })
 
     if (!supplierOwnProductCheck) {
-      throw new Error('This product does not belong to the specified supplier.')
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        'This product does not belong to the specified supplier.',
+      )
     }
 
     const returnProduct = await tx.returns.create({ data: returnInfo })
@@ -64,7 +69,7 @@ const CreateReturnService = async (payloads: Returns) => {
     })
 
     if (!searchSupplierPayment) {
-      throw new Error('Payment does not exist')
+      throw new ApiError(httpStatus.NOT_FOUND, 'Payment does not exist')
     }
 
     if (searchSupplierPayment.totalDue < isProductExist.purchaseRate) {
@@ -82,7 +87,10 @@ const CreateReturnService = async (payloads: Returns) => {
           })
         }
 
-        throw new Error(`Please refund ${change} balance in the seller.`)
+        throw new ApiError(
+          httpStatus.CONFLICT,
+          `Please refund ${change} balance in the seller.`,
+        )
       }
     } else {
       const pevDueAmount =

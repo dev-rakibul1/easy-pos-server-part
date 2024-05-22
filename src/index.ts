@@ -2,6 +2,7 @@ import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import express, { Application, NextFunction, Request, Response } from 'express'
 import httpStatus from 'http-status'
+import GlobalErrorHandler from './app/middlewares/globalErrorHandler'
 import router from './app/routes/app.routes'
 import { databaseConnect } from './utilities/server'
 export const app: Application = express()
@@ -19,7 +20,7 @@ app.use('/api/v1', router)
  * GLOBAL ERROR HANDLING AND PRODUCTION LABEL
  */
 
-// app.use(globalErrorHandler);
+app.use(GlobalErrorHandler)
 
 // global error handling
 app.use('*', (req: Request, res: Response, next: NextFunction) => {
