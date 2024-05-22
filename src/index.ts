@@ -19,7 +19,6 @@ app.use('/api/v1', router)
 /**
  * GLOBAL ERROR HANDLING AND PRODUCTION LABEL
  */
-
 app.use(GlobalErrorHandler)
 
 // global error handling

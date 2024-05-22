@@ -1,3 +1,4 @@
+import { Colors } from '@prisma/client'
 import { Request, Response } from 'express'
 import httpStatus from 'http-status'
 import CatchAsync from '../../../shared/catchAsync'
@@ -10,7 +11,7 @@ const CreateColorController = CatchAsync(
     const payload = req.body
     const result = await ColorService.CreateColorService(payload)
 
-    sendResponse(res, {
+    sendResponse<Colors | null>(res, {
       statusCode: httpStatus.OK,
       success: true,
       message: 'Color added success!',
@@ -24,7 +25,7 @@ const GetAllColorController = CatchAsync(
   async (req: Request, res: Response) => {
     const result = await ColorService.GetAllColorService()
 
-    sendResponse(res, {
+    sendResponse<Colors[] | null>(res, {
       statusCode: httpStatus.OK,
       success: true,
       message: 'Color get successfully!',
@@ -33,7 +34,25 @@ const GetAllColorController = CatchAsync(
   },
 )
 
+// Update color
+const UpdateColorController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const payload = req.body
+    const { id } = req.params
+
+    const result = await ColorService.UpdateColorService(id, payload)
+
+    sendResponse<Colors | null>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Color update successfully!',
+      data: result,
+    })
+  },
+)
+
 export const ColorController = {
   CreateColorController,
   GetAllColorController,
+  UpdateColorController,
 }
