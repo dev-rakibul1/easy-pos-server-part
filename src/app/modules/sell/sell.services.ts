@@ -26,7 +26,7 @@ const CreateSellService = async (payloads: any) => {
 
       const variantId = payload.variantId
 
-      console.log(payload)
+      // console.log(payload)
 
       // Check if the variant exists
       const isVariantExist = await tx.variants.findUnique({
@@ -107,9 +107,9 @@ const CreateSellService = async (payloads: any) => {
       await tx.customerPayments.update({
         where: { id: isPaymentExist.id },
         data: {
-          totalPay,
-          totalSellPrice,
-          totalDue,
+          totalPay: isPaymentExist.totalPay + totalPay,
+          totalSellPrice: isPaymentExist.totalSellPrice + totalSellPrice,
+          totalDue: isPaymentExist.totalDue + totalDue,
         },
       })
     }

@@ -1,5 +1,9 @@
 import express from 'express'
+import { ColorRoutes } from '../modules/colors/color.route'
+import { CurrencyTypeRoutes } from '../modules/currencyType/currencyType.route'
+import { CustomerPaymentRoutes } from '../modules/customerPayments/customerPayments.route'
 import { CustomerRoutes } from '../modules/customers/customers.route'
+import { DiscountRoutes } from '../modules/discounts/discount.route'
 import { productRoutes } from '../modules/products/product.route'
 import { PurchaseRoutes } from '../modules/purchase/purchase.route'
 import { ReturnRoutes } from '../modules/returns/return.route'
@@ -9,6 +13,7 @@ import { SupplierRoutes } from '../modules/supplier/supplier.route'
 import { SupplierPaymentRoutes } from '../modules/supplierPayments/supplierPayment.route'
 import { UserRoutes } from '../modules/users/user.route'
 import { VariantRoutes } from '../modules/variants/variants.route'
+import { VatRoutes } from '../modules/vats/vats.route'
 
 const router = express.Router()
 
@@ -52,6 +57,26 @@ const modulesRouters = [
   {
     path: '/return',
     route: ReturnRoutes,
+  },
+  {
+    path: '/customer-payment',
+    route: CustomerPaymentRoutes,
+  },
+  {
+    path: '/color',
+    route: ColorRoutes,
+  },
+  {
+    path: '/currency-type',
+    route: CurrencyTypeRoutes,
+  },
+  {
+    path: '/discount',
+    route: DiscountRoutes,
+  },
+  {
+    path: '/vat',
+    route: VatRoutes,
   },
 ]
 

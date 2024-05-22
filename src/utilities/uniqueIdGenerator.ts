@@ -158,3 +158,71 @@ export async function generateUniqueCustomerPaymentId(
     throw error
   }
 }
+
+// Generate color id
+export async function generateUniqueColorId(code: string): Promise<string> {
+  try {
+    // Get the count of existing users
+    const count = await prisma.colors.count()
+    const codeUpperCase = code.toUpperCase()
+
+    // Generate the next unique user ID
+    const nextColorId = `${codeUpperCase}-${String(count + 1).padStart(5, '0')}`
+
+    return nextColorId
+  } catch (error) {
+    console.error('Error generating unique color ID:', error)
+    throw error
+  }
+}
+// Generate currency type id
+export async function generateUniqueCurrencyTypeId(
+  code: string,
+): Promise<string> {
+  try {
+    // Get the count of existing users
+    const count = await prisma.currencyType.count()
+    const codeUpperCase = code.toUpperCase()
+
+    // Generate the next unique user ID
+    const nextCurrencyTypeId = `${codeUpperCase}-${String(count + 1).padStart(5, '0')}`
+
+    return nextCurrencyTypeId
+  } catch (error) {
+    console.error('Error generating unique currency type ID:', error)
+    throw error
+  }
+}
+
+// Generate discount id
+export async function generateUniqueDiscountId(code: string): Promise<string> {
+  try {
+    // Get the count of existing discount
+    const count = await prisma.discounts.count()
+    const codeUpperCase = code.toUpperCase()
+
+    // Generate the next unique user ID
+    const nextDiscountId = `${codeUpperCase}-${String(count + 1).padStart(5, '0')}`
+
+    return nextDiscountId
+  } catch (error) {
+    console.error('Error generating unique discount ID:', error)
+    throw error
+  }
+}
+// Generate vat id
+export async function generateUniqueVatId(code: string): Promise<string> {
+  try {
+    // Get the count of existing vat
+    const count = await prisma.vats.count()
+    const codeUpperCase = code.toUpperCase()
+
+    // Generate the next unique user ID
+    const nextVatId = `${codeUpperCase}-${String(count + 1).padStart(5, '0')}`
+
+    return nextVatId
+  } catch (error) {
+    console.error('Error generating unique vat ID:', error)
+    throw error
+  }
+}

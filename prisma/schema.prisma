@@ -290,8 +290,10 @@ model CustomerPayments {
 model Vats {
   id                   String  @id @default(uuid())
 
-  name                 Int
+  name                 String
   vatType              String
+  vatValue             Int
+  uniqueId             String
 
   createdAt            DateTime   @default(now())
   updatedAt            DateTime   @updatedAt
@@ -302,8 +304,10 @@ model Vats {
 model Discounts {
   id                   String  @id @default(uuid())
 
-  name                 Int
+  name                 String
   discountType         String
+  discountValue        Int
+  uniqueId             String
 
   createdAt            DateTime   @default(now())
   updatedAt            DateTime   @updatedAt
@@ -315,6 +319,8 @@ model Colors {
   id                   String  @id @default(uuid())
 
   name                 String
+  colorCode            String?
+  uniqueId             String
 
   createdAt            DateTime   @default(now())
   updatedAt            DateTime   @updatedAt
@@ -326,6 +332,7 @@ model CurrencyType {
   id                   String  @id @default(uuid())
 
   currencyName                 String
+  uniqueId             String
 
   createdAt            DateTime   @default(now())
   updatedAt            DateTime   @updatedAt
