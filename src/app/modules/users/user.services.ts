@@ -1,9 +1,14 @@
-import { User } from '@prisma/client'
+import { Prisma, User } from '@prisma/client'
 import httpStatus from 'http-status'
 import { ENUM_USER_PASSWORD, ENUM_USER_ROLE } from '../../../enums/role'
 import ApiError from '../../../errors/apiError'
+import { paginationHelpers } from '../../../helpers/paginationHelpers'
 import prisma from '../../../shared/prisma'
 import { generateUniqueId } from '../../../utilities/uniqueIdGenerator'
+import { IGenericResponse } from '../../interfaces/common'
+import { IPaginationOptions } from '../../interfaces/pagination'
+import { IUserFilterRequest } from './user.type'
+import { userFilterableKey } from './users.constant'
 
 // Create user
 const CreateUserService = async (payloads: User) => {
@@ -51,8 +56,59 @@ const CreateUserService = async (payloads: User) => {
 }
 
 // get all user
-const GetAllCreateUserService = async () => {
+const GetAllCreateUserService = async (
+  filters: IUserFilterRequest,
+  paginationOptions: IPaginationOptions,
+): Promise<IGenericResponse<User[]>> => {
+  // filters
+  const { searchTerm, ...filterData } = filters
+
+  const andConditions = []
+
+  // SearchTerms
+  if (searchTerm) {
+    andConditions.push({
+      OR: userFilterableKey.map(filed => ({
+        [filed]: {
+          contains: searchTerm,
+          mode: 'insensitive',
+        },
+      })),
+    })
+  }
+
+  // Filter data
+  if (Object.keys(filterData).length) {
+    andConditions.push({
+      AND: Object.keys(filterData).map(key => ({
+        [key]: {
+          equals: (filterData as any)[key],
+        },
+      })),
+    })
+  }
+
+  const whereConditions: Prisma.UserWhereInput =
+    andConditions.length > 0 ? { AND: andConditions } : {}
+
+  // Pagination
+  const { page, limit, skip } =
+    paginationHelpers.calculatePagination(paginationOptions)
+
   const result = await prisma.user.findMany({
+    where: whereConditions,
+    skip,
+    take: limit,
+
+    orderBy:
+      paginationOptions.sortBy && paginationOptions.sortOrder
+        ? {
+            [paginationOptions.sortBy]: paginationOptions.sortOrder,
+          }
+        : {
+            createdAt: 'desc',
+          },
+
     include: {
       purchases: true,
       sells: true,
@@ -60,7 +116,12 @@ const GetAllCreateUserService = async () => {
       supplierPayment: true,
     },
   })
-  return result
+
+  const total = await prisma.user.count()
+  return {
+    meta: { limit, page, total },
+    data: result,
+  }
 }
 
 // updated user
