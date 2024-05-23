@@ -1,9 +1,11 @@
 import { Purchase } from '@prisma/client'
+import httpStatus from 'http-status'
+import ApiError from '../../../errors/apiError'
 import prisma from '../../../shared/prisma'
 import { generateUniquePurchaseIds } from '../../../utilities/purchaseIdGen/purchaseIdGen'
 import { generateUniqueSupplierPaymentId } from '../../../utilities/uniqueIdGenerator'
 
-// Create user
+// Create purchase
 const CreatePurchaseService = async (data: any) => {
   const { variants, purchase, supplierPayment } = data
 
@@ -44,9 +46,6 @@ const CreatePurchaseService = async (data: any) => {
         updatedPurchases.push(updatedPurchase)
       } else {
         // Purchase does not exist, proceed with creation
-        // Set unique IDs for the new purchase
-        // const uniqueUpdateId = await generateUniquePurchaseIds('PUR', 1)
-        // const newData = { ...purchaseItem, uniqueId: uniqueUpdateId[0] }
 
         // purchase product id updated
         const uniqueUpdateId = await generateUniquePurchaseIds(
@@ -66,11 +65,6 @@ const CreatePurchaseService = async (data: any) => {
         createdPurchases.push(createdPurchase)
       }
     }
-
-    // if(updatedPurchases){
-    //   await tx.variants.createMany({ data: variants })
-    //   const result = await tx.purchase.createMany({ data: newData })
-    // }
 
     // ------------SUPPLIER PAYMENT INFORMATION------------
     const supplierPaymentId = await generateUniqueSupplierPaymentId('spd')
@@ -104,8 +98,6 @@ const CreatePurchaseService = async (data: any) => {
       uniqueId: supplierPaymentId,
     }
 
-    // console.log(supplierPaymentInfo)
-
     // If the purchase exists, update it
     if (isExistingSupplierAndUser) {
       await tx.supplierPayment.update({
@@ -125,7 +117,7 @@ const CreatePurchaseService = async (data: any) => {
   })
 }
 
-// get all user
+// get all purchase
 const GetAllCreatePurchaseService = async () => {
   const result = await prisma.purchase.findMany({
     include: {
@@ -137,7 +129,49 @@ const GetAllCreatePurchaseService = async () => {
   return result
 }
 
+// Purchase updated
+const UpdateCreatePurchaseService = async (id: string, payloads: Purchase) => {
+  try {
+    return prisma.$transaction(async tx => {
+      const isExist = await tx.purchase.findUnique({ where: { id: id } })
+      if (!isExist) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Invalid purchase.')
+      }
+
+      const result = await tx.purchase.update({
+        where: { id: id },
+        data: payloads,
+      })
+
+      const searchSupplierPayment = await tx.supplierPayment.findFirst({
+        where: { userId: result.userId, supplierId: result.supplierId },
+      })
+
+      if (!searchSupplierPayment) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Supplier payment not found.')
+      }
+
+      const previousAmount = isExist.totalPrice
+      const currentPrice =
+        searchSupplierPayment.totalSellPrice -
+        previousAmount +
+        result.sellingPrice
+
+      await tx.supplierPayment.update({
+        where: { id: searchSupplierPayment.id },
+        data: { totalSellPrice: currentPrice },
+      })
+
+      return result
+    })
+  } catch (error) {
+    console.error('Error in UpdateCreatePurchaseService:', error)
+    throw error // Rethrow the error for the caller to handle
+  }
+}
+
 export const PurchaseService = {
   CreatePurchaseService,
   GetAllCreatePurchaseService,
+  UpdateCreatePurchaseService,
 }

@@ -46,15 +46,15 @@ model Product {
   productName   String
   brandName     String
   modelName     String
-  processor     String
+  processor     String?
   unit          String
   category      String
   reOrderAlert  Int
-  productImage  String
-  description   String
-  uniqueId      String
-  productStock  Int
-  othersStock   Int
+  productImage  String?
+  description   String?
+  uniqueId      String?
+  productStock  Int?
+  othersStock   Int?
   variants      Variants[]
   purchases     Purchase[]
   
@@ -160,12 +160,12 @@ model Returns {
 
 model Purchase {
   id                    String  @id @default(uuid())
-  purchaseRate          Int
-  sellingPrice          Int
-  discounts             Int
-  vats                  Int
-  totalPrice            Int
-  totalStock            Int
+  purchaseRate          Float
+  sellingPrice          Float
+  discounts             Float
+  vats                  Float
+  totalPrice            Float
+  totalStock            Float
   color                 String
   uniqueId              String
 
@@ -292,7 +292,7 @@ model Vats {
 
   name                 String
   vatType              String
-  vatValue             Int
+  vatValue             Float
   uniqueId             String
 
   createdAt            DateTime   @default(now())
@@ -306,7 +306,7 @@ model Discounts {
 
   name                 String
   discountType         String
-  discountValue        Int
+  discountValue        Float
   uniqueId             String
 
   createdAt            DateTime   @default(now())

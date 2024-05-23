@@ -1,9 +1,20 @@
-import express from "express";
-import { UserController } from "./user.controller";
+import express from 'express'
+import ValidateZodRequest from '../../middlewares/validateRequest'
+import { UserController } from './user.controller'
+import { UserZodSchema } from './user.validation'
 
-const router = express.Router();
+const router = express.Router()
 
-router.post("/create-user", UserController.CreateUserController);
-router.get("/", UserController.GetAllUserController);
+router.post(
+  '/create-user',
+  ValidateZodRequest(UserZodSchema.CreateUserZodSchema),
+  UserController.CreateUserController,
+)
+router.get('/', UserController.GetAllUserController)
+router.patch(
+  '/:id',
+  ValidateZodRequest(UserZodSchema.UpdateUserZodSchema),
+  UserController.UpdateUserController,
+)
 
-export const UserRoutes = router;
+export const UserRoutes = router

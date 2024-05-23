@@ -1,3 +1,4 @@
+import { Product } from '@prisma/client'
 import { Request, Response } from 'express'
 import httpStatus from 'http-status'
 import CatchAsync from '../../../shared/catchAsync'
@@ -46,9 +47,26 @@ const GetSingleProductsController = CatchAsync(
     })
   },
 )
+// get single product
+const UpdateProductsController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const payloads = req.body
+    const { id } = req.params
+
+    const result = await ProductsService.UpdateProductGetService(id, payloads)
+
+    sendResponse<Partial<Product> | null>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Product updated success.',
+      data: result,
+    })
+  },
+)
 
 export const ProductsController = {
   CreateProductsController,
   GetAllProductsController,
   GetSingleProductsController,
+  UpdateProductsController,
 }

@@ -33,7 +33,28 @@ const GetAllPurchaseController = CatchAsync(
   },
 )
 
+// purchase updated
+const UpdatePurchaseController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const payload = req.body
+    const { id } = req.params
+
+    const result = await PurchaseService.UpdateCreatePurchaseService(
+      id,
+      payload,
+    )
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Purchase updated success',
+      data: result,
+    })
+  },
+)
+
 export const PurchaseController = {
   CreatePurchaseController,
   GetAllPurchaseController,
+  UpdatePurchaseController,
 }

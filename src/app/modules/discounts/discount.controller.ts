@@ -1,3 +1,4 @@
+import { Discounts } from '@prisma/client'
 import { Request, Response } from 'express'
 import httpStatus from 'http-status'
 import CatchAsync from '../../../shared/catchAsync'
@@ -33,7 +34,25 @@ const GetAllDiscountController = CatchAsync(
   },
 )
 
+// updated Discount
+const UpdateDiscountController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const payloads = req.body
+    const { id } = req.params
+
+    const result = await DiscountService.UpdateDiscountService(id, payloads)
+
+    sendResponse<Partial<Discounts>>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Discount updated successfully!',
+      data: result,
+    })
+  },
+)
+
 export const DiscountController = {
   CreateDiscountController,
   GetAllDiscountController,
+  UpdateDiscountController,
 }

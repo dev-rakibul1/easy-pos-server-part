@@ -1,4 +1,6 @@
 import { CurrencyType } from '@prisma/client'
+import httpStatus from 'http-status'
+import ApiError from '../../../errors/apiError'
 import prisma from '../../../shared/prisma'
 import { generateUniqueCurrencyTypeId } from '../../../utilities/uniqueIdGenerator'
 
@@ -18,7 +20,25 @@ const GetAllCurrencyTypeService = async () => {
   return result
 }
 
+// get all currency type
+const UpdateCurrencyTypeService = async (
+  id: string,
+  payloads: Partial<CurrencyType>,
+) => {
+  const isExist = await prisma.currencyType.findUnique({ where: { id: id } })
+  if (!isExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Invalid currency.')
+  }
+
+  const result = await prisma.currencyType.update({
+    where: { id: id },
+    data: payloads,
+  })
+  return result
+}
+
 export const CurrencyTypeService = {
   CreateCurrencyTypeService,
   GetAllCurrencyTypeService,
+  UpdateCurrencyTypeService,
 }

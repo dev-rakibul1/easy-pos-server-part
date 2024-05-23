@@ -1,3 +1,4 @@
+import { CurrencyType } from '@prisma/client'
 import { Request, Response } from 'express'
 import httpStatus from 'http-status'
 import CatchAsync from '../../../shared/catchAsync'
@@ -33,7 +34,28 @@ const GetAllCurrencyTypeController = CatchAsync(
   },
 )
 
+// Update Currency Type
+const UpdateCurrencyTypeController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const payloads = req.body
+    const { id } = req.params
+
+    const result = await CurrencyTypeService.UpdateCurrencyTypeService(
+      id,
+      payloads,
+    )
+
+    sendResponse<Partial<CurrencyType>>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Currency updated successfully!',
+      data: result,
+    })
+  },
+)
+
 export const CurrencyTypeController = {
   CreateCurrencyTypeController,
   GetAllCurrencyTypeController,
+  UpdateCurrencyTypeController,
 }

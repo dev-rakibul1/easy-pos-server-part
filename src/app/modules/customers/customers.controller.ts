@@ -4,7 +4,7 @@ import CatchAsync from '../../../shared/catchAsync'
 import sendResponse from '../../../shared/sendResponse'
 import { CustomerService } from './customers.services'
 
-// Create a user
+// Create a customer
 const CreateCustomerController = CatchAsync(
   async (req: Request, res: Response) => {
     const payload = req.body
@@ -19,7 +19,7 @@ const CreateCustomerController = CatchAsync(
   },
 )
 
-// get all user
+// get all customer
 const GetAllCustomerController = CatchAsync(
   async (req: Request, res: Response) => {
     const result = await CustomerService.GetAllCustomerService()
@@ -32,8 +32,25 @@ const GetAllCustomerController = CatchAsync(
     })
   },
 )
+// update customer
+const UpdateCustomerController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const payloads = req.body
+    const { id } = req.params
+
+    const result = await CustomerService.UpdateCustomerService(id, payloads)
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Customer updated success!',
+      data: result,
+    })
+  },
+)
 
 export const CustomerController = {
   CreateCustomerController,
   GetAllCustomerController,
+  UpdateCustomerController,
 }

@@ -4,7 +4,7 @@ import CatchAsync from '../../../shared/catchAsync'
 import sendResponse from '../../../shared/sendResponse'
 import { SupplierService } from './supplier.services'
 
-// Create a user
+// Create a supplier
 const CreateSupplierController = CatchAsync(
   async (req: Request, res: Response) => {
     const payload = req.body
@@ -19,7 +19,7 @@ const CreateSupplierController = CatchAsync(
   },
 )
 
-// get all user
+// get all supplier
 const GetAllSupplierController = CatchAsync(
   async (req: Request, res: Response) => {
     const result = await SupplierService.GetAllSupplierUserService()
@@ -32,8 +32,24 @@ const GetAllSupplierController = CatchAsync(
     })
   },
 )
+// updated  supplier
+const UpdateSupplierController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const payloads = req.body
+    const { id } = req.params
+    const result = await SupplierService.UpdateSupplierUserService(id, payloads)
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Supplier updated successfully!',
+      data: result,
+    })
+  },
+)
 
 export const SupplierController = {
   CreateSupplierController,
   GetAllSupplierController,
+  UpdateSupplierController,
 }

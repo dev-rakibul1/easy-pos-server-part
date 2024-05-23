@@ -28,8 +28,23 @@ const GetAllVatController = CatchAsync(async (req: Request, res: Response) => {
     data: result,
   })
 })
+// updated Vat
+const UpdateVatController = CatchAsync(async (req: Request, res: Response) => {
+  const payloads = req.body
+  const { id } = req.params
+
+  const result = await VatService.UpdateVatService(id, payloads)
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Vat updated successfully!',
+    data: result,
+  })
+})
 
 export const VatController = {
   CreateVatController,
   GetAllVatController,
+  UpdateVatController,
 }

@@ -1,0 +1,7 @@
+-- AlterTable
+ALTER TABLE "products" ALTER COLUMN "processor" DROP NOT NULL,
+ALTER COLUMN "productImage" DROP NOT NULL,
+ALTER COLUMN "description" DROP NOT NULL,
+ALTER COLUMN "uniqueId" DROP NOT NULL,
+ALTER COLUMN "productStock" DROP NOT NULL,
+ALTER COLUMN "othersStock" DROP NOT NULL;
