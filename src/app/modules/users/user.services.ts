@@ -1,4 +1,5 @@
 import { Prisma, User } from '@prisma/client'
+import { Request } from 'express'
 import httpStatus from 'http-status'
 import { ENUM_USER_PASSWORD, ENUM_USER_ROLE } from '../../../enums/role'
 import ApiError from '../../../errors/apiError'
@@ -11,9 +12,15 @@ import { IUserFilterRequest } from './user.type'
 import { userFilterableKey } from './users.constant'
 
 // Create user
-const CreateUserService = async (payloads: User) => {
+const CreateUserService = async (req: Request) => {
+  const payloads: User = req.body
   const userId = await generateUniqueId('u')
   payloads.uniqueId = userId
+
+  const filePath = `/${req.file?.destination}${req.file?.originalname}`
+  if (filePath) {
+    payloads.profileImage = filePath
+  }
 
   if (!payloads.password) {
     payloads.password = ENUM_USER_PASSWORD.DEFAULT_USER_PASSWORD

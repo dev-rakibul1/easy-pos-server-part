@@ -1,4 +1,5 @@
 import { Customers, Prisma } from '@prisma/client'
+import { Request } from 'express'
 import httpStatus from 'http-status'
 import ApiError from '../../../errors/apiError'
 import { paginationHelpers } from '../../../helpers/paginationHelpers'
@@ -10,14 +11,22 @@ import { ICustomerFilterRequest } from './customer.type'
 import { customerFilterAbleKey } from './customers.constant'
 
 // Create customer
-const CreateCustomerService = async (payload: Customers) => {
+const CreateCustomerService = async (req: Request) => {
+  const payloads: Customers = req.body
+
   const customerId = await generateUniqueCustomerId('c')
-  payload.uniqueId = customerId
+  payloads.uniqueId = customerId
+
+  // Image setup
+  const filePath = `/${req.file?.destination}${req.file?.originalname}`
+  if (filePath) {
+    payloads.profileImage = filePath
+  }
 
   return prisma.$transaction(async tx => {
     // Check if email already exists
     const existingEmail = await tx.customers.findUnique({
-      where: { email: payload.email },
+      where: { email: payloads.email },
     })
 
     if (existingEmail) {
@@ -26,14 +35,14 @@ const CreateCustomerService = async (payload: Customers) => {
 
     // Check if phone number already exists
     const existingPhoneNo = await tx.customers.findUnique({
-      where: { phoneNo: payload.phoneNo },
+      where: { phoneNo: payloads.phoneNo },
     })
 
     if (existingPhoneNo) {
       throw new ApiError(httpStatus.CONFLICT, 'Phone number already exists.')
     }
 
-    const result = await tx.customers.create({ data: payload })
+    const result = await tx.customers.create({ data: payloads })
     return result
   })
 }

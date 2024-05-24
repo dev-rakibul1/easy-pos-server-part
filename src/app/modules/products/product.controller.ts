@@ -11,8 +11,7 @@ import { ProductsService } from './product.services'
 // Create a user
 const CreateProductsController = CatchAsync(
   async (req: Request, res: Response) => {
-    const payload = req.body
-    const result = await ProductsService.CreateUserService(payload)
+    const result = await ProductsService.CreateUserService(req)
 
     sendResponse(res, {
       statusCode: httpStatus.OK,

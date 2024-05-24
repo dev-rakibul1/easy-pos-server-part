@@ -11,8 +11,7 @@ import { CustomerService } from './customers.services'
 // Create a customer
 const CreateCustomerController = CatchAsync(
   async (req: Request, res: Response) => {
-    const payload = req.body
-    const result = await CustomerService.CreateCustomerService(payload)
+    const result = await CustomerService.CreateCustomerService(req)
 
     sendResponse(res, {
       statusCode: httpStatus.OK,

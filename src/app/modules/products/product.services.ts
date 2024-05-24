@@ -1,4 +1,5 @@
 import { Prisma, Product } from '@prisma/client'
+import { Request } from 'express'
 import httpStatus from 'http-status'
 import ApiError from '../../../errors/apiError'
 import { paginationHelpers } from '../../../helpers/paginationHelpers'
@@ -10,9 +11,16 @@ import { productFilterableKey } from './product.constant'
 import { IProductFilterRequest } from './product.type'
 
 // Create user
-const CreateUserService = async (payload: Product) => {
+const CreateUserService = async (req: Request) => {
+  const payload: Product = req.body
+
   const productId = await generateUniqueProductId('p')
   payload.uniqueId = productId
+
+  const filePath = `/${req.file?.destination}${req.file?.originalname}`
+  if (filePath) {
+    payload.productImage = filePath
+  }
 
   // @ts-ignore
   payload.productStock = payload.variants?.length || 0
