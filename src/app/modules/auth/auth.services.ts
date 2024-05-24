@@ -5,8 +5,9 @@ import { PAYLOADS } from '../../../enums/role'
 import ApiError from '../../../errors/apiError'
 import { jwtTokenProvider } from '../../../helpers/jwtHelper'
 import prisma from '../../../shared/prisma'
-import { IAuthLoginTypes, IUserLoginResponse } from './auth.type'
+import { IAuthLoginTypes, IRefreshToken, IUserLoginResponse } from './auth.type'
 
+// Login token
 const LoginUserService = async (
   payload: IAuthLoginTypes,
 ): Promise<IUserLoginResponse> => {
@@ -31,7 +32,7 @@ const LoginUserService = async (
   // Generate access token
   const accessToken = jwtTokenProvider.createToken(
     {
-      id: user?.uniqueId,
+      uniqueId: user?.uniqueId,
       role: user?.role,
     },
     PAYLOADS.ACCESS_TOKEN as Secret,
@@ -40,7 +41,7 @@ const LoginUserService = async (
 
   // Generate refresh token
   const refreshToken = jwtTokenProvider.createToken(
-    { id: user?.uniqueId, role: user?.role },
+    { uniqueId: user?.uniqueId, role: user?.role },
     PAYLOADS.REFRESH_TOKEN as Secret,
     PAYLOADS.REFRESH_TOKEN_EXPIRE_IN as string,
   )
@@ -51,6 +52,42 @@ const LoginUserService = async (
   }
 }
 
+// Refresh token
+const RefreshTokenService = async (token: string): Promise<IRefreshToken> => {
+  let verifyToken = null
+
+  try {
+    verifyToken = jwtTokenProvider.verifyJwtToken(
+      token,
+      PAYLOADS.REFRESH_TOKEN as Secret,
+    )
+  } catch (error) {
+    throw new ApiError(httpStatus.FORBIDDEN, 'Invalid refresh token.')
+  }
+
+  const { uniqueId } = verifyToken
+
+  const user = await prisma.user.findUnique({ where: { uniqueId } })
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist.')
+  }
+
+  // Generate a new token
+  const newAccessToken = jwtTokenProvider.createToken(
+    {
+      userId: user.uniqueId,
+      role: user.role,
+    },
+    PAYLOADS.ACCESS_TOKEN as Secret,
+    PAYLOADS.ACCESS_TOKEN_EXPIRE_IN as string,
+  )
+
+  return {
+    accessToken: newAccessToken,
+  }
+}
+
 export const AuthService = {
   LoginUserService,
+  RefreshTokenService,
 }

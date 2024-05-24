@@ -1,10 +1,24 @@
 import express from 'express'
+import { ENUM_USER_ROLE } from '../../../enums/role'
+import { AuthProvider } from '../../middlewares/auth'
 import { VariantsController } from './variants.controller'
 
 const router = express.Router()
 
-router.post('/create-variant', VariantsController.CreateVariantsController)
+router.post(
+  '/create-variant',
+  AuthProvider.Auth(
+    ENUM_USER_ROLE.SUPER_ADMIN,
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.MODERATOR,
+  ),
+  VariantsController.CreateVariantsController,
+)
 router.get('/', VariantsController.GetAllVariantsController)
-router.delete('/:id', VariantsController.DeleteSingleVariantsController)
+router.delete(
+  '/:id',
+  AuthProvider.Auth(ENUM_USER_ROLE.SUPER_ADMIN, ENUM_USER_ROLE.ADMIN),
+  VariantsController.DeleteSingleVariantsController,
+)
 
 export const VariantRoutes = router

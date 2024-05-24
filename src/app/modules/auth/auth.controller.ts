@@ -6,6 +6,7 @@ import sendResponse from '../../../shared/sendResponse'
 import { AuthService } from './auth.services'
 import { IUserLoginResponse } from './auth.type'
 
+// Login
 const LoginUser = CatchAsync(async (req: Request, res: Response) => {
   const { ...loginData } = req.body
 
@@ -30,6 +31,32 @@ const LoginUser = CatchAsync(async (req: Request, res: Response) => {
   })
 })
 
+// Refresh token
+const RefreshToken = CatchAsync(async (req: Request, res: Response) => {
+  const { refreshToken } = req.cookies
+  // console.log('refreshToken____________', refreshToken)
+
+  const result = await AuthService.RefreshTokenService(refreshToken)
+
+  const cookieOptions = {
+    secure: config.env === 'production',
+    httpOnly: true,
+  }
+  res.cookie('refreshToken', refreshToken, cookieOptions)
+
+  // if ('refreshToken' in result) {
+  //   delete result.refreshToken;
+  // }
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Login successfully!',
+    data: result,
+  })
+})
+
 export const LoginController = {
   LoginUser,
+  RefreshToken,
 }

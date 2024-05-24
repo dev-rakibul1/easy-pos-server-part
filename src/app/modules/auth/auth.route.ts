@@ -11,4 +11,10 @@ router.post(
   LoginController.LoginUser,
 )
 
+router.post(
+  '/create-refresh-token',
+  ValidateZodRequest(AuthValidation.CreateRefreshTokenZodValidation),
+  LoginController.RefreshToken,
+)
+
 export const AuthRoutes = router
