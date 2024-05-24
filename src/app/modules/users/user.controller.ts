@@ -11,7 +11,6 @@ import { userFilterableQuery } from './users.constant'
 // Create a user
 const CreateUserController = CatchAsync(async (req: Request, res: Response) => {
   console.log(req.file)
-  // console.log(req.body)
 
   const result = await UserService.CreateUserService(req)
 

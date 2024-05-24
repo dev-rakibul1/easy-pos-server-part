@@ -1,4 +1,5 @@
 import express from 'express'
+import { AuthRoutes } from '../modules/auth/auth.route'
 import { ColorRoutes } from '../modules/colors/color.route'
 import { CurrencyTypeRoutes } from '../modules/currencyType/currencyType.route'
 import { CustomerPaymentRoutes } from '../modules/customerPayments/customerPayments.route'
@@ -77,6 +78,10 @@ const modulesRouters = [
   {
     path: '/vat',
     route: VatRoutes,
+  },
+  {
+    path: '/auth',
+    route: AuthRoutes,
   },
 ]
 

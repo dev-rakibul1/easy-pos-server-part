@@ -1,7 +1,8 @@
 import { Prisma, User } from '@prisma/client'
+import bcrypt from 'bcrypt'
 import { Request } from 'express'
 import httpStatus from 'http-status'
-import { ENUM_USER_PASSWORD, ENUM_USER_ROLE } from '../../../enums/role'
+import { ENUM_USER_ROLE, PAYLOADS } from '../../../enums/role'
 import ApiError from '../../../errors/apiError'
 import { paginationHelpers } from '../../../helpers/paginationHelpers'
 import prisma from '../../../shared/prisma'
@@ -17,15 +18,28 @@ const CreateUserService = async (req: Request) => {
   const userId = await generateUniqueId('u')
   payloads.uniqueId = userId
 
+  // image setup
   const filePath = `/${req.file?.destination}${req.file?.originalname}`
   if (filePath) {
     payloads.profileImage = filePath
   }
 
+  // Password Bcrypt
   if (!payloads.password) {
-    payloads.password = ENUM_USER_PASSWORD.DEFAULT_USER_PASSWORD
+    const saltPass = await bcrypt.hash(
+      PAYLOADS.DEFAULT_USER_PASSWORD,
+      PAYLOADS.PASSWORD_SALT_ROUND,
+    )
+    payloads.password = saltPass
+  } else {
+    const saltPass = await bcrypt.hash(
+      payloads.password,
+      PAYLOADS.PASSWORD_SALT_ROUND,
+    )
+    payloads.password = saltPass
   }
 
+  // Transaction
   return prisma.$transaction(async tx => {
     const existingEmail = await tx.user.findUnique({
       where: { email: payloads.email },
