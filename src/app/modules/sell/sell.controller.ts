@@ -1,10 +1,14 @@
+import { Sells } from '@prisma/client'
 import { Request, Response } from 'express'
 import httpStatus from 'http-status'
 import CatchAsync from '../../../shared/catchAsync'
+import pick from '../../../shared/pick'
 import sendResponse from '../../../shared/sendResponse'
+import { paginationQueryKeys } from '../../interfaces/pagination'
+import { sellFilterableQuery } from './sell.constant'
 import { SellService } from './sell.services'
 
-// Create a user
+// Create a sell
 const CreateSellController = CatchAsync(async (req: Request, res: Response) => {
   const payload = req.body
   const result = await SellService.CreateSellService(payload)
@@ -17,15 +21,19 @@ const CreateSellController = CatchAsync(async (req: Request, res: Response) => {
   })
 })
 
-// get all user
+// get all sell
 const GetAllSellController = CatchAsync(async (req: Request, res: Response) => {
-  const result = await SellService.GetAllSellService()
+  const filters = pick(req.query, sellFilterableQuery)
+  const paginationOptions = pick(req.query, paginationQueryKeys)
 
-  sendResponse(res, {
+  const result = await SellService.GetAllSellService(filters, paginationOptions)
+
+  sendResponse<Sells[]>(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: 'Sell get successfully!',
-    data: result,
+    meta: result.meta,
+    data: result.data,
   })
 })
 

@@ -1,8 +1,13 @@
-import { Suppliers } from '@prisma/client'
+import { Prisma, Suppliers } from '@prisma/client'
 import httpStatus from 'http-status'
 import ApiError from '../../../errors/apiError'
+import { paginationHelpers } from '../../../helpers/paginationHelpers'
 import prisma from '../../../shared/prisma'
 import { generateUniqueSupplierId } from '../../../utilities/uniqueIdGenerator'
+import { IGenericResponse } from '../../interfaces/common'
+import { IPaginationOptions } from '../../interfaces/pagination'
+import { supplierFilterableKey } from './supplier.constant'
+import { ISupplierFilterRequest } from './supplier.type'
 
 // Create supplier
 const CreateSupplierService = async (payloads: Suppliers) => {
@@ -33,15 +38,67 @@ const CreateSupplierService = async (payloads: Suppliers) => {
 }
 
 // get all supplier
-const GetAllSupplierUserService = async () => {
+const GetAllSupplierUserService = async (
+  filters: ISupplierFilterRequest,
+  paginationOptions: IPaginationOptions,
+): Promise<IGenericResponse<Suppliers[]>> => {
+  const { searchTerm, ...filterData } = filters
+
+  const andConditions = []
+
+  // SearchTerms
+  if (searchTerm) {
+    andConditions.push({
+      OR: supplierFilterableKey.map(filed => ({
+        [filed]: {
+          contains: searchTerm,
+          mode: 'insensitive',
+        },
+      })),
+    })
+  }
+
+  // Filter data
+  if (Object.keys(filterData).length) {
+    andConditions.push({
+      AND: Object.keys(filterData).map(key => ({
+        [key]: {
+          equals: (filterData as any)[key],
+        },
+      })),
+    })
+  }
+
+  // Where conditions
+  const whereConditions: Prisma.SuppliersWhereInput =
+    andConditions.length > 0 ? { AND: andConditions } : {}
+
+  // pagination
+  const { limit, page, skip, sortBy, sortOrder } =
+    paginationHelpers.calculatePagination(paginationOptions)
+
   const result = await prisma.suppliers.findMany({
+    where: whereConditions,
+
+    skip,
+    take: limit,
+
+    orderBy:
+      sortBy && sortOrder ? { [sortBy]: sortOrder } : { createdAt: 'desc' },
+
     include: {
       payments: true,
       purchase: true,
       returnHistory: true,
     },
   })
-  return result
+
+  const total = await prisma.suppliers.count()
+
+  return {
+    meta: { limit, page, total },
+    data: result,
+  }
 }
 
 // Update supplier

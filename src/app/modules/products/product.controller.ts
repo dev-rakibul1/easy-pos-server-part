@@ -2,7 +2,10 @@ import { Product } from '@prisma/client'
 import { Request, Response } from 'express'
 import httpStatus from 'http-status'
 import CatchAsync from '../../../shared/catchAsync'
+import pick from '../../../shared/pick'
 import sendResponse from '../../../shared/sendResponse'
+import { paginationQueryKeys } from '../../interfaces/pagination'
+import { productFilterableQuery } from './product.constant'
 import { ProductsService } from './product.services'
 
 // Create a user
@@ -23,13 +26,20 @@ const CreateProductsController = CatchAsync(
 // get all user
 const GetAllProductsController = CatchAsync(
   async (req: Request, res: Response) => {
-    const result = await ProductsService.GetAllCreateUserService()
+    const filters = pick(req.query, productFilterableQuery)
+    const paginationOptions = pick(req.query, paginationQueryKeys)
 
-    sendResponse(res, {
+    const result = await ProductsService.GetAllCreateUserService(
+      filters,
+      paginationOptions,
+    )
+
+    sendResponse<Product[]>(res, {
       statusCode: httpStatus.OK,
       success: true,
       message: 'Product get successfully!',
-      data: result,
+      meta: result.meta,
+      data: result.data,
     })
   },
 )
@@ -37,9 +47,11 @@ const GetAllProductsController = CatchAsync(
 // get single product
 const GetSingleProductsController = CatchAsync(
   async (req: Request, res: Response) => {
-    const result = await ProductsService.SingleProductGetService()
+    const { id } = req.params
 
-    sendResponse(res, {
+    const result = await ProductsService.SingleProductGetService(id)
+
+    sendResponse<Product | null>(res, {
       statusCode: httpStatus.OK,
       success: true,
       message: 'Single product get successfully!',

@@ -88,6 +88,7 @@ const GetAllCreateUserService = async (
     })
   }
 
+  // Where conditions
   const whereConditions: Prisma.UserWhereInput =
     andConditions.length > 0 ? { AND: andConditions } : {}
 

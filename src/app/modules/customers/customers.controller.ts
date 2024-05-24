@@ -1,7 +1,11 @@
+import { Customers } from '@prisma/client'
 import { Request, Response } from 'express'
 import httpStatus from 'http-status'
 import CatchAsync from '../../../shared/catchAsync'
+import pick from '../../../shared/pick'
 import sendResponse from '../../../shared/sendResponse'
+import { paginationQueryKeys } from '../../interfaces/pagination'
+import { customerFilterAbleQuery } from './customers.constant'
 import { CustomerService } from './customers.services'
 
 // Create a customer
@@ -22,13 +26,20 @@ const CreateCustomerController = CatchAsync(
 // get all customer
 const GetAllCustomerController = CatchAsync(
   async (req: Request, res: Response) => {
-    const result = await CustomerService.GetAllCustomerService()
+    const filters = pick(req.query, customerFilterAbleQuery)
+    const paginationOptions = pick(req.query, paginationQueryKeys)
 
-    sendResponse(res, {
+    const result = await CustomerService.GetAllCustomerService(
+      filters,
+      paginationOptions,
+    )
+
+    sendResponse<Customers[]>(res, {
       statusCode: httpStatus.OK,
       success: true,
       message: 'Customer get successfully!',
-      data: result,
+      meta: result.meta,
+      data: result.data,
     })
   },
 )

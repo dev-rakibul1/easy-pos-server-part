@@ -1,7 +1,10 @@
+import { Purchase } from '@prisma/client'
 import { Request, Response } from 'express'
 import httpStatus from 'http-status'
 import CatchAsync from '../../../shared/catchAsync'
+import pick from '../../../shared/pick'
 import sendResponse from '../../../shared/sendResponse'
+import { paginationQueryKeys } from '../../interfaces/pagination'
 import { PurchaseService } from './purchase.services'
 
 // Purchase product
@@ -22,13 +25,20 @@ const CreatePurchaseController = CatchAsync(
 // get all purchase
 const GetAllPurchaseController = CatchAsync(
   async (req: Request, res: Response) => {
-    const result = await PurchaseService.GetAllCreatePurchaseService()
+    const filters = pick(req.query, ['color', 'uniqueId', 'searchTerm'])
+    const paginationOptions = pick(req.query, paginationQueryKeys)
 
-    sendResponse(res, {
+    const result = await PurchaseService.GetAllCreatePurchaseService(
+      filters,
+      paginationOptions,
+    )
+
+    sendResponse<Purchase[]>(res, {
       statusCode: httpStatus.OK,
       success: true,
       message: 'All purchase get successfully!',
-      data: result,
+      meta: result.meta,
+      data: result.data,
     })
   },
 )

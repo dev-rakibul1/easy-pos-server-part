@@ -1,8 +1,13 @@
-import { Customers } from '@prisma/client'
+import { Customers, Prisma } from '@prisma/client'
 import httpStatus from 'http-status'
 import ApiError from '../../../errors/apiError'
+import { paginationHelpers } from '../../../helpers/paginationHelpers'
 import prisma from '../../../shared/prisma'
 import { generateUniqueCustomerId } from '../../../utilities/uniqueIdGenerator'
+import { IGenericResponse } from '../../interfaces/common'
+import { IPaginationOptions } from '../../interfaces/pagination'
+import { ICustomerFilterRequest } from './customer.type'
+import { customerFilterAbleKey } from './customers.constant'
 
 // Create customer
 const CreateCustomerService = async (payload: Customers) => {
@@ -33,14 +38,63 @@ const CreateCustomerService = async (payload: Customers) => {
   })
 }
 // get all customer
-const GetAllCustomerService = async () => {
+const GetAllCustomerService = async (
+  filters: ICustomerFilterRequest,
+  paginationOptions: IPaginationOptions,
+): Promise<IGenericResponse<Customers[]>> => {
+  const { searchTerm, ...filterData } = filters
+
+  const andConditions = []
+
+  // SearchTerms
+  if (searchTerm) {
+    andConditions.push({
+      OR: customerFilterAbleKey.map(filed => ({
+        [filed]: {
+          contains: searchTerm,
+          mode: 'insensitive',
+        },
+      })),
+    })
+  }
+
+  // Filter data
+  if (Object.keys(filterData).length) {
+    andConditions.push({
+      AND: Object.keys(filterData).map(key => ({
+        [key]: {
+          equals: (filterData as any)[key],
+        },
+      })),
+    })
+  }
+
+  // Where conditions
+  const whereConditions: Prisma.CustomersWhereInput =
+    andConditions.length > 0 ? { AND: andConditions } : {}
+
+  // Pagination
+  const { limit, page, skip, sortBy, sortOrder } =
+    paginationHelpers.calculatePagination(paginationOptions)
+
   const result = await prisma.customers.findMany({
+    where: whereConditions,
+    skip,
+    take: limit,
+    orderBy:
+      sortBy && sortOrder ? { [sortBy]: sortOrder } : { createdAt: 'desc' },
     include: {
       purchaseHistory: true,
       payments: true,
     },
   })
-  return result
+
+  const total = await prisma.customers.count()
+
+  return {
+    meta: { limit, page, total },
+    data: result,
+  }
 }
 //  customer updated
 const UpdateCustomerService = async (id: string, payloads: Customers) => {

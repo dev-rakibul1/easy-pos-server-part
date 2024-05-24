@@ -1,0 +1,25 @@
+export const customerFilterAbleQuery = [
+  'searchTerm',
+  'firstName',
+  'middleName',
+  'lastName',
+  'email',
+  'phoneNo',
+  'nid',
+  'presentAddress',
+  'permanentAddress',
+  'profileImage',
+  'uniqueId',
+]
+export const customerFilterAbleKey = [
+  'firstName',
+  'middleName',
+  'lastName',
+  'email',
+  'phoneNo',
+  'nid',
+  'presentAddress',
+  'permanentAddress',
+  'profileImage',
+  'uniqueId',
+]
