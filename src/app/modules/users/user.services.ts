@@ -192,9 +192,29 @@ const UpdateUserService = async (
     return result
   })
 }
+// updated user
+const DeleteUserService = async (id: string): Promise<Partial<User | null>> => {
+  const isExist = await prisma.user.findUnique({ where: { id } })
+
+  if (!isExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Invalid user.')
+  }
+
+  if (isExist.role === ENUM_USER_ROLE.SUPER_ADMIN) {
+    throw new ApiError(
+      httpStatus.FORBIDDEN,
+      'Deletion of the super admin is not permitted.',
+    )
+  }
+
+  const deleteUser = await prisma.user.delete({ where: { id } })
+
+  return deleteUser
+}
 
 export const UserService = {
   CreateUserService,
   GetAllCreateUserService,
   UpdateUserService,
+  DeleteUserService,
 }
