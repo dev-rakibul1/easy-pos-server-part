@@ -26,7 +26,7 @@ model User {
   presentAddress        String?
   permanentAddress      String?
   profileImage          String?
-  role                  UserRole @default(USER)
+  role                  UserRole @default(user)
   password              String
   uniqueId              String      @unique
 
@@ -315,6 +315,39 @@ model Discounts {
   @@map("discounts")
 }
 
+model Brands {
+  id                   String  @id @default(uuid())
+
+  brandName            String
+  description          String?
+  uniqueId             String     @unique
+
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
+
+  @@map("brands")
+}
+model Units {
+  id                   String  @id @default(uuid())
+
+  unitName            String
+
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
+
+  @@map("units")
+}
+model Categorys {
+  id                   String  @id @default(uuid())
+
+  categoryName         String
+
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
+
+  @@map("categories")
+}
+
 model Colors {
   id                   String  @id @default(uuid())
 
@@ -343,10 +376,10 @@ model CurrencyType {
 
 // Enum value
 enum UserRole {
-  SUPER_ADMIN
-  ADMIN
-  USER
-  MODERATOR
-  CONTENT_MANAGER
-  MARKETING_MANAGER
+  super_admin        
+  admin
+  user
+  moderator
+  content_manager    
+  marketing_manager  
 }

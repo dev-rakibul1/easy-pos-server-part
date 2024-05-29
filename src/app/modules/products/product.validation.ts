@@ -93,7 +93,7 @@ const UpdateProductZodValidation = z.object({
       .optional(),
     brandName: z
       .string()
-      .min(5, { message: 'Brand name must be at least 5 characters long' })
+      .min(2, { message: 'Brand name must be at least 2 characters long' })
       .max(255, {
         message: 'Brand name must be less than or equal to 255 characters',
       })
@@ -107,7 +107,7 @@ const UpdateProductZodValidation = z.object({
       .optional(),
     processor: z
       .string()
-      .min(5, { message: 'Processor must be at least 5 characters long' })
+      .min(2, { message: 'Processor must be at least 2 characters long' })
       .max(255, {
         message: 'Processor must be less than or equal to 255 characters',
       })

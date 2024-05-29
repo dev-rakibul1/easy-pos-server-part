@@ -1,10 +1,10 @@
 export const UserRoleEnum = [
-  'SUPER_ADMIN',
-  'ADMIN',
-  'USER',
-  'MODERATOR',
-  'CONTENT_MANAGER',
-  'MARKETING_MANAGER',
+  'super_admin',
+  'admin',
+  'user',
+  'moderator',
+  'content_manager',
+  'marketing_manager',
 ]
 
 export const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/

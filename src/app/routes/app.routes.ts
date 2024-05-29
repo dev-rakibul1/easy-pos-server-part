@@ -1,5 +1,7 @@
 import express from 'express'
 import { AuthRoutes } from '../modules/auth/auth.route'
+import { BrandRoutes } from '../modules/brand/brand.route'
+import { CategoryRoutes } from '../modules/category/category.route'
 import { ColorRoutes } from '../modules/colors/color.route'
 import { CurrencyTypeRoutes } from '../modules/currencyType/currencyType.route'
 import { CustomerPaymentRoutes } from '../modules/customerPayments/customerPayments.route'
@@ -12,6 +14,7 @@ import { SellRoutes } from '../modules/sell/sell.route'
 import { SellVariantRoutes } from '../modules/sellVariants/sellVariants.route'
 import { SupplierRoutes } from '../modules/supplier/supplier.route'
 import { SupplierPaymentRoutes } from '../modules/supplierPayments/supplierPayment.route'
+import { UnitRoutes } from '../modules/unit/unit.route'
 import { UserRoutes } from '../modules/users/user.route'
 import { VariantRoutes } from '../modules/variants/variants.route'
 import { VatRoutes } from '../modules/vats/vats.route'
@@ -82,6 +85,18 @@ const modulesRouters = [
   {
     path: '/auth',
     route: AuthRoutes,
+  },
+  {
+    path: '/unit',
+    route: UnitRoutes,
+  },
+  {
+    path: '/brand',
+    route: BrandRoutes,
+  },
+  {
+    path: '/category',
+    route: CategoryRoutes,
   },
 ]
 

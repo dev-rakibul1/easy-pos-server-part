@@ -226,3 +226,19 @@ export async function generateUniqueVatId(code: string): Promise<string> {
     throw error
   }
 }
+// Generate brand id
+export async function generateUniqueBrandId(code: string): Promise<string> {
+  try {
+    // Get the count of existing vat
+    const count = await prisma.brands.count()
+    const codeUpperCase = code.toUpperCase()
+
+    // Generate the next unique user ID
+    const nextBrandId = `${codeUpperCase}-${String(count + 1).padStart(5, '0')}`
+
+    return nextBrandId
+  } catch (error) {
+    console.error('Error generating unique brand ID:', error)
+    throw error
+  }
+}

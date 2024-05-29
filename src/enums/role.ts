@@ -1,10 +1,10 @@
 export enum ENUM_USER_ROLE {
-  SUPER_ADMIN = 'SUPER_ADMIN',
-  ADMIN = 'ADMIN',
-  CONTENT_MANAGER = 'CONTENT_MANAGER',
-  MARKETING_MANAGER = 'MARKETING_MANAGER',
-  USER = 'USER',
-  MODERATOR = 'MODERATOR',
+  SUPER_ADMIN = 'super_admin',
+  ADMIN = 'admin',
+  CONTENT_MANAGER = 'content_manager',
+  MARKETING_MANAGER = 'marketing_manager',
+  USER = 'user',
+  MODERATOR = 'moderator',
 }
 
 export enum PAYLOADS {
