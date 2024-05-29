@@ -32,5 +32,41 @@ router.get(
   ),
   CategoryController.GetAllCategoryController,
 )
+router.get(
+  '/:id',
+  AuthProvider.Auth(
+    ENUM_USER_ROLE.SUPER_ADMIN,
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.CONTENT_MANAGER,
+    ENUM_USER_ROLE.MARKETING_MANAGER,
+    ENUM_USER_ROLE.MODERATOR,
+    ENUM_USER_ROLE.USER,
+  ),
+  CategoryController.GetSingleCategoryController,
+)
+router.patch(
+  '/:id',
+  AuthProvider.Auth(
+    ENUM_USER_ROLE.SUPER_ADMIN,
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.CONTENT_MANAGER,
+    ENUM_USER_ROLE.MARKETING_MANAGER,
+    ENUM_USER_ROLE.MODERATOR,
+    ENUM_USER_ROLE.USER,
+  ),
+  CategoryController.UpdateCategoryController,
+)
+router.delete(
+  '/:id',
+  AuthProvider.Auth(
+    ENUM_USER_ROLE.SUPER_ADMIN,
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.CONTENT_MANAGER,
+    ENUM_USER_ROLE.MARKETING_MANAGER,
+    ENUM_USER_ROLE.MODERATOR,
+    ENUM_USER_ROLE.USER,
+  ),
+  CategoryController.DeleteCategoryController,
+)
 
 export const CategoryRoutes = router
