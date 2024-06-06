@@ -13,6 +13,11 @@ import { IPurchaseFilterRequest } from './purchase.type'
 const CreatePurchaseService = async (data: any) => {
   const { variants, purchase, supplierPayment } = data
 
+  purchase.forEach((pur: any) => {
+    delete pur.productName
+    delete pur.brandName
+  })
+
   // Initialize arrays to store updated and created purchases
   const updatedPurchases: any[] = []
   const createdPurchases: any[] = []
@@ -81,9 +86,12 @@ const CreatePurchaseService = async (data: any) => {
       (accumulator, item) => accumulator + item.totalPrice,
       0,
     )
-    const subTotalPrice = totalPrice1 || 0 + totalPrice2 || 0
+    const subTotalPrice = totalPrice1 // 500
     const totalDueBalance =
-      parseInt(subTotalPrice) - parseInt(supplierPayment.totalPay)
+      parseFloat(subTotalPrice) - parseFloat(supplierPayment.totalPay)
+
+    const createSubTotalPrice =
+      parseFloat(totalPrice2) - parseFloat(supplierPayment.totalPay)
 
     // Check if the purchase already exists
     const isExistingSupplierAndUser = await tx.supplierPayment.findFirst({
@@ -107,8 +115,11 @@ const CreatePurchaseService = async (data: any) => {
       await tx.supplierPayment.update({
         where: { id: isExistingSupplierAndUser.id },
         data: {
-          totalPay: supplierPayment.totalPay,
-          totalSellPrice: subTotalPrice,
+          totalPay:
+            isExistingSupplierAndUser?.totalPay + supplierPayment.totalPay,
+          totalSellPrice:
+            isExistingSupplierAndUser?.totalSellPrice + subTotalPrice,
+          totalDue: isExistingSupplierAndUser?.totalDue + totalDueBalance,
         },
       })
     } else {
@@ -230,8 +241,26 @@ const UpdateCreatePurchaseService = async (id: string, payloads: Purchase) => {
   }
 }
 
+// Supplier And User Trans
+const GetBuySupplierAndUserPurchaseService = async (ids: any) => {
+  try {
+    const obj = ids
+    const [supplierId, userId] = obj.id.split(',')
+
+    const result = await prisma.purchase.findMany({
+      where: { supplierId: supplierId, userId: userId },
+    })
+
+    return result
+  } catch (error) {
+    console.error(error)
+    throw error
+  }
+}
+
 export const PurchaseService = {
   CreatePurchaseService,
   GetAllCreatePurchaseService,
   UpdateCreatePurchaseService,
+  GetBuySupplierAndUserPurchaseService,
 }

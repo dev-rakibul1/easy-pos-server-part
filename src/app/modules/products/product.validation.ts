@@ -40,13 +40,7 @@ const createProductZodValidation = z.object({
     .refine((value: number) => value === Math.floor(value), {
       message: 'Reorder alert must be an integer',
     }),
-  productImage: z
-    .string()
-    .min(1, { message: 'Product image is required' })
-    .max(255, {
-      message: 'Product image must be less than or equal to 255 characters',
-    })
-    .optional(),
+
   description: z
     .string({ message: 'Description is required' })
     .max(1000, {

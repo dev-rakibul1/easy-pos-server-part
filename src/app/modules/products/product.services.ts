@@ -23,8 +23,9 @@ const CreateUserService = async (req: Request) => {
   }
 
   // @ts-ignore
-  payload.productStock = payload.variants?.length || 0
+  payload.productStock = payload.variants?.length
 
+  console.log(payload)
   // Save the product to the database
   const result = await prisma.product.create({ data: payload })
   return result
@@ -135,10 +136,23 @@ const UpdateProductGetService = async (
   })
   return result
 }
+// Update product
+const DeleteProductGetService = async (id: string): Promise<Product | null> => {
+  const isExist = await prisma.product.findUnique({ where: { id: id } })
+  if (!isExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Invalid product.')
+  }
+
+  const result = await prisma.product.delete({
+    where: { id: id },
+  })
+  return result
+}
 
 export const ProductsService = {
   CreateUserService,
   GetAllCreateUserService,
   SingleProductGetService,
   UpdateProductGetService,
+  DeleteProductGetService,
 }

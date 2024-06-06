@@ -63,8 +63,25 @@ const UpdatePurchaseController = CatchAsync(
   },
 )
 
+// Purchase buy supplier and user
+const GetBySupplierAndUserPurchaseController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const ids = req.params
+    const result =
+      await PurchaseService.GetBuySupplierAndUserPurchaseService(ids)
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Get purchase by supplier and user successfully',
+      data: result,
+    })
+  },
+)
+
 export const PurchaseController = {
   CreatePurchaseController,
   GetAllPurchaseController,
   UpdatePurchaseController,
+  GetBySupplierAndUserPurchaseController,
 }

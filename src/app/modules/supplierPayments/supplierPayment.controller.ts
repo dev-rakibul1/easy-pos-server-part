@@ -34,7 +34,26 @@ const GetAllSupplierPaymentController = CatchAsync(
   },
 )
 
+// get by supplier and user
+const GetSupplierAndUserTransSupplierPaymentController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const ids = req.params
+    const result =
+      await SupplierPaymentService.SupplierAndUserTransSupplierPaymentService(
+        ids,
+      )
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Supplier and user payment get successfully',
+      data: result,
+    })
+  },
+)
+
 export const SupplierPaymentController = {
   CreateSupplierPaymentController,
   GetAllSupplierPaymentController,
+  GetSupplierAndUserTransSupplierPaymentController,
 }

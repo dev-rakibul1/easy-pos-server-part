@@ -8,5 +8,9 @@ router.post(
   SupplierPaymentController.CreateSupplierPaymentController,
 )
 router.get('/', SupplierPaymentController.GetAllSupplierPaymentController)
+router.get(
+  '/supplier-and-user-trans/:id',
+  SupplierPaymentController.GetSupplierAndUserTransSupplierPaymentController,
+)
 
 export const SupplierPaymentRoutes = router

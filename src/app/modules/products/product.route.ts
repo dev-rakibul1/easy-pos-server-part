@@ -47,5 +47,10 @@ router.patch(
   ValidateZodRequest(ProductZodValidation.UpdateProductZodValidation),
   ProductsController.UpdateProductsController,
 )
+router.delete(
+  '/:id',
+  AuthProvider.Auth(ENUM_USER_ROLE.SUPER_ADMIN, ENUM_USER_ROLE.ADMIN),
+  ProductsController.DeleteProductsController,
+)
 
 export const productRoutes = router

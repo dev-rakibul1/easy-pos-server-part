@@ -10,7 +10,7 @@ const router = express.Router()
 
 router.post(
   '/create-user',
-  AuthProvider.Auth(ENUM_USER_ROLE.SUPER_ADMIN, ENUM_USER_ROLE.ADMIN),
+  // AuthProvider.Auth(ENUM_USER_ROLE.SUPER_ADMIN, ENUM_USER_ROLE.ADMIN),
   FileUploads.uploads.single('file'),
   (req: Request, res: Response, next: NextFunction) => {
     req.body = UserZodSchema.CreateUserZodSchema.parse(
@@ -39,6 +39,18 @@ router.delete(
   '/:id',
   AuthProvider.Auth(ENUM_USER_ROLE.SUPER_ADMIN, ENUM_USER_ROLE.ADMIN),
   UserController.DeleteUserController,
+)
+router.get(
+  '/:id',
+  AuthProvider.Auth(
+    ENUM_USER_ROLE.SUPER_ADMIN,
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.CONTENT_MANAGER,
+    ENUM_USER_ROLE.MARKETING_MANAGER,
+    ENUM_USER_ROLE.MODERATOR,
+    ENUM_USER_ROLE.USER,
+  ),
+  UserController.GetSingleUserByUniqueIdController,
 )
 
 export const UserRoutes = router

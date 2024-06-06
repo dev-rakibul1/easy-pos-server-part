@@ -192,7 +192,7 @@ const UpdateUserService = async (
     return result
   })
 }
-// updated user
+// delete user
 const DeleteUserService = async (id: string): Promise<Partial<User | null>> => {
   const isExist = await prisma.user.findUnique({ where: { id } })
 
@@ -211,10 +211,32 @@ const DeleteUserService = async (id: string): Promise<Partial<User | null>> => {
 
   return deleteUser
 }
+// get single user by unique id
+const GetSingleUserByUniqueIdService = async (
+  id: string,
+): Promise<Partial<User> | null> => {
+  const isExist = await prisma.user.findUnique({
+    where: { uniqueId: id },
+
+    include: {
+      purchases: true,
+      sells: true,
+      customerPayment: true,
+      supplierPayment: true,
+    },
+  })
+
+  if (!isExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Invalid user.')
+  }
+
+  return isExist
+}
 
 export const UserService = {
   CreateUserService,
   GetAllCreateUserService,
   UpdateUserService,
   DeleteUserService,
+  GetSingleUserByUniqueIdService,
 }

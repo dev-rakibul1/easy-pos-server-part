@@ -54,14 +54,31 @@ export async function generateUniquePurchaseId(code: string): Promise<string> {
 // Generate supplier id
 export async function generateUniqueSupplierId(code: string): Promise<string> {
   try {
-    // Get the count of existing users
-    const count = await prisma.suppliers.count()
     const codeUpperCase = code.toUpperCase()
 
-    // Generate the next unique user ID
-    const nextUserId = `${codeUpperCase}-${String(count + 1).padStart(5, '0')}`
+    // Get the last inserted uniqueId that matches the given code
+    const lastIdNumber = await prisma.suppliers.findFirst({
+      where: {
+        uniqueId: {
+          startsWith: codeUpperCase,
+        },
+      },
+      orderBy: {
+        uniqueId: 'desc',
+      },
+    })
 
-    return nextUserId
+    let nextNumber = 1
+    if (lastIdNumber) {
+      const lastId = lastIdNumber.uniqueId
+      const lastNumber = parseInt(lastId.split('-')[1], 10)
+      nextNumber = lastNumber + 1
+    }
+
+    // Generate the next unique brand ID
+    const nextBrandId = `${codeUpperCase}-${String(nextNumber).padStart(5, '0')}`
+
+    return nextBrandId
   } catch (error) {
     console.error('Error generating unique supplier ID:', error)
     throw error
@@ -227,14 +244,47 @@ export async function generateUniqueVatId(code: string): Promise<string> {
   }
 }
 // Generate brand id
+// export async function generateUniqueBrandId(code: string): Promise<string> {
+//   try {
+//     // Get the count of existing vat
+//     const count = await prisma.brands.count()
+//     const codeUpperCase = code.toUpperCase()
+
+//     // Generate the next unique user ID
+//     const nextBrandId = `${codeUpperCase}-${String(count + 1).padStart(5, '0')}`
+
+//     return nextBrandId
+//   } catch (error) {
+//     console.error('Error generating unique brand ID:', error)
+//     throw error
+//   }
+// }
+
 export async function generateUniqueBrandId(code: string): Promise<string> {
   try {
-    // Get the count of existing vat
-    const count = await prisma.brands.count()
     const codeUpperCase = code.toUpperCase()
 
-    // Generate the next unique user ID
-    const nextBrandId = `${codeUpperCase}-${String(count + 1).padStart(5, '0')}`
+    // Get the last inserted uniqueId that matches the given code
+    const lastBrand = await prisma.brands.findFirst({
+      where: {
+        uniqueId: {
+          startsWith: codeUpperCase,
+        },
+      },
+      orderBy: {
+        uniqueId: 'desc',
+      },
+    })
+
+    let nextNumber = 1
+    if (lastBrand) {
+      const lastId = lastBrand.uniqueId
+      const lastNumber = parseInt(lastId.split('-')[1], 10)
+      nextNumber = lastNumber + 1
+    }
+
+    // Generate the next unique brand ID
+    const nextBrandId = `${codeUpperCase}-${String(nextNumber).padStart(5, '0')}`
 
     return nextBrandId
   } catch (error) {

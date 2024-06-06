@@ -68,10 +68,26 @@ const DeleteUserController = CatchAsync(async (req: Request, res: Response) => {
     data: result,
   })
 })
+// Get single user by unique id
+const GetSingleUserByUniqueIdController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const { id } = req.params
+
+    const result = await UserService.GetSingleUserByUniqueIdService(id)
+
+    sendResponse<Partial<User>>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'User get success!',
+      data: result,
+    })
+  },
+)
 
 export const UserController = {
   CreateUserController,
   GetAllUserController,
   UpdateUserController,
   DeleteUserController,
+  GetSingleUserByUniqueIdController,
 }

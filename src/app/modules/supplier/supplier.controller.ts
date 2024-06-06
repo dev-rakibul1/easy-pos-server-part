@@ -11,8 +11,7 @@ import { SupplierService } from './supplier.services'
 // Create a supplier
 const CreateSupplierController = CatchAsync(
   async (req: Request, res: Response) => {
-    const payload = req.body
-    const result = await SupplierService.CreateSupplierService(payload)
+    const result = await SupplierService.CreateSupplierService(req)
 
     sendResponse(res, {
       statusCode: httpStatus.OK,
@@ -58,9 +57,24 @@ const UpdateSupplierController = CatchAsync(
     })
   },
 )
+// get single  supplier
+const GetSingleSupplierController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const { id } = req.params
+    const result = await SupplierService.GetSingleSupplierUserService(id)
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Single Supplier get successfully!',
+      data: result,
+    })
+  },
+)
 
 export const SupplierController = {
   CreateSupplierController,
   GetAllSupplierController,
   UpdateSupplierController,
+  GetSingleSupplierController,
 }

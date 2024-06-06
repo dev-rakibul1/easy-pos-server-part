@@ -68,14 +68,9 @@ model Product {
 model Variants {
   id            String     @id @default(uuid())
   imeiNumber    String
-  ram           String
-  rom           String
-  color         String
-  purchaseRate  Int
-  sellingPrice  Int
-  vats          Int
-  discounts     Int
- 
+  ram           String?
+  rom           String?
+  color         String?
 
   productId     String
   product       Product    @relation(fields: [productId], references: [id])
@@ -87,6 +82,8 @@ model Variants {
 
   @@map("variants")
 }
+
+
 
 model SupplierPayment {
   id                   String  @id @default(uuid())
@@ -165,9 +162,12 @@ model Purchase {
   discounts             Float
   vats                  Float
   totalPrice            Float
-  totalStock            Float
+  productStock          Int?
+  othersStock           Int?
   color                 String
   uniqueId              String
+  ram                   String
+  room                  String
 
   supplierId            String
   suppliers             Suppliers @relation(fields: [supplierId], references: [id])

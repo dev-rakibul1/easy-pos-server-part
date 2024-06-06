@@ -1,4 +1,5 @@
 import { Prisma, Suppliers } from '@prisma/client'
+import { Request } from 'express'
 import httpStatus from 'http-status'
 import ApiError from '../../../errors/apiError'
 import { paginationHelpers } from '../../../helpers/paginationHelpers'
@@ -10,9 +11,16 @@ import { supplierFilterableKey } from './supplier.constant'
 import { ISupplierFilterRequest } from './supplier.type'
 
 // Create supplier
-const CreateSupplierService = async (payloads: Suppliers) => {
+const CreateSupplierService = async (req: Request) => {
+  const payloads: Suppliers = req.body
+
   const supplierId = await generateUniqueSupplierId('S')
   payloads.uniqueId = supplierId
+
+  const filePath = `/${req.file?.destination}${req.file?.originalname}`
+  if (filePath) {
+    payloads.profileImage = filePath
+  }
 
   return prisma.$transaction(async tx => {
     const existingEmail = await tx.suppliers.findUnique({
@@ -143,9 +151,26 @@ const UpdateSupplierUserService = async (
 
   return result
 }
+// Update supplier
+const GetSingleSupplierUserService = async (id: string) => {
+  // Find the existing supplier
+  const isExist = await prisma.suppliers.findUnique({
+    where: { id: id },
+    include: {
+      payments: true,
+      purchase: true,
+      returnHistory: true,
+    },
+  })
+  if (!isExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Invalid supplier.')
+  }
+  return isExist
+}
 
 export const SupplierService = {
   CreateSupplierService,
   GetAllSupplierUserService,
   UpdateSupplierUserService,
+  GetSingleSupplierUserService,
 }
