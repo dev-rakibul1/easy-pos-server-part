@@ -45,5 +45,31 @@ router.patch(
   ValidateZodRequest(DiscountZodSchema.UpdateDiscountZodSchema),
   DiscountController.UpdateDiscountController,
 )
+router.get(
+  '/:id',
+  AuthProvider.Auth(
+    ENUM_USER_ROLE.SUPER_ADMIN,
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.CONTENT_MANAGER,
+    ENUM_USER_ROLE.MARKETING_MANAGER,
+    ENUM_USER_ROLE.MODERATOR,
+    ENUM_USER_ROLE.USER,
+  ),
+
+  DiscountController.GetSingleDiscountController,
+)
+router.delete(
+  '/:id',
+  AuthProvider.Auth(
+    ENUM_USER_ROLE.SUPER_ADMIN,
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.CONTENT_MANAGER,
+    ENUM_USER_ROLE.MARKETING_MANAGER,
+    ENUM_USER_ROLE.MODERATOR,
+    ENUM_USER_ROLE.USER,
+  ),
+
+  DiscountController.DeleteDiscountController,
+)
 
 export const DiscountRoutes = router

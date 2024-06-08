@@ -34,5 +34,11 @@ router.get(
   ValidateZodRequest(PurchaseZodSchema.UpdatePurchaseZodSchema),
   PurchaseController.GetBySupplierAndUserPurchaseController,
 )
+router.get(
+  '/:id',
+  AuthProvider.Auth(ENUM_USER_ROLE.SUPER_ADMIN, ENUM_USER_ROLE.ADMIN),
+  ValidateZodRequest(PurchaseZodSchema.UpdatePurchaseZodSchema),
+  PurchaseController.GetSinglePurchaseController,
+)
 
 export const PurchaseRoutes = router

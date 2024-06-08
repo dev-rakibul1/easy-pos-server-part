@@ -38,21 +38,26 @@ const CreatePurchaseService = async (data: any) => {
 
       // If the purchase exists, update it
       if (existingPurchase) {
-        await tx.variants.createMany({ data: variants })
-        const updatedPurchase = await tx.purchase.update({
-          where: { id: existingPurchase.id },
-          data: {
-            sellingPrice: purchaseItem.sellingPrice,
-            purchaseRate: purchaseItem.purchaseRate,
-            vats: purchaseItem.vats,
-            discounts: purchaseItem.discounts,
-            color: purchaseItem.color,
-            totalPrice: purchaseItem.totalPrice,
-            totalStock: purchaseItem.totalStock,
-          },
-        })
+        if (variants.length) {
+          await tx.variants.createMany({ data: variants })
+          const updatedPurchase = await tx.purchase.update({
+            where: { id: existingPurchase.id },
+            data: {
+              sellingPrice: purchaseItem.sellingPrice,
+              purchaseRate: purchaseItem.purchaseRate,
+              vats: purchaseItem.vats,
+              discounts: purchaseItem.discounts,
+              color: purchaseItem.color,
+              totalPrice: purchaseItem.totalPrice,
+              othersStock: purchaseItem.othersStock,
+              productStock: purchaseItem.productStock,
+              ram: purchaseItem.ram,
+              room: purchaseItem.room,
+            },
+          })
 
-        updatedPurchases.push(updatedPurchase)
+          updatedPurchases.push(updatedPurchase)
+        }
       } else {
         // Purchase does not exist, proceed with creation
 
@@ -214,6 +219,8 @@ const UpdateCreatePurchaseService = async (id: string, payloads: Purchase) => {
         data: payloads,
       })
 
+      // console.log(result)
+
       const searchSupplierPayment = await tx.supplierPayment.findFirst({
         where: { userId: result.userId, supplierId: result.supplierId },
       })
@@ -257,10 +264,27 @@ const GetBuySupplierAndUserPurchaseService = async (ids: any) => {
     throw error
   }
 }
+//Single purchase get
+const GetSinglePurchaseService = async (id: string) => {
+  const result = await prisma.purchase.findUnique({
+    where: { id },
+    include: {
+      additionalPurchase: true,
+      products: true,
+      suppliers: true,
+      users: true,
+    },
+  })
+  if (!result) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Invalid purchase')
+  }
+  return result
+}
 
 export const PurchaseService = {
   CreatePurchaseService,
   GetAllCreatePurchaseService,
   UpdateCreatePurchaseService,
   GetBuySupplierAndUserPurchaseService,
+  GetSinglePurchaseService,
 }

@@ -78,10 +78,25 @@ const GetBySupplierAndUserPurchaseController = CatchAsync(
     })
   },
 )
+// Single purchase get
+const GetSinglePurchaseController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const { id } = req.params
+    const result = await PurchaseService.GetSinglePurchaseService(id)
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Single purchase get successfully',
+      data: result,
+    })
+  },
+)
 
 export const PurchaseController = {
   CreatePurchaseController,
   GetAllPurchaseController,
   UpdatePurchaseController,
   GetBySupplierAndUserPurchaseController,
+  GetSinglePurchaseController,
 }
