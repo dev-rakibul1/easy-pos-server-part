@@ -292,3 +292,39 @@ export async function generateUniqueBrandId(code: string): Promise<string> {
     throw error
   }
 }
+
+// Supplier sells id generate
+export async function generateUniqueSupplierSellId(
+  code: string,
+): Promise<string> {
+  try {
+    const codeUpperCase = code.toUpperCase()
+
+    // Get the last inserted uniqueId that matches the given code
+    const lastSells = await prisma.supplierSell.findFirst({
+      where: {
+        uniqueId: {
+          startsWith: codeUpperCase,
+        },
+      },
+      orderBy: {
+        uniqueId: 'desc',
+      },
+    })
+
+    let nextNumber = 1
+    if (lastSells) {
+      const lastId = lastSells.uniqueId
+      const lastNumber = parseInt(lastId.split('-')[1], 10)
+      nextNumber = lastNumber + 1
+    }
+
+    // Generate the next unique supplier sell ID
+    const nextBrandId = `${codeUpperCase}-${String(nextNumber).padStart(5, '0')}`
+
+    return nextBrandId
+  } catch (error) {
+    console.error('Error generating unique supplier sells ID:', error)
+    throw error
+  }
+}

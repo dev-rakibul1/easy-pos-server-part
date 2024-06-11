@@ -34,6 +34,8 @@ model User {
   sells                 Sells[]
   supplierPayment       SupplierPayment[]
   customerPayment       CustomerPayments[]
+
+  supplierSell          SupplierSell[]
   
   createdAt             DateTime    @default(now())
   updatedAt             DateTime    @updatedAt
@@ -122,6 +124,8 @@ model Suppliers {
   purchase            Purchase[]
   returnHistory       Returns[]
 
+  supplierSell        SupplierSell[]
+
 
   createdAt           DateTime   @default(now())
   updatedAt           DateTime   @updatedAt
@@ -159,15 +163,15 @@ model Purchase {
   id                    String  @id @default(uuid())
   purchaseRate          Float
   sellingPrice          Float
-  discounts             Float
-  vats                  Float
+  discounts             Float?
+  vats                  Float?
   totalPrice            Float
   productStock          Int?
   othersStock           Int?
-  color                 String
+  color                 String?
   uniqueId              String
-  ram                   String
-  room                  String
+  ram                   String?
+  room                  String?
 
   supplierId            String
   suppliers             Suppliers @relation(fields: [supplierId], references: [id])
@@ -372,6 +376,47 @@ model CurrencyType {
 
   @@map("currencyType")
 }
+
+model SupplierSell {
+  id                    String @id @default(uuid())
+  quantity              Int
+  totalSellAmounts      Int
+  totalDue              Int
+  totalPay              Int
+  supplierId            String 
+  userId                String
+  productId             String
+
+  supplier              Suppliers @relation(fields: [supplierId], references: [id])
+  user                  User     @relation(fields: [userId], references: [id])
+
+  supplierSellVariants SupplierSellVariants[]
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("supplierSells")
+
+}
+
+model SupplierSellVariants {
+  id                 String     @id @default(uuid())
+  imeiNumber         String
+  ram                String?
+  rom                String?
+  color              String?
+    
+  supplierSellId     String
+  supplierSell       SupplierSell    @relation(fields: [supplierSellId], references: [id])
+
+
+  
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+
+  @@map("supplierSellVariants")
+}
+
 
 
 // Enum value

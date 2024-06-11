@@ -14,6 +14,7 @@ import { SellRoutes } from '../modules/sell/sell.route'
 import { SellVariantRoutes } from '../modules/sellVariants/sellVariants.route'
 import { SupplierRoutes } from '../modules/supplier/supplier.route'
 import { SupplierPaymentRoutes } from '../modules/supplierPayments/supplierPayment.route'
+import { SupplierSellRoutes } from '../modules/supplierSell/supplierSell.route'
 import { UnitRoutes } from '../modules/unit/unit.route'
 import { UserRoutes } from '../modules/users/user.route'
 import { VariantRoutes } from '../modules/variants/variants.route'
@@ -97,6 +98,10 @@ const modulesRouters = [
   {
     path: '/category',
     route: CategoryRoutes,
+  },
+  {
+    path: '/supplier-sell',
+    route: SupplierSellRoutes,
   },
 ]
 
