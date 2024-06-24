@@ -1,4 +1,6 @@
 import { SupplierSell } from '@prisma/client'
+import httpStatus from 'http-status'
+import ApiError from '../../../errors/apiError'
 import prisma from '../../../shared/prisma'
 
 // Create supplier sell service
@@ -7,6 +9,8 @@ const CreateSupplierSellsService = async (payloads: SupplierSell[]) => {
     const createdSupplierSells = await prisma.supplierSell.createMany({
       data: payloads,
     })
+
+    // 01950505981
 
     return createdSupplierSells
   } catch (error) {
@@ -17,7 +21,19 @@ const CreateSupplierSellsService = async (payloads: SupplierSell[]) => {
 
 // get all supplier sells
 const GetAllSupplierSellsService = async (): Promise<SupplierSell[]> => {
-  const result = await prisma.supplierSell.findMany({})
+  const result = await prisma.supplierSell.findMany({
+    include: {
+      supplier: true,
+      user: true,
+      purchase: true,
+      product: {
+        include: {
+          supplierSells: true,
+          variants: true,
+        },
+      },
+    },
+  })
   return result
 }
 // Get Supplier Sell By Supplier And User Service
@@ -30,6 +46,16 @@ const GetSupplierSellBySupplierAndUserService = async (
 
     const result = await prisma.supplierSell.findMany({
       where: { supplierId: supplierId, userId: userId },
+      include: {
+        supplier: true,
+        user: true,
+        product: {
+          include: {
+            supplierSells: true,
+            variants: true,
+          },
+        },
+      },
     })
 
     return result
@@ -38,9 +64,33 @@ const GetSupplierSellBySupplierAndUserService = async (
     throw error
   }
 }
+// Get Supplier Sell By Supplier And User Service
+const GetSingleSupplierSellService = async (
+  id: string,
+): Promise<SupplierSell | null> => {
+  const result = await prisma.supplierSell.findUnique({
+    where: { id },
+    include: {
+      supplier: true,
+      user: true,
+      product: {
+        include: {
+          supplierSells: true,
+          variants: true,
+        },
+      },
+    },
+  })
+
+  if (!result) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Invalid supplier sells')
+  }
+  return result
+}
 
 export const SupplierSellsService = {
   CreateSupplierSellsService,
   GetAllSupplierSellsService,
   GetSupplierSellBySupplierAndUserService,
+  GetSingleSupplierSellService,
 }

@@ -1,22 +1,10 @@
 import express from 'express'
 import { ENUM_USER_ROLE } from '../../../enums/role'
 import { AuthProvider } from '../../middlewares/auth'
-import { SupplierSellController } from './supplierSell.controller'
+import { SupplierSellProductController } from './supplierSellProduct.controller'
 
 const router = express.Router()
 
-router.post(
-  '/create-supplier-sell',
-  AuthProvider.Auth(
-    ENUM_USER_ROLE.SUPER_ADMIN,
-    ENUM_USER_ROLE.ADMIN,
-    ENUM_USER_ROLE.CONTENT_MANAGER,
-    ENUM_USER_ROLE.MARKETING_MANAGER,
-    ENUM_USER_ROLE.MODERATOR,
-    ENUM_USER_ROLE.USER,
-  ),
-  SupplierSellController.CreateSupplierSellController,
-)
 router.get(
   '/',
   AuthProvider.Auth(
@@ -27,11 +15,10 @@ router.get(
     ENUM_USER_ROLE.MODERATOR,
     ENUM_USER_ROLE.USER,
   ),
-  SupplierSellController.GetAllSupplierSellController,
+  SupplierSellProductController.GetAllSupplierSellProductController,
 )
-
 router.get(
-  '/get-sell-by-supplier-and-user/:id',
+  '/get-by-user-and-supplier/:id',
   AuthProvider.Auth(
     ENUM_USER_ROLE.SUPER_ADMIN,
     ENUM_USER_ROLE.ADMIN,
@@ -40,7 +27,7 @@ router.get(
     ENUM_USER_ROLE.MODERATOR,
     ENUM_USER_ROLE.USER,
   ),
-  SupplierSellController.GetSupplierSellBySupplierAndUserController,
+  SupplierSellProductController.GetByUserAndSupplierController,
 )
 router.get(
   '/:id',
@@ -52,7 +39,7 @@ router.get(
     ENUM_USER_ROLE.MODERATOR,
     ENUM_USER_ROLE.USER,
   ),
-  SupplierSellController.GetSingleSupplierSellController,
+  SupplierSellProductController.GetSingleSupplierSellProductController,
 )
 
-export const SupplierSellRoutes = router
+export const SupplierSellProductRoutes = router

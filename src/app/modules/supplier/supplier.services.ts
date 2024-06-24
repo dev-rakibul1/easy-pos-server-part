@@ -97,6 +97,8 @@ const GetAllSupplierUserService = async (
     include: {
       payments: true,
       purchase: true,
+      supplierSell: true,
+      supplierSellProducts: true,
       returnHistory: true,
     },
   })
@@ -134,6 +136,13 @@ const UpdateSupplierUserService = async (
   if (payloads?.phoneNo && payloads.phoneNo !== isExist.phoneNo) {
     const existingPhoneNo = await prisma.suppliers.findFirst({
       where: { phoneNo: payloads.phoneNo },
+      include: {
+        payments: true,
+        purchase: true,
+        supplierSell: true,
+        supplierSellProducts: true,
+        returnHistory: true,
+      },
     })
     if (existingPhoneNo) {
       throw new ApiError(httpStatus.CONFLICT, 'Phone number already exists.')
@@ -159,6 +168,8 @@ const GetSingleSupplierUserService = async (id: string) => {
     include: {
       payments: true,
       purchase: true,
+      supplierSell: true,
+      supplierSellProducts: true,
       returnHistory: true,
     },
   })

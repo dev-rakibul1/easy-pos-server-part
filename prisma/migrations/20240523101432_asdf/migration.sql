@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE "discounts" ALTER COLUMN "discountValue" SET DATA TYPE DOUBLE PRECISION;

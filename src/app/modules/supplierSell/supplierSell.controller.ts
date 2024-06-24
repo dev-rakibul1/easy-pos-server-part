@@ -49,9 +49,24 @@ const GetSupplierSellBySupplierAndUserController = CatchAsync(
     })
   },
 )
+// get all SupplierSell
+const GetSingleSupplierSellController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const { id } = req.params
+    const result = await SupplierSellsService.GetSingleSupplierSellService(id)
+
+    sendResponse<SupplierSell | null>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Single sells get success!',
+      data: result,
+    })
+  },
+)
 
 export const SupplierSellController = {
   GetAllSupplierSellController,
   CreateSupplierSellController,
   GetSupplierSellBySupplierAndUserController,
+  GetSingleSupplierSellController,
 }

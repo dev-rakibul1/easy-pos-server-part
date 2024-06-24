@@ -59,6 +59,7 @@ model Product {
   othersStock   Int?
   variants      Variants[]
   purchases     Purchase[]
+  supplierSells SupplierSell[]
   
 
   createdAt     DateTime    @default(now())
@@ -126,6 +127,8 @@ model Suppliers {
 
   supplierSell        SupplierSell[]
 
+  supplierSellProducts SupplierSellProduct[]
+
 
   createdAt           DateTime   @default(now())
   updatedAt           DateTime   @updatedAt
@@ -179,12 +182,14 @@ model Purchase {
   userId                String
   users                 User @relation(fields: [userId], references: [id])
 
-
   productId             String
   products              Product @relation(fields: [productId], references: [id])
 
-  additionalPurchaseId  String?
-  additionalPurchase    AdditionalProductPurchase? @relation(fields: [additionalPurchaseId], references: [id])
+  supplierSellId        String
+  supplierSells         SupplierSell @relation(fields: [supplierSellId], references: [id])
+
+  supplierSellProductId String @unique
+  supplierSellProduct   SupplierSellProduct @relation(fields: [supplierSellProductId], references: [id])
 
   createdAt             DateTime   @default(now())
   updatedAt             DateTime   @updatedAt
@@ -192,15 +197,7 @@ model Purchase {
   @@map("purchases")
 }
 
-model AdditionalProductPurchase {
-  id                      String @id  @default(uuid())
-  additionalPurchase      Purchase[]
 
-  createdAt               DateTime @default(now())
-  updatedAt               DateTime @updatedAt
-
-  @@map("additionalProductPurchases")
-}
 
 model Sells {
   id                String  @id  @default(uuid())
@@ -383,14 +380,20 @@ model SupplierSell {
   totalSellAmounts      Int
   totalDue              Int
   totalPay              Int
+
   supplierId            String 
   userId                String
   productId             String
 
-  supplier              Suppliers @relation(fields: [supplierId], references: [id])
-  user                  User     @relation(fields: [userId], references: [id])
 
-  supplierSellVariants SupplierSellVariants[]
+  product               Product @relation(fields: [productId], references: [id])
+  supplier              Suppliers @relation(fields: [supplierId], references: [id])
+  user                  User @relation(fields: [userId], references: [id])
+
+  purchase              Purchase[]
+
+  purchaseGroupId       String @unique
+  purchaseGroup         PurchaseGroup @relation(fields: [purchaseGroupId], references: [id])
 
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
@@ -399,15 +402,53 @@ model SupplierSell {
 
 }
 
+
+model SupplierSellProduct {
+  id                    String                  @id @default(uuid())
+  productName           String?
+  brandName             String?
+  modelName             String?
+  processor             String?
+  unit                  String?
+  category              String?
+  reOrderAlert          Int?
+  productImage          String?
+  description           String?
+  productStock          Int?                    
+  othersStock           Int?
+  
+  variants              SupplierSellVariants[]
+
+  purchase              Purchase?
+  
+  purchaseGroupId       String
+  purchaseGroup         PurchaseGroup @relation(fields: [purchaseGroupId], references: [id])
+
+  userId                String
+  productId             String
+
+  supplierId            String
+  supplier              Suppliers               @relation(fields: [supplierId], references: [id])
+
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+  
+  @@map("supplierSellProducts")
+}
+
+
 model SupplierSellVariants {
-  id                 String     @id @default(uuid())
-  imeiNumber         String
-  ram                String?
-  rom                String?
-  color              String?
+  id                              String     @id @default(uuid())
+  imeiNumber                      String
+  ram                             String?
+  rom                             String?
+  color                           String?
+
+  supplierSellProductId           String
+  product                         SupplierSellProduct @relation(fields: [supplierSellProductId], references: [id])
     
-  supplierSellId     String
-  supplierSell       SupplierSell    @relation(fields: [supplierSellId], references: [id])
+  // supplierSellId     String
+  // supplierSell       SupplierSell    @relation(fields: [supplierSellId], references: [id])
 
 
   
@@ -417,6 +458,18 @@ model SupplierSellVariants {
   @@map("supplierSellVariants")
 }
 
+model PurchaseGroup {
+  id                    String                  @id @default(uuid())
+  supplierId            String
+  userId                String
+  supplierSellProducts  SupplierSellProduct[] 
+  supplierSells         SupplierSell? 
+
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+  
+  @@map("purchaseGroups")
+}
 
 
 // Enum value
