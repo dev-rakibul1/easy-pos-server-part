@@ -12,6 +12,7 @@ const GetAllPurchaseGroupService = async (): Promise<PurchaseGroup[]> => {
         },
       },
       supplierSells: true,
+      payInSupplier: true,
     },
   })
   return result
@@ -30,6 +31,7 @@ const SinglePurchaseGroupService = async (
         },
       },
       supplierSells: true,
+      payInSupplier: true,
     },
   })
   return result

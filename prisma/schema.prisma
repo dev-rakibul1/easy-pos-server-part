@@ -464,11 +464,26 @@ model PurchaseGroup {
   userId                String
   supplierSellProducts  SupplierSellProduct[] 
   supplierSells         SupplierSell? 
+  payInSupplier         PayInSupplier[]
 
   createdAt             DateTime                @default(now())
   updatedAt             DateTime                @updatedAt
   
   @@map("purchaseGroups")
+}
+
+model PayInSupplier {
+  id                    String @id @default(uuid())
+  payAmount             Int
+  supplierSellId        String
+
+  purchaseGroupId       String
+  purchaseGroups        PurchaseGroup @relation(fields: [purchaseGroupId], references: [id])
+
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+
+  @@map("payInSuppliers")
 }
 
 

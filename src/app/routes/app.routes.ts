@@ -7,6 +7,7 @@ import { CurrencyTypeRoutes } from '../modules/currencyType/currencyType.route'
 import { CustomerPaymentRoutes } from '../modules/customerPayments/customerPayments.route'
 import { CustomerRoutes } from '../modules/customers/customers.route'
 import { DiscountRoutes } from '../modules/discounts/discount.route'
+import { PayInSupplierRoutes } from '../modules/payInSupplier/payInSupplier.route'
 import { productRoutes } from '../modules/products/product.route'
 import { PurchaseRoutes } from '../modules/purchase/purchase.route'
 import { PurchaseGroupRoutes } from '../modules/purchaseGroup/purchaseGroup.route'
@@ -117,6 +118,10 @@ const modulesRouters = [
   {
     path: '/purchase-group',
     route: PurchaseGroupRoutes,
+  },
+  {
+    path: '/pay-in-supplier',
+    route: PayInSupplierRoutes,
   },
 ]
 
