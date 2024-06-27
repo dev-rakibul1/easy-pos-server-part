@@ -3,13 +3,18 @@ import httpStatus from 'http-status'
 import ApiError from '../../../errors/apiError'
 import { paginationHelpers } from '../../../helpers/paginationHelpers'
 import prisma from '../../../shared/prisma'
+import {
+  generateUniqueInvoiceId,
+  generateUniquePurchaseId,
+} from '../../../utilities/uniqueIdGenerator'
 import { IGenericResponse } from '../../interfaces/common'
 import { IPaginationOptions } from '../../interfaces/pagination'
 import { IPurchaseFilterRequest, IPurchaseType } from './purchase.type'
 
 // Create purchase
 const CreatePurchaseService = async (data: IPurchaseType) => {
-  const uniqueUpdateId = 'PUR-000000'
+  const purchaseId = await generateUniquePurchaseId('pur')
+  const invoiceId = await generateUniqueInvoiceId('Inv')
   const { variants, purchase, supplierPayment } = data
   // Remove unnecessary fields from purchase
   purchase.forEach((pur: any) => {
@@ -29,6 +34,7 @@ const CreatePurchaseService = async (data: IPurchaseType) => {
   const purchaseGroupInformation = {
     supplierId: supplierPayment.supplierId,
     userId: supplierPayment.userId,
+    uniqueId: invoiceId,
   }
 
   const purchaseGroup = await prisma.purchaseGroup.create({
@@ -78,14 +84,6 @@ const CreatePurchaseService = async (data: IPurchaseType) => {
       productId: id,
     }
   })
-  // console.log(newProducts)
-
-  // const getSupplierSellProductId = await prisma.supplierSellProduct.createMany({
-  //   data: newProducts,
-  // })
-  // console.log('getSupplierSellProductId', getSupplierSellProductId)
-
-  // -----------------
 
   // Store the new products in the supplierSellProduct table and get the created objects
   const createdProductsPromises = newProducts.map(newProduct =>
@@ -106,23 +104,18 @@ const CreatePurchaseService = async (data: IPurchaseType) => {
     return {
       ...purchase,
       supplierSellProductId,
-      uniqueId: uniqueUpdateId,
+      uniqueId: purchaseId,
       supplierSellId: createdSupplierSells.id,
     }
   })
 
-  console.log('purchases', newProducts)
+  console.log(purchases)
 
   // Extract the created purchase IDs and map them to product IDs
   const productIdToPurchaseIdMap: any = {}
   createdSupplierSellProducts.forEach((product, index) => {
     productIdToPurchaseIdMap[newProducts[index].productId] = product.id
   })
-
-  console.log('productIdToPurchaseIdMap', productIdToPurchaseIdMap)
-
-  // const getProductIds = newProducts.map(id => id.productId)
-  // console.log('getProductId________', getProductIds)
 
   // Supplier sell variants create
   const isMatchWithProduct = variants
@@ -136,14 +129,16 @@ const CreatePurchaseService = async (data: IPurchaseType) => {
       }
     })
 
-  console.log('supplierSellProduct_________', isMatchWithProduct)
-
   // Create the variants in the supplierSellVariants table
-  const createVariant = await prisma.supplierSellVariants.createMany({
+  await prisma.supplierSellVariants.createMany({
     data: isMatchWithProduct,
   })
-  console.log(createVariant)
-  const createPurchase = await prisma.purchase.createMany({ data: purchases })
+
+  // -------------PURCHASE & VARIANTS------------
+  await prisma.variants.createMany({
+    data: variants,
+  })
+  await prisma.purchase.createMany({ data: purchases })
 }
 
 // Create purchase
@@ -445,6 +440,8 @@ const GetAllCreatePurchaseService = async (
       products: true,
       suppliers: true,
       users: true,
+      supplierSellProduct: true,
+      supplierSells: true,
     },
   })
 

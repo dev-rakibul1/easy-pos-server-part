@@ -136,7 +136,7 @@ const UpdateProductGetService = async (
   })
   return result
 }
-// Update product
+// delete product
 const DeleteProductGetService = async (id: string): Promise<Product | null> => {
   const isExist = await prisma.product.findUnique({ where: { id: id } })
   if (!isExist) {
@@ -148,6 +148,20 @@ const DeleteProductGetService = async (id: string): Promise<Product | null> => {
   })
   return result
 }
+// Stock in product
+const StockInProductGetService = async (): Promise<Product[] | null> => {
+  const result = await prisma.product.findMany({
+    where: {
+      variants: {
+        some: {},
+      },
+    },
+    include: {
+      variants: true,
+    },
+  })
+  return result
+}
 
 export const ProductsService = {
   CreateUserService,
@@ -155,4 +169,5 @@ export const ProductsService = {
   SingleProductGetService,
   UpdateProductGetService,
   DeleteProductGetService,
+  StockInProductGetService,
 }

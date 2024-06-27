@@ -34,23 +34,6 @@ export async function generateUniqueProductId(code: string): Promise<string> {
   }
 }
 
-// Generate purchase id
-export async function generateUniquePurchaseId(code: string): Promise<string> {
-  try {
-    // Get the count of existing users
-    const count = await prisma.purchase.count()
-    const codeUpperCase = code.toUpperCase()
-
-    // Generate the next unique user ID
-    const nextUserId = `${codeUpperCase}-${String(count + 1).padStart(5, '0')}`
-
-    return nextUserId
-  } catch (error) {
-    console.error('Error generating unique purchase ID:', error)
-    throw error
-  }
-}
-
 // Generate supplier id
 export async function generateUniqueSupplierId(code: string): Promise<string> {
   try {
@@ -243,22 +226,6 @@ export async function generateUniqueVatId(code: string): Promise<string> {
     throw error
   }
 }
-// Generate brand id
-// export async function generateUniqueBrandId(code: string): Promise<string> {
-//   try {
-//     // Get the count of existing vat
-//     const count = await prisma.brands.count()
-//     const codeUpperCase = code.toUpperCase()
-
-//     // Generate the next unique user ID
-//     const nextBrandId = `${codeUpperCase}-${String(count + 1).padStart(5, '0')}`
-
-//     return nextBrandId
-//   } catch (error) {
-//     console.error('Error generating unique brand ID:', error)
-//     throw error
-//   }
-// }
 
 export async function generateUniqueBrandId(code: string): Promise<string> {
   try {
@@ -294,14 +261,48 @@ export async function generateUniqueBrandId(code: string): Promise<string> {
 }
 
 // Supplier sells id generate
-export async function generateUniqueSupplierSellId(
-  code: string,
-): Promise<string> {
+// export async function generateUniqueSupplierSellId(
+//   code: string,
+// ): Promise<string> {
+//   try {
+//     const codeUpperCase = code.toUpperCase()
+
+//     // Get the last inserted uniqueId that matches the given code
+//     const lastSells = await prisma.supplierSell.findFirst({
+//       where: {
+//         uniqueId: {
+//           startsWith: codeUpperCase,
+//         },
+//       },
+//       orderBy: {
+//         uniqueId: 'desc',
+//       },
+//     })
+
+//     let nextNumber = 1
+//     if (lastSells) {
+//       const lastId = lastSells.uniqueId
+//       const lastNumber = parseInt(lastId.split('-')[1], 10)
+//       nextNumber = lastNumber + 1
+//     }
+
+//     // Generate the next unique supplier sell ID
+//     const nextBrandId = `${codeUpperCase}-${String(nextNumber).padStart(5, '0')}`
+
+//     return nextBrandId
+//   } catch (error) {
+//     console.error('Error generating unique supplier sells ID:', error)
+//     throw error
+//   }
+// }
+
+// Purchase report or invoice id generator
+export async function generateUniqueInvoiceId(code: string): Promise<string> {
   try {
     const codeUpperCase = code.toUpperCase()
 
     // Get the last inserted uniqueId that matches the given code
-    const lastSells = await prisma.supplierSell.findFirst({
+    const lastBrand = await prisma.purchaseGroup.findFirst({
       where: {
         uniqueId: {
           startsWith: codeUpperCase,
@@ -313,18 +314,51 @@ export async function generateUniqueSupplierSellId(
     })
 
     let nextNumber = 1
-    if (lastSells) {
-      const lastId = lastSells.uniqueId
+    if (lastBrand) {
+      const lastId = lastBrand.uniqueId
       const lastNumber = parseInt(lastId.split('-')[1], 10)
       nextNumber = lastNumber + 1
     }
 
-    // Generate the next unique supplier sell ID
+    // Generate the next unique brand ID
     const nextBrandId = `${codeUpperCase}-${String(nextNumber).padStart(5, '0')}`
 
     return nextBrandId
   } catch (error) {
-    console.error('Error generating unique supplier sells ID:', error)
+    console.error('Error generating unique brand ID:', error)
+    throw error
+  }
+}
+// Purchase report or invoice id generator
+export async function generateUniquePurchaseId(code: string): Promise<string> {
+  try {
+    const codeUpperCase = code.toUpperCase()
+
+    // Get the last inserted uniqueId that matches the given code
+    const lastBrand = await prisma.purchase.findFirst({
+      where: {
+        uniqueId: {
+          startsWith: codeUpperCase,
+        },
+      },
+      orderBy: {
+        uniqueId: 'desc',
+      },
+    })
+
+    let nextNumber = 1
+    if (lastBrand) {
+      const lastId = lastBrand.uniqueId
+      const lastNumber = parseInt(lastId.split('-')[1], 10)
+      nextNumber = lastNumber + 1
+    }
+
+    // Generate the next unique brand ID
+    const nextBrandId = `${codeUpperCase}-${String(nextNumber).padStart(5, '0')}`
+
+    return nextBrandId
+  } catch (error) {
+    console.error('Error generating unique purchase ID:', error)
     throw error
   }
 }

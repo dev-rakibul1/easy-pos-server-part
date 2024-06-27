@@ -13,7 +13,6 @@ import { customerFilterAbleKey } from './customers.constant'
 // Create customer
 const CreateCustomerService = async (req: Request) => {
   const payloads: Customers = req.body
-
   const customerId = await generateUniqueCustomerId('c')
   payloads.uniqueId = customerId
 
@@ -138,9 +137,18 @@ const UpdateCustomerService = async (id: string, payloads: Customers) => {
     return result
   })
 }
+//  customer updated
+const GetSingleCustomerService = async (id: string) => {
+  const isExist = await prisma.customers.findUnique({ where: { id: id } })
+  if (!isExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Invalid customer.')
+  }
+  return isExist
+}
 
 export const CustomerService = {
   CreateCustomerService,
   GetAllCustomerService,
   UpdateCustomerService,
+  GetSingleCustomerService,
 }

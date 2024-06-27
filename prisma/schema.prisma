@@ -234,10 +234,6 @@ model SellVariants {
   ram                 String
   rom                 String
   color               String
-  purchaseRate        Int
-  sellingPrice        Int
-  vats                Int
-  discounts           Int
   sells               Sells[]
   
 
@@ -463,6 +459,7 @@ model PurchaseGroup {
   supplierId            String
   userId                String
   supplierSellProducts  SupplierSellProduct[] 
+  uniqueId              String @unique
   supplierSells         SupplierSell? 
   payInSupplier         PayInSupplier[]
 

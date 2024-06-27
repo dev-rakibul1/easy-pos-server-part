@@ -58,9 +58,25 @@ const UpdateCustomerController = CatchAsync(
     })
   },
 )
+// update customer
+const GetSingleCustomerController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const { id } = req.params
+
+    const result = await CustomerService.GetSingleCustomerService(id)
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Single customer get success!',
+      data: result,
+    })
+  },
+)
 
 export const CustomerController = {
   CreateCustomerController,
   GetAllCustomerController,
   UpdateCustomerController,
+  GetSingleCustomerController,
 }

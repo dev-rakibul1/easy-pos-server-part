@@ -43,5 +43,14 @@ router.patch(
   ValidateZodRequest(CustomerZodSchema.UpdateCustomerZodSchema),
   CustomerController.UpdateCustomerController,
 )
+router.get(
+  '/:id',
+  AuthProvider.Auth(
+    ENUM_USER_ROLE.SUPER_ADMIN,
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.MODERATOR,
+  ),
+  CustomerController.GetSingleCustomerController,
+)
 
 export const CustomerRoutes = router

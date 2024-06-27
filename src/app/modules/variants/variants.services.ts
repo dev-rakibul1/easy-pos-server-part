@@ -1,4 +1,6 @@
 import { Prisma, Variants } from '@prisma/client'
+import httpStatus from 'http-status'
+import ApiError from '../../../errors/apiError'
 import { paginationHelpers } from '../../../helpers/paginationHelpers'
 import prisma from '../../../shared/prisma'
 import { IGenericResponse } from '../../interfaces/common'
@@ -77,9 +79,16 @@ const DeleteSingleVariantService = async (id: string) => {
   const result = await prisma.variants.delete({ where: { id: id } })
   return result
 }
+// get all user
+const GetSingleSingleVariantService = async (id: string) => {
+  const result = await prisma.variants.findFirst({ where: { id: id } })
+  if (!result) throw new ApiError(httpStatus.NOT_FOUND, 'Invalid variants')
+  return result
+}
 
 export const VariantService = {
   CreateVariantService,
   GetAllCreateVariantService,
   DeleteSingleVariantService,
+  GetSingleSingleVariantService,
 }

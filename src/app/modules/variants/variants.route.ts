@@ -15,6 +15,7 @@ router.post(
   VariantsController.CreateVariantsController,
 )
 router.get('/', VariantsController.GetAllVariantsController)
+router.get('/:id', VariantsController.GetSingleVariantsController)
 router.delete(
   '/:id',
   AuthProvider.Auth(ENUM_USER_ROLE.SUPER_ADMIN, ENUM_USER_ROLE.ADMIN),

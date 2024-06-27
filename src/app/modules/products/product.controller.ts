@@ -89,6 +89,19 @@ const DeleteProductsController = CatchAsync(
     })
   },
 )
+// Stock in product
+const StockInProductsController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const result = await ProductsService.StockInProductGetService()
+
+    sendResponse<Product[] | null>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Stock in product get success.',
+      data: result,
+    })
+  },
+)
 
 export const ProductsController = {
   CreateProductsController,
@@ -96,4 +109,5 @@ export const ProductsController = {
   GetSingleProductsController,
   UpdateProductsController,
   DeleteProductsController,
+  StockInProductsController,
 }
