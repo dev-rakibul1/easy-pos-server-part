@@ -5,15 +5,15 @@ const createProductZodValidation = z.object({
     .string({
       required_error: 'Product name is required',
     })
-    .min(5, {
-      message: 'Product name must be at least 5 characters long',
+    .min(1, {
+      message: 'Product name must be at least 1 characters long',
     })
     .max(255, {
       message: 'Product name must be less than or equal to 255 characters',
     }),
   brandName: z
     .string({ required_error: 'Brand name is required' })
-    .min(5, { message: 'Product name must be at least 5 characters long' })
+    .min(1, { message: 'Brand name must be at least 1 characters long' })
     .max(255, {
       message: 'Brand name must be less than or equal to 255 characters',
     }),
@@ -22,7 +22,7 @@ const createProductZodValidation = z.object({
   }),
   processor: z
     .string()
-    .min(5, { message: 'Processor must be at least 5 characters long' })
+    .min(1, { message: 'Processor must be at least 1 characters long' })
     .max(255, {
       message: 'Processor must be less than or equal to 255 characters',
     })
@@ -78,8 +78,8 @@ const UpdateProductZodValidation = z.object({
   body: z.object({
     productName: z
       .string()
-      .min(5, {
-        message: 'Product name must be at least 5 characters long',
+      .min(1, {
+        message: 'Product name must be at least 1 characters long',
       })
       .max(255, {
         message: 'Product name must be less than or equal to 255 characters',

@@ -50,10 +50,6 @@ const CreateSellService = async (payloads: any) => {
         ram: isVariantExist.ram,
         rom: isVariantExist.rom,
         color: isVariantExist.color,
-        purchaseRate: isVariantExist.purchaseRate,
-        sellingPrice: isVariantExist.sellingPrice,
-        vats: isVariantExist.vats,
-        discounts: isVariantExist.discounts,
       }
 
       const createSellVariant = await tx.sellVariants.create({

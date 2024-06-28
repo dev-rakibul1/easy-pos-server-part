@@ -212,6 +212,10 @@ model Sells {
   uniqueId          String
 
   variantId         String
+  productId         String
+
+  customerPurchaseProductId String @unique
+  customerPurchaseProduct   CustomerPurchaseProducts @relation(fields: [customerPurchaseProductId], references: [id])
   
   sellVariantId     String
   sellVariant       SellVariants  @relation(fields: [sellVariantId], references: [id])
@@ -235,7 +239,6 @@ model SellVariants {
   rom                 String
   color               String
   sells               Sells[]
-  
 
   createdAt           DateTime   @default(now())
   updatedAt           DateTime   @updatedAt
@@ -243,6 +246,90 @@ model SellVariants {
   @@map("sellvariants")
 }
 
+model SellGroups {
+  id                          String @id @default(uuid())
+
+  customerId                  String
+  userId                      String
+  customerPurchaseProducts    CustomerPurchaseProducts[] 
+  uniqueId                    String @unique
+  customerPurchase            CustomerPurchase? 
+  
+  //customerPayInUser           PayInSupplier[] Additional pay
+
+  createdAt                   DateTime                @default(now())
+  updatedAt                   DateTime                @updatedAt
+
+
+  @@map("sellGroups")
+}
+
+model CustomerPurchaseProducts {
+  id                    String                  @id @default(uuid())
+  productName           String?
+  brandName             String?
+  modelName             String?
+  processor             String?
+  unit                  String?
+  category              String?
+  reOrderAlert          Int?
+  productImage          String?
+  description           String?
+  productStock          Int?                    
+  othersStock           Int?
+  
+  variants              CustomerPurchaseVariants[]
+  sell                  Sells?
+
+  sellGroupId           String
+  sellGroups            SellGroups @relation(fields: [sellGroupId], references: [id])
+
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+  
+  @@map("customerPurchaseProducts")
+}
+
+model CustomerPurchaseVariants {
+  id                              String     @id @default(uuid())
+  imeiNumber                      String
+  ram                             String?
+  rom                             String?
+  color                           String?
+
+  customerPurchaseProductId       String
+  product                         CustomerPurchaseProducts @relation(fields: [customerPurchaseProductId], references: [id])
+  
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+
+  @@map("customerPurchaseVariants")
+}
+
+model CustomerPurchase {
+  id                    String @id @default(uuid())
+  quantity              Int
+  totalPurchaseAmounts  Int
+  totalDue              Int
+  totalPay              Int
+
+  userId                String
+
+  customerId            String 
+  customer              Customers @relation(fields: [customerId], references: [id])
+
+
+  sellGroupId           String @unique
+  sellGroup             SellGroups @relation(fields: [sellGroupId], references: [id])
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("customerPurchases")
+
+}
+
+// ------------------------------------END SELLs--------------------------------
 model Customers {
   id                  String  @id @default(uuid())
   firstName           String
@@ -257,6 +344,7 @@ model Customers {
   uniqueId            String
   purchaseHistory     Sells[]
   payments            CustomerPayments[]
+  customerPurchase    CustomerPurchase[]
 
   createdAt           DateTime   @default(now())
   updatedAt           DateTime   @updatedAt
@@ -469,6 +557,7 @@ model PurchaseGroup {
   @@map("purchaseGroups")
 }
 
+// Additional pay in supplier
 model PayInSupplier {
   id                    String @id @default(uuid())
   payAmount             Int
