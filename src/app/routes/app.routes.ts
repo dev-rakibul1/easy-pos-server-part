@@ -13,6 +13,7 @@ import { PurchaseRoutes } from '../modules/purchase/purchase.route'
 import { PurchaseGroupRoutes } from '../modules/purchaseGroup/purchaseGroup.route'
 import { ReturnRoutes } from '../modules/returns/return.route'
 import { SellRoutes } from '../modules/sell/sell.route'
+import { SellGroupRoutes } from '../modules/sellGroup/sellGroup.route'
 import { SellVariantRoutes } from '../modules/sellVariants/sellVariants.route'
 import { SupplierRoutes } from '../modules/supplier/supplier.route'
 import { SupplierPaymentRoutes } from '../modules/supplierPayments/supplierPayment.route'
@@ -118,6 +119,10 @@ const modulesRouters = [
   {
     path: '/purchase-group',
     route: PurchaseGroupRoutes,
+  },
+  {
+    path: '/sell-group',
+    route: SellGroupRoutes,
   },
   {
     path: '/pay-in-supplier',

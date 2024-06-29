@@ -10,13 +10,14 @@ import { SellService } from './sell.services'
 
 // Create a sell
 const CreateSellController = CatchAsync(async (req: Request, res: Response) => {
-  const payload = req.body
-  const result = await SellService.CreateSellService(payload)
+  const payloads = req.body
+  console.log(payloads)
+  const result = await SellService.CreateSellService(payloads)
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Sell success!',
+    message: 'Sales success!',
     data: result,
   })
 })

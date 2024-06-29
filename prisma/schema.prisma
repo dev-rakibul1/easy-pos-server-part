@@ -206,10 +206,9 @@ model Sells {
   vats              Int
   discounts         Int
   sellingPrice      Int
-  paymentMethod     String
-  totalPay          Int
   totalSellPrice    Int
   uniqueId          String
+  quantity          Int
 
   variantId         String
   productId         String
@@ -217,8 +216,8 @@ model Sells {
   customerPurchaseProductId String @unique
   customerPurchaseProduct   CustomerPurchaseProducts @relation(fields: [customerPurchaseProductId], references: [id])
   
-  sellVariantId     String
-  sellVariant       SellVariants  @relation(fields: [sellVariantId], references: [id])
+  customerPurchaseVariantId     String
+  customerPurchaseVariants       CustomerPurchaseVariants  @relation(fields: [customerPurchaseVariantId], references: [id])
 
   userId            String
   user              User @relation(fields: [userId], references: [id])
@@ -232,13 +231,14 @@ model Sells {
   @@map("sells")
 }
 
+// Remove the table
 model SellVariants {
   id                  String  @id  @default(uuid())
   imeiNumber          String
   ram                 String
   rom                 String
   color               String
-  sells               Sells[]
+  
 
   createdAt           DateTime   @default(now())
   updatedAt           DateTime   @updatedAt
@@ -277,6 +277,9 @@ model CustomerPurchaseProducts {
   description           String?
   productStock          Int?                    
   othersStock           Int?
+  customerId            String
+  userId                String
+  productId             String
   
   variants              CustomerPurchaseVariants[]
   sell                  Sells?
@@ -299,6 +302,7 @@ model CustomerPurchaseVariants {
 
   customerPurchaseProductId       String
   product                         CustomerPurchaseProducts @relation(fields: [customerPurchaseProductId], references: [id])
+  sells                           Sells[]
   
   createdAt           DateTime   @default(now())
   updatedAt           DateTime   @updatedAt
