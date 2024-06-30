@@ -1,12 +1,12 @@
 import express from 'express'
 import { ENUM_USER_ROLE } from '../../../enums/role'
 import { AuthProvider } from '../../middlewares/auth'
-import { PayInSupplierController } from './payInSupplier.controller'
+import { CustomerPayInUserController } from './customerPayInUser.controller'
 
 const router = express.Router()
 
 router.post(
-  '/create-pay',
+  '/create-pay-in-user',
   AuthProvider.Auth(
     ENUM_USER_ROLE.SUPER_ADMIN,
     ENUM_USER_ROLE.ADMIN,
@@ -15,7 +15,7 @@ router.post(
     ENUM_USER_ROLE.MODERATOR,
     ENUM_USER_ROLE.USER,
   ),
-  PayInSupplierController.CreatePayInSupplierController,
+  CustomerPayInUserController.CreateCustomerPayInUserController,
 )
 
-export const PayInSupplierRoutes = router
+export const CustomerPayInUserRoutes = router

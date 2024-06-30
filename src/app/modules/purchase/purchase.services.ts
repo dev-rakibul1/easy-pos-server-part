@@ -109,8 +109,6 @@ const CreatePurchaseService = async (data: IPurchaseType) => {
     }
   })
 
-  console.log(purchases)
-
   // Extract the created purchase IDs and map them to product IDs
   const productIdToPurchaseIdMap: any = {}
   createdSupplierSellProducts.forEach((product, index) => {
@@ -138,7 +136,8 @@ const CreatePurchaseService = async (data: IPurchaseType) => {
   await prisma.variants.createMany({
     data: variants,
   })
-  await prisma.purchase.createMany({ data: purchases })
+  const result = await prisma.purchase.createMany({ data: purchases })
+  return result
 }
 
 // Create purchase

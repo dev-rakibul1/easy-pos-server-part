@@ -4,7 +4,9 @@ import { BrandRoutes } from '../modules/brand/brand.route'
 import { CategoryRoutes } from '../modules/category/category.route'
 import { ColorRoutes } from '../modules/colors/color.route'
 import { CurrencyTypeRoutes } from '../modules/currencyType/currencyType.route'
+import { CustomerPayInUserRoutes } from '../modules/customerPayInUser/customerPayInUser.router'
 import { CustomerPaymentRoutes } from '../modules/customerPayments/customerPayments.route'
+import { CustomerPurchaseRoutes } from '../modules/customerPurchase/customerPurchase.route'
 import { CustomerRoutes } from '../modules/customers/customers.route'
 import { DiscountRoutes } from '../modules/discounts/discount.route'
 import { PayInSupplierRoutes } from '../modules/payInSupplier/payInSupplier.route'
@@ -127,6 +129,14 @@ const modulesRouters = [
   {
     path: '/pay-in-supplier',
     route: PayInSupplierRoutes,
+  },
+  {
+    path: '/customer-purchase',
+    route: CustomerPurchaseRoutes,
+  },
+  {
+    path: '/customer-pay-in-user',
+    route: CustomerPayInUserRoutes,
   },
 ]
 

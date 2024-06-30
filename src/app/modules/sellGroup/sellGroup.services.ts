@@ -57,7 +57,12 @@ const GetAllSellGroupService = async (
           sell: true,
         },
       },
-      customerPurchase: true,
+      customerPurchase: {
+        include: {
+          customer: true,
+        },
+      },
+      customerPayInUser:true
     },
     orderBy:
       sortBy && sortOrder ? { [sortBy]: sortOrder } : { createdAt: 'desc' },
@@ -97,6 +102,7 @@ const SingleSellGroupService = async (
         },
       },
       customerPurchase: true,
+      customerPayInUser:true
     },
   })
   return result

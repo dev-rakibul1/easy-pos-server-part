@@ -19,8 +19,8 @@ const CreateSellService = async (payloads: ISellsType) => {
 
   const { variants, sells, customerPayInUser } = payloads
 
-  console.log(payloads)
-  console.log(customerPayInUser)
+  // console.log(payloads)
+  // console.log(customerPayInUser)
 
   // Total product sell price
   const totalProductPrice = sells?.reduce(
@@ -342,7 +342,6 @@ const GetAllSellService = async (
     include: {
       customer: true,
       user: true,
-      sellVariant: true,
     },
   })
 

@@ -231,31 +231,16 @@ model Sells {
   @@map("sells")
 }
 
-// Remove the table
-model SellVariants {
-  id                  String  @id  @default(uuid())
-  imeiNumber          String
-  ram                 String
-  rom                 String
-  color               String
-  
-
-  createdAt           DateTime   @default(now())
-  updatedAt           DateTime   @updatedAt
-  
-  @@map("sellvariants")
-}
-
 model SellGroups {
   id                          String @id @default(uuid())
 
   customerId                  String
   userId                      String
-  customerPurchaseProducts    CustomerPurchaseProducts[] 
   uniqueId                    String @unique
   customerPurchase            CustomerPurchase? 
+  customerPurchaseProducts    CustomerPurchaseProducts[] 
   
-  //customerPayInUser           PayInSupplier[] Additional pay
+  customerPayInUser           CustomerPayInUser[] 
 
   createdAt                   DateTime                @default(now())
   updatedAt                   DateTime                @updatedAt
@@ -322,15 +307,31 @@ model CustomerPurchase {
   customerId            String 
   customer              Customers @relation(fields: [customerId], references: [id])
 
-
   sellGroupId           String @unique
   sellGroup             SellGroups @relation(fields: [sellGroupId], references: [id])
+
+  
 
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 
   @@map("customerPurchases")
 
+}
+
+// Additional pay in customer
+model CustomerPayInUser {
+  id                    String @id @default(uuid())
+  payAmount             Int
+  customerPurchaseId    String
+
+  sellGroupId           String
+  sellGroups            SellGroups @relation(fields: [sellGroupId], references: [id])
+
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+
+  @@map("customerPayInUsers")
 }
 
 // ------------------------------------END SELLs--------------------------------
@@ -348,7 +349,8 @@ model Customers {
   uniqueId            String
   purchaseHistory     Sells[]
   payments            CustomerPayments[]
-  customerPurchase    CustomerPurchase[]
+
+  customerPurchase            CustomerPurchase[]
 
   createdAt           DateTime   @default(now())
   updatedAt           DateTime   @updatedAt
