@@ -72,9 +72,26 @@ const GetSingleSupplierController = CatchAsync(
   },
 )
 
+// get supplier by supplier, product and user
+const GetBySuppliersByUserSupplierProductController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const ids = req.params
+    const result =
+      await SupplierService.GetSuppliersByUserSupplierProductService(ids)
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Get supplier by supplier, user and product successfully',
+      data: result,
+    })
+  },
+)
+
 export const SupplierController = {
   CreateSupplierController,
   GetAllSupplierController,
   UpdateSupplierController,
   GetSingleSupplierController,
+  GetBySuppliersByUserSupplierProductController,
 }

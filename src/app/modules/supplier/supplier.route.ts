@@ -33,6 +33,7 @@ router.get(
   ),
   SupplierController.GetAllSupplierController,
 )
+
 router.get(
   '/:id',
   AuthProvider.Auth(
@@ -51,6 +52,16 @@ router.patch(
   ),
   ValidateZodRequest(SupplierZodSchema.UpdateSupplierZodSchema),
   SupplierController.UpdateSupplierController,
+)
+
+router.get(
+  '/get-suppliers-by-user-supplier-product/:id',
+  AuthProvider.Auth(
+    ENUM_USER_ROLE.SUPER_ADMIN,
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.MODERATOR,
+  ),
+  SupplierController.GetBySuppliersByUserSupplierProductController,
 )
 
 export const SupplierRoutes = router

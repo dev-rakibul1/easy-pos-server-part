@@ -31,13 +31,11 @@ router.patch(
 router.get(
   '/get-by-supplier-and-user/:id',
   AuthProvider.Auth(ENUM_USER_ROLE.SUPER_ADMIN, ENUM_USER_ROLE.ADMIN),
-  ValidateZodRequest(PurchaseZodSchema.UpdatePurchaseZodSchema),
   PurchaseController.GetBySupplierAndUserPurchaseController,
 )
 router.get(
   '/:id',
   AuthProvider.Auth(ENUM_USER_ROLE.SUPER_ADMIN, ENUM_USER_ROLE.ADMIN),
-  ValidateZodRequest(PurchaseZodSchema.UpdatePurchaseZodSchema),
   PurchaseController.GetSinglePurchaseController,
 )
 

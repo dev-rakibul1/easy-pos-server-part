@@ -69,6 +69,7 @@ const CreateSellService = async (payloads: ISellsType) => {
     const sellGroupId = sellGroup.id
     const customerId = customerPayInUser.customerId
 
+    // customer purchase product information or data
     const newProducts = products.map(product => {
       // @ts-ignore
       const { uniqueId, id, ...restProduct } = product
@@ -109,6 +110,8 @@ const CreateSellService = async (payloads: ISellsType) => {
           customerPurchaseProductId,
         }
       })
+
+    console.log(isMatchWithProduct)
 
     isMatchWithProduct?.map(ve => {
       // @ts-ignore

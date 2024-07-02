@@ -30,114 +30,144 @@ const CreatePurchaseService = async (data: IPurchaseType) => {
     0,
   )
 
-  // -------------------Purchase Group-------------------
-  const purchaseGroupInformation = {
-    supplierId: supplierPayment.supplierId,
-    userId: supplierPayment.userId,
-    uniqueId: invoiceId,
-  }
-
-  const purchaseGroup = await prisma.purchaseGroup.create({
-    data: purchaseGroupInformation,
-  })
-
-  //------------------SUPPLIER SELLS------------------
-  // Generate supplier sell entries
-  const supplierSellEntries = {
-    quantity: variants.length,
-    totalSellAmounts: totalProductPrice,
-    totalDue: totalProductPrice - supplierPayment.totalPay,
-    totalPay: supplierPayment.totalPay,
-    supplierId: supplierPayment.supplierId,
-    userId: supplierPayment.userId,
-    productId: supplierPayment.productId,
-    purchaseGroupId: purchaseGroup.id,
-  }
-
-  // Create supplier sells
-  const createdSupplierSells = await prisma.supplierSell.create({
-    data: supplierSellEntries,
-  })
-
-  // -----------Supplier sell product----------
-  const ids = purchase.map((purchase: Purchase) => purchase.productId)
-
-  // Fetch data for each id
-  const dataPromises = ids.map(id =>
-    prisma.product.findUnique({ where: { id } }),
-  )
-  const products = await Promise.all(dataPromises)
-
-  const userId = supplierPayment.userId
-  const purchaseGroupId = purchaseGroup.id
-  const supplierId = supplierPayment.supplierId
-
-  const newProducts = products.map(product => {
-    // @ts-ignore
-    const { uniqueId, id, ...restProduct } = product
-
-    return {
-      ...restProduct,
-      userId,
-      purchaseGroupId,
-      supplierId,
-      productId: id,
+  return prisma.$transaction(async tx => {
+    // --------Purchase Group----------
+    const purchaseGroupInformation = {
+      supplierId: supplierPayment.supplierId,
+      userId: supplierPayment.userId,
+      uniqueId: invoiceId,
     }
-  })
 
-  // Store the new products in the supplierSellProduct table and get the created objects
-  const createdProductsPromises = newProducts.map(newProduct =>
-    prisma.supplierSellProduct.create({ data: newProduct }),
-  )
-  const createdSupplierSellProducts = await Promise.all(createdProductsPromises)
+    const purchaseGroup = await tx.purchaseGroup.create({
+      data: purchaseGroupInformation,
+    })
 
-  // Log the stored data for demonstration
-  // console.log('getSupplierSellProductId-2', createdProducts)
-
-  const createdPurchaseIds = createdSupplierSellProducts.map(id => id.id)
-  // console.log(createdPurchaseIds)
-
-  // Fetch data for each id
-  const purchases = purchase.map((purchase, index) => {
-    const supplierSellProductId =
-      createdPurchaseIds[index % createdPurchaseIds.length]
-    return {
-      ...purchase,
-      supplierSellProductId,
-      uniqueId: purchaseId,
-      supplierSellId: createdSupplierSells.id,
+    //------SUPPLIER SELLS---------
+    // Generate supplier sell entries
+    const supplierSellEntries = {
+      quantity: variants.length,
+      totalSellAmounts: totalProductPrice,
+      totalDue: totalProductPrice - supplierPayment.totalPay,
+      totalPay: supplierPayment.totalPay,
+      supplierId: supplierPayment.supplierId,
+      userId: supplierPayment.userId,
+      productId: supplierPayment.productId,
+      purchaseGroupId: purchaseGroup.id,
     }
-  })
 
-  // Extract the created purchase IDs and map them to product IDs
-  const productIdToPurchaseIdMap: any = {}
-  createdSupplierSellProducts.forEach((product, index) => {
-    productIdToPurchaseIdMap[newProducts[index].productId] = product.id
-  })
+    // Create supplier sells
+    const createdSupplierSells = await tx.supplierSell.create({
+      data: supplierSellEntries,
+    })
 
-  // Supplier sell variants create
-  const isMatchWithProduct = variants
-    .filter(va => productIdToPurchaseIdMap.hasOwnProperty(va.productId))
-    .map(va => {
-      const supplierSellProductId = productIdToPurchaseIdMap[va.productId]
-      const { productId, ...rest } = va
+    // -----------Supplier sell product----------
+    const ids = purchase.map((purchase: Purchase) => purchase.productId)
+
+    // Fetch data for each id
+    const dataPromises = ids.map(id => tx.product.findUnique({ where: { id } }))
+    const products = await Promise.all(dataPromises)
+
+    const userId = supplierPayment.userId
+    const purchaseGroupId = purchaseGroup.id
+    const supplierId = supplierPayment.supplierId
+
+    const newProducts = products.map(product => {
+      // @ts-ignore
+      const { uniqueId, id, ...restProduct } = product
+
       return {
-        ...rest,
-        supplierSellProductId,
+        ...restProduct,
+        userId,
+        purchaseGroupId,
+        supplierId,
+        productId: id,
       }
     })
 
-  // Create the variants in the supplierSellVariants table
-  await prisma.supplierSellVariants.createMany({
-    data: isMatchWithProduct,
-  })
+    // Store the new products in the supplierSellProduct table and get the created objects
+    const createdProductsPromises = newProducts.map(newProduct =>
+      tx.supplierSellProduct.create({ data: newProduct }),
+    )
+    const createdSupplierSellProducts = await Promise.all(
+      createdProductsPromises,
+    )
 
-  // -------------PURCHASE & VARIANTS------------
-  await prisma.variants.createMany({
-    data: variants,
+    const createdPurchaseIds = createdSupplierSellProducts.map(id => id.id)
+
+    // Fetch data for each id
+    const purchases = purchase.map((purchase, index) => {
+      const supplierSellProductId =
+        createdPurchaseIds[index % createdPurchaseIds.length]
+      return {
+        ...purchase,
+        supplierSellProductId,
+        uniqueId: purchaseId,
+        supplierSellId: createdSupplierSells.id,
+      }
+    })
+
+    // Extract the created purchase IDs and map them to product IDs
+    const productIdToPurchaseIdMap: any = {}
+    createdSupplierSellProducts.forEach((product, index) => {
+      productIdToPurchaseIdMap[newProducts[index].productId] = product.id
+    })
+
+    // Supplier sell variants create
+    const isMatchWithProduct = variants
+      .filter(va => productIdToPurchaseIdMap.hasOwnProperty(va.productId))
+      .map(va => {
+        const supplierSellProductId = productIdToPurchaseIdMap[va.productId]
+        const { productId, ...rest } = va
+        return {
+          ...rest,
+          supplierSellProductId,
+        }
+      })
+
+    // Create the variants in the supplierSellVariants table
+    await tx.supplierSellVariants.createMany({
+      data: isMatchWithProduct,
+    })
+
+    // --------PURCHASE & VARIANTS--------
+    // Create purchases
+    // Create purchases individually and store the created records
+    const createdPurchases = await Promise.all(
+      purchases.map(purchase => tx.purchase.create({ data: purchase })),
+    )
+
+    // Match purchases with variants
+    createdPurchases.filter(pur => {
+      const matchingVariant = variants.find(
+        va => va.productId === pur.productId,
+      )
+      return matchingVariant !== undefined
+    })
+
+    // Map new variants info
+    const newVariantsInfo = variants.map(variant => {
+      const matchingPurchase = createdPurchases.find(
+        purchase => purchase.productId === variant.productId,
+      )
+      if (matchingPurchase) {
+        return {
+          ...variant,
+          purchaseId: matchingPurchase.id,
+        }
+      }
+      return variant
+    })
+
+    await tx.variants.createMany({
+      data: newVariantsInfo,
+    })
+
+    // await tx.variants.createMany({
+    //   data: variants,
+    // })
+    // const result = await tx.purchase.createMany({ data: purchases })
+    return createdPurchases
   })
-  const result = await prisma.purchase.createMany({ data: purchases })
-  return result
 }
 
 // Create purchase
@@ -161,7 +191,7 @@ const CreatePurchaseService = async (data: IPurchaseType) => {
 //     0,
 //   )
 
-//   return await prisma.$transaction(async tx => {
+//   return await tx.$transaction(async tx => {
 //     // -------------------Purchase Group-------------------
 //     const purchaseGroupInformation = {
 //       supplierId: supplierPayment.supplierId,

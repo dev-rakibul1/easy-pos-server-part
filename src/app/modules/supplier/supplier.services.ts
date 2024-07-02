@@ -179,9 +179,34 @@ const GetSingleSupplierUserService = async (id: string) => {
   return isExist
 }
 
+// Supplier filter by supplier, user and product
+const GetSuppliersByUserSupplierProductService = async (ids: any) => {
+  try {
+    const [userId, productId] = ids.id.split(',')
+    console.log(ids)
+
+    const result = await prisma.suppliers.findMany({
+      where: {
+        purchase: {
+          some: {
+            userId: userId,
+            productId: productId,
+          },
+        },
+      },
+    })
+
+    return result
+  } catch (error) {
+    console.error(error)
+    throw error
+  }
+}
+
 export const SupplierService = {
   CreateSupplierService,
   GetAllSupplierUserService,
   UpdateSupplierUserService,
   GetSingleSupplierUserService,
+  GetSuppliersByUserSupplierProductService,
 }
