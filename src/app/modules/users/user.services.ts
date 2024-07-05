@@ -232,6 +232,27 @@ const GetSingleUserByUniqueIdService = async (
 
   return isExist
 }
+// get single user by unique id
+const GetSingleUserService = async (
+  id: string,
+): Promise<Partial<User> | null> => {
+  const isExist = await prisma.user.findFirst({
+    where: { id },
+
+    include: {
+      purchases: true,
+      sells: true,
+      customerPayment: true,
+      supplierPayment: true,
+    },
+  })
+
+  if (!isExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Invalid user.')
+  }
+
+  return isExist
+}
 
 export const UserService = {
   CreateUserService,
@@ -239,4 +260,5 @@ export const UserService = {
   UpdateUserService,
   DeleteUserService,
   GetSingleUserByUniqueIdService,
+  GetSingleUserService,
 }

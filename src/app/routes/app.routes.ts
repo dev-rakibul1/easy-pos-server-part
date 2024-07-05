@@ -1,4 +1,5 @@
 import express from 'express'
+import { AdditionalMoneyBackRoutes } from '../modules/additionalMoneyBack/additionalMoneyBack.route'
 import { AuthRoutes } from '../modules/auth/auth.route'
 import { BrandRoutes } from '../modules/brand/brand.route'
 import { CategoryRoutes } from '../modules/category/category.route'
@@ -13,12 +14,14 @@ import { PayInSupplierRoutes } from '../modules/payInSupplier/payInSupplier.rout
 import { productRoutes } from '../modules/products/product.route'
 import { PurchaseRoutes } from '../modules/purchase/purchase.route'
 import { PurchaseGroupRoutes } from '../modules/purchaseGroup/purchaseGroup.route'
+import { ReturnGroupRoutes } from '../modules/returnGroup/returnGroup.route'
 import { ReturnRoutes } from '../modules/returns/return.route'
 import { SellRoutes } from '../modules/sell/sell.route'
 import { SellGroupRoutes } from '../modules/sellGroup/sellGroup.route'
 import { SellVariantRoutes } from '../modules/sellVariants/sellVariants.route'
 import { SupplierRoutes } from '../modules/supplier/supplier.route'
 import { SupplierPaymentRoutes } from '../modules/supplierPayments/supplierPayment.route'
+import { SupplierReturnPaymentsRoutes } from '../modules/supplierReturnPayments/supplierReturnPayments.route'
 import { SupplierSellRoutes } from '../modules/supplierSell/supplierSell.route'
 import { SupplierSellProductRoutes } from '../modules/supplierSellProduct/supplierSellProduct.route'
 import { SupplierSellVariantsRoutes } from '../modules/supplierSellVariants/supplierSellVariant.route'
@@ -137,6 +140,18 @@ const modulesRouters = [
   {
     path: '/customer-pay-in-user',
     route: CustomerPayInUserRoutes,
+  },
+  {
+    path: '/return-group',
+    route: ReturnGroupRoutes,
+  },
+  {
+    path: '/supplier-return-payment',
+    route: SupplierReturnPaymentsRoutes,
+  },
+  {
+    path: '/additional-money-back-to-user',
+    route: AdditionalMoneyBackRoutes,
   },
 ]
 

@@ -11,7 +11,7 @@ const CreateReturnController = CatchAsync(
     const payload = req.body
     const result = await ReturnService.CreateReturnService(payload)
 
-    sendResponse(res, {
+    sendResponse<Returns | null>(res, {
       statusCode: httpStatus.OK,
       success: true,
       message: 'Product return success!',

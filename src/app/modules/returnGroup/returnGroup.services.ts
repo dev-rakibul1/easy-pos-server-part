@@ -1,15 +1,15 @@
-import { Prisma, SellGroups } from '@prisma/client'
+import { Prisma, ReturnGroups } from '@prisma/client'
 import { paginationHelpers } from '../../../helpers/paginationHelpers'
 import prisma from '../../../shared/prisma'
 import { IGenericResponse } from '../../interfaces/common'
 import { IPaginationOptions } from '../../interfaces/pagination'
-import { ISellFilterRequest } from './sellGroup.type'
+import { IReturnGroupFilterRequest } from './returnGroup.type'
 
-// get all sell group
-const GetAllSellGroupService = async (
-  filters: ISellFilterRequest,
+// get all Return group
+const GetAllReturnGroupService = async (
+  filters: IReturnGroupFilterRequest,
   paginationOptions: IPaginationOptions,
-): Promise<IGenericResponse<SellGroups[]>> => {
+): Promise<IGenericResponse<ReturnGroups[]>> => {
   const { searchTerm, ...filterData } = filters
 
   const andConditions = []
@@ -17,7 +17,7 @@ const GetAllSellGroupService = async (
   // searchTerm
   if (searchTerm) {
     andConditions.push({
-      OR: ['uniqueId', 'userId', 'customerId'].map(field => ({
+      OR: ['uniqueId', 'userId', 'supplierId'].map(field => ({
         [field]: {
           contains: searchTerm,
           mode: 'insensitive',
@@ -42,60 +42,59 @@ const GetAllSellGroupService = async (
     paginationHelpers.calculatePagination(paginationOptions)
 
   // Where condition
-  const whereConditions: Prisma.SellGroupsWhereInput = andConditions.length
+  const whereConditions: Prisma.ReturnGroupsWhereInput = andConditions.length
     ? { AND: andConditions }
     : {}
 
-  const result = await prisma.sellGroups.findMany({
+  const result = await prisma.returnGroups.findMany({
     where: whereConditions,
     skip,
     take: limit,
     include: {
-      customerPurchaseProducts: {
+      supplierReturnPayments: {
         include: {
-          variants: true,
-          sell: true,
+          user: true,
         },
       },
-      customerPurchase: {
+      userReturnProducts: {
         include: {
-          customer: true,
+          returns: true,
         },
       },
-      customerPayInUser: true,
     },
     orderBy:
       sortBy && sortOrder ? { [sortBy]: sortOrder } : { createdAt: 'desc' },
   })
 
-  const total = await prisma.sellGroups.count()
+  const total = await prisma.returnGroups.count()
 
   return {
     meta: { limit, page, total },
     data: result,
   }
 }
-// get single group by customer sells id
-const SingleSellGroupService = async (
-  id: string,
-): Promise<SellGroups | null> => {
-  const result = await prisma.sellGroups.findFirst({
-    where: { customerPurchase: { id: id } },
+// get single group by supplier sells id
+const SingleReturnGroupService = async (id: string) => {
+  const result = await prisma.returnGroups.findFirst({
+    where: { supplierReturnPayments: { id: id } },
     include: {
-      customerPurchaseProducts: {
+      supplierReturnPayments: {
         include: {
-          variants: true,
-          sell: true,
+          user: true,
         },
       },
-      customerPurchase: true,
-      customerPayInUser: true,
+      userReturnProducts: {
+        include: {
+          returns: true,
+        },
+      },
+      additionalMoneyBack: true,
     },
   })
   return result
 }
 
-export const SellGroupService = {
-  GetAllSellGroupService,
-  SingleSellGroupService,
+export const ReturnGroupService = {
+  GetAllReturnGroupService,
+  SingleReturnGroupService,
 }

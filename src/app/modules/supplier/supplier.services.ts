@@ -161,7 +161,7 @@ const UpdateSupplierUserService = async (
   return result
 }
 // Update supplier
-const GetSingleSupplierUserService = async (id: string) => {
+const GetSingleSupplierService = async (id: string) => {
   // Find the existing supplier
   const isExist = await prisma.suppliers.findUnique({
     where: { id: id },
@@ -183,7 +183,6 @@ const GetSingleSupplierUserService = async (id: string) => {
 const GetSuppliersByUserSupplierProductService = async (ids: any) => {
   try {
     const [userId, productId] = ids.id.split(',')
-    console.log(ids)
 
     const result = await prisma.suppliers.findMany({
       where: {
@@ -207,6 +206,6 @@ export const SupplierService = {
   CreateSupplierService,
   GetAllSupplierUserService,
   UpdateSupplierUserService,
-  GetSingleSupplierUserService,
+  GetSingleSupplierService,
   GetSuppliersByUserSupplierProductService,
 }

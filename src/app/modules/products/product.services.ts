@@ -64,7 +64,6 @@ const GetAllCreateUserService = async (
     })
   }
 
-  // console.log(filters)
   // Pagination
   const { limit, page, skip } =
     paginationHelpers.calculatePagination(paginationOptions)

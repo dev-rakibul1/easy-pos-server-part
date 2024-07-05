@@ -22,8 +22,6 @@ const CreatePurchaseService = async (data: IPurchaseType) => {
     delete pur.brandName
   })
 
-  // console.log({ variants })
-
   // Total product sell price
   const totalProductPrice = purchase.reduce(
     (accumulator: number, item: Purchase) => accumulator + item.totalPrice,

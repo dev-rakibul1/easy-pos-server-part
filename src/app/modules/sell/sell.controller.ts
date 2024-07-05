@@ -11,7 +11,7 @@ import { SellService } from './sell.services'
 // Create a sell
 const CreateSellController = CatchAsync(async (req: Request, res: Response) => {
   const payloads = req.body
-  console.log(payloads)
+
   const result = await SellService.CreateSellService(payloads)
 
   sendResponse(res, {
@@ -37,8 +37,29 @@ const GetAllSellController = CatchAsync(async (req: Request, res: Response) => {
     data: result.data,
   })
 })
+// get all sell by current date
+const GetAllSellByCurrentDateController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const filters = pick(req.query, sellFilterableQuery)
+    const paginationOptions = pick(req.query, paginationQueryKeys)
+
+    const result = await SellService.GetAllSellByCurrentDateService(
+      filters,
+      paginationOptions,
+    )
+
+    sendResponse<Sells[]>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Sell get by current date.',
+      meta: result.meta,
+      data: result.data,
+    })
+  },
+)
 
 export const SellController = {
   CreateSellController,
   GetAllSellController,
+  GetAllSellByCurrentDateController,
 }

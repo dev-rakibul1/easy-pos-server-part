@@ -10,8 +10,6 @@ import { userFilterableQuery } from './users.constant'
 
 // Create a user
 const CreateUserController = CatchAsync(async (req: Request, res: Response) => {
-  console.log(req.file)
-
   const result = await UserService.CreateUserService(req)
 
   sendResponse(res, {
@@ -83,6 +81,21 @@ const GetSingleUserByUniqueIdController = CatchAsync(
     })
   },
 )
+// Get single user
+const GetSingleUserController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const { id } = req.params
+
+    const result = await UserService.GetSingleUserService(id)
+
+    sendResponse<Partial<User>>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Single user get success!',
+      data: result,
+    })
+  },
+)
 
 export const UserController = {
   CreateUserController,
@@ -90,4 +103,5 @@ export const UserController = {
   UpdateUserController,
   DeleteUserController,
   GetSingleUserByUniqueIdController,
+  GetSingleUserController,
 }

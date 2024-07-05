@@ -34,6 +34,7 @@ model User {
   sells                 Sells[]
   supplierPayment       SupplierPayment[]
   customerPayment       CustomerPayments[]
+  supplierReturnPayments SupplierReturnPayments[]
 
   supplierSell          SupplierSell[]
   
@@ -149,11 +150,12 @@ model Returns {
   variantId             String
   userId                String
   productId             String
+  price                 Int
 
   supplierId            String
   supplier              Suppliers  @relation(fields: [supplierId], references: [id])
 
-  userReturnProductsId String
+  userReturnProductsId  String
   userReturnProducts    UserReturnProducts @relation(fields: [userReturnProductsId], references: [id])
 
   createdAt             DateTime   @default(now())
@@ -167,13 +169,29 @@ model ReturnGroups {
    supplierId            String
    userId                String
    userReturnProducts    UserReturnProducts[]
-   supplierReturnPayments SupplierReturnPayments[]
+   supplierReturnPayments SupplierReturnPayments?
    uniqueId                String @unique
+   additionalMoneyBack    AdditionalMoneyBack[]
 
   createdAt             DateTime   @default(now())
   updatedAt             DateTime   @updatedAt
 
   @@map("returnGroups")
+}
+
+// Additional pay in customer
+model AdditionalMoneyBack {
+  id                          String @id @default(uuid())
+  payAmount                   Int
+  supplierReturnPaymentId     String
+
+  returnGroupId               String
+  returnGroups                ReturnGroups @relation(fields: [returnGroupId], references: [id])
+
+  createdAt                   DateTime                @default(now())
+  updatedAt                   DateTime                @updatedAt
+
+  @@map("additionalMoneyBacks")
 }
 
 model UserReturnProducts {
@@ -216,11 +234,9 @@ model SupplierReturnPayments {
   userId                String
   productId             String
 
-  // product               Product @relation(fields: [productId], references: [id])
-  // supplier              Suppliers @relation(fields: [supplierId], references: [id])
-  // user                  User @relation(fields: [userId], references: [id])
+  user                  User @relation(fields: [userId], references: [id])
 
-  returnGroupId         String
+  returnGroupId         String @unique
   returnGroup           ReturnGroups @relation(fields: [returnGroupId], references: [id])
 
   createdAt             DateTime @default(now())

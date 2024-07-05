@@ -34,7 +34,6 @@ const LoginUser = CatchAsync(async (req: Request, res: Response) => {
 // Refresh token
 const RefreshToken = CatchAsync(async (req: Request, res: Response) => {
   const { refreshToken } = req.cookies
-  // console.log('refreshToken____________', refreshToken)
 
   const result = await AuthService.RefreshTokenService(refreshToken)
 

@@ -61,7 +61,7 @@ const UpdateSupplierController = CatchAsync(
 const GetSingleSupplierController = CatchAsync(
   async (req: Request, res: Response) => {
     const { id } = req.params
-    const result = await SupplierService.GetSingleSupplierUserService(id)
+    const result = await SupplierService.GetSingleSupplierService(id)
 
     sendResponse(res, {
       statusCode: httpStatus.OK,
