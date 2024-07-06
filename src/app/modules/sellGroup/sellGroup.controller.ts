@@ -32,6 +32,31 @@ const GetAllSellGroupController = CatchAsync(
     })
   },
 )
+// get all Sell Group by current date
+const GetSellGroupByCurrentDateController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const filters = pick(req.query, [
+      'searchTerm',
+      'uniqueId',
+      'customerId',
+      'userId',
+    ])
+    const paginationOptions = pick(req.query, paginationQueryKeys)
+
+    const result = await SellGroupService.GetSellGroupByCurrentDateService(
+      filters,
+      paginationOptions,
+    )
+
+    sendResponse<SellGroups[]>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Sell group get by current date!',
+      meta: result?.meta,
+      data: result?.data,
+    })
+  },
+)
 // get Single Sell Group
 const SingleSellGroupController = CatchAsync(
   async (req: Request, res: Response) => {
@@ -50,4 +75,5 @@ const SingleSellGroupController = CatchAsync(
 export const SellGroupController = {
   GetAllSellGroupController,
   SingleSellGroupController,
+  GetSellGroupByCurrentDateController,
 }

@@ -13,6 +13,7 @@ type ICustomerPayment = {
   customerId: string
   userId: string
   productId: string
+  paymentType?: string
 }
 
 type Variant = {

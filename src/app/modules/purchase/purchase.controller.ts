@@ -42,6 +42,20 @@ const GetAllPurchaseController = CatchAsync(
     })
   },
 )
+// get all purchase by current date
+const GetAllPurchaseByCurrentDateController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const result = await PurchaseService.GetAllPurchaseByCurrentDateService()
+
+    sendResponse<Purchase[]>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'All purchase get by current date!',
+
+      data: result,
+    })
+  },
+)
 
 // purchase updated
 const UpdatePurchaseController = CatchAsync(
@@ -99,4 +113,5 @@ export const PurchaseController = {
   UpdatePurchaseController,
   GetBySupplierAndUserPurchaseController,
   GetSinglePurchaseController,
+  GetAllPurchaseByCurrentDateController,
 }

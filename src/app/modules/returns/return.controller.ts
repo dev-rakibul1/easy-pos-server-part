@@ -33,8 +33,22 @@ const GetAllReturnController = CatchAsync(
     })
   },
 )
+// get all return
+const GetAllReturnByCurrentDateController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const result = await ReturnService.GetAllReturnByCurrentDateService()
+
+    sendResponse<Returns[] | null>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'All return product get by current date!',
+      data: result,
+    })
+  },
+)
 
 export const ReturnController = {
   CreateReturnController,
   GetAllReturnController,
+  GetAllReturnByCurrentDateController,
 }

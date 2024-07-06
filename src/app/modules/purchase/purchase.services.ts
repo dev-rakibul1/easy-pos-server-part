@@ -51,6 +51,7 @@ const CreatePurchaseService = async (data: IPurchaseType) => {
       userId: supplierPayment.userId,
       productId: supplierPayment.productId,
       purchaseGroupId: purchaseGroup.id,
+      paymentType: supplierPayment.paymentType,
     }
 
     // Create supplier sells
@@ -479,6 +480,35 @@ const GetAllCreatePurchaseService = async (
     data: result,
   }
 }
+const GetAllPurchaseByCurrentDateService = async (): Promise<Purchase[]> => {
+  // Current date
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  const tomorrow = new Date(today)
+  tomorrow.setDate(today.getDate() + 1)
+
+  const result = await prisma.purchase.findMany({
+    where: {
+      createdAt: {
+        gte: today,
+        lt: tomorrow,
+      },
+    },
+
+    orderBy: { createdAt: 'desc' },
+
+    include: {
+      products: true,
+      suppliers: true,
+      users: true,
+      supplierSellProduct: true,
+      supplierSells: true,
+    },
+  })
+
+  return result
+}
 
 // Purchase updated
 const UpdateCreatePurchaseService = async (id: string, payloads: Purchase) => {
@@ -561,4 +591,5 @@ export const PurchaseService = {
   UpdateCreatePurchaseService,
   GetBuySupplierAndUserPurchaseService,
   GetSinglePurchaseService,
+  GetAllPurchaseByCurrentDateService,
 }

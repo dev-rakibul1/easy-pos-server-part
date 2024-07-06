@@ -49,7 +49,7 @@ const CreateSellService = async (payloads: ISellsType) => {
       totalPay: customerPayInUser.totalPay,
       customerId: customerPayInUser.customerId,
       userId: customerPayInUser.userId,
-      // productId: customerPayInUser.productId,
+      paymentType: customerPayInUser.paymentType,
       sellGroupId: sellGroup.id,
     }
 
@@ -243,41 +243,7 @@ const GetAllSellService = async (
   }
 }
 
-const GetAllSellByCurrentDateService = async (
-  filters: ISellFilterRequest,
-  paginationOptions: IPaginationOptions,
-): Promise<IGenericResponse<Sells[]>> => {
-  const { searchTerm, ...filterData } = filters
-
-  const andConditions = []
-
-  // searchTerm
-  if (searchTerm) {
-    andConditions.push({
-      OR: sellFilterablePartialSearch.map(field => ({
-        [field]: {
-          contains: searchTerm,
-          mode: 'insensitive',
-        },
-      })),
-    })
-  }
-
-  // Filters
-  if (Object.keys(filterData).length) {
-    andConditions.push({
-      AND: Object.keys(filterData).map(key => ({
-        [key]: {
-          equals: (filterData as any)[key],
-        },
-      })),
-    })
-  }
-
-  // Pagination
-  const { limit, page, skip, sortBy, sortOrder } =
-    paginationHelpers.calculatePagination(paginationOptions)
-
+const GetAllSellByCurrentDateService = async (): Promise<Sells[]> => {
   // Current date
   const today = new Date()
   today.setHours(0, 0, 0, 0)
@@ -285,25 +251,16 @@ const GetAllSellByCurrentDateService = async (
   const tomorrow = new Date(today)
   tomorrow.setDate(today.getDate() + 1)
 
-  // Where condition including date range
-  const whereConditions: Prisma.SellsWhereInput = {
-    AND: [
-      ...andConditions,
-      {
-        createdAt: {
-          gte: today,
-          lt: tomorrow,
-        },
-      },
-    ],
-  }
-
   const result = await prisma.sells.findMany({
-    where: whereConditions,
-    skip,
-    take: limit,
+    where: {
+      createdAt: {
+        gte: today,
+        lt: tomorrow,
+      },
+    },
+
     orderBy: {
-      [sortBy || 'createdAt']: sortOrder || 'desc',
+      createdAt: 'desc',
     },
     include: {
       customer: true,
@@ -311,12 +268,7 @@ const GetAllSellByCurrentDateService = async (
     },
   })
 
-  const total = await prisma.sells.count()
-
-  return {
-    meta: { limit, page, total },
-    data: result,
-  }
+  return result
 }
 
 export const SellService = {

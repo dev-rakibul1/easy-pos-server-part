@@ -17,6 +17,42 @@ const GetAllPurchaseGroupService = async (): Promise<PurchaseGroup[]> => {
   })
   return result
 }
+
+// get all purchase group
+const GetAllPurchaseGroupByCurrentDateService = async (): Promise<
+  PurchaseGroup[]
+> => {
+  // Current date
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  const tomorrow = new Date(today)
+  tomorrow.setDate(today.getDate() + 1)
+
+  const result = await prisma.purchaseGroup.findMany({
+    include: {
+      supplierSellProducts: {
+        include: {
+          variants: true,
+          purchase: true,
+        },
+      },
+      supplierSells: true,
+      payInSupplier: true,
+    },
+
+    where: {
+      createdAt: {
+        gte: today,
+        lt: tomorrow,
+      },
+    },
+    orderBy: {
+      createdAt: 'asc',
+    },
+  })
+  return result
+}
 // get single group by supplier sells id
 const SinglePurchaseGroupService = async (
   id: string,
@@ -40,4 +76,5 @@ const SinglePurchaseGroupService = async (
 export const PurchaseGroupService = {
   GetAllPurchaseGroupService,
   SinglePurchaseGroupService,
+  GetAllPurchaseGroupByCurrentDateService,
 }

@@ -13,6 +13,7 @@ type ISupplierReturn = {
   productId: string
   totalPay: number
   totalReturnAmount: number
+  paymentType: string
 }
 
 type IReturnPayloads = {
@@ -58,14 +59,13 @@ const CreateReturnService = async (
       userId: supplierReturn.userId,
       productId: supplierReturn.productId,
       returnGroupId: returnGroup.id,
+      paymentType: supplierReturn.paymentType,
     }
 
     // Create supplier sells
-    const createdSupplierReturnEntries = await tx.supplierReturnPayments.create(
-      {
-        data: returnAmountEntries,
-      },
-    )
+    await tx.supplierReturnPayments.create({
+      data: returnAmountEntries,
+    })
 
     // -----------Supplier sell product----------
     const ids = payloads.map(id => id.productId)
@@ -192,7 +192,36 @@ const GetAllReturnService = async (): Promise<Returns[] | null> => {
   return result
 }
 
+// get all user
+const GetAllReturnByCurrentDateService = async (): Promise<
+  Returns[] | null
+> => {
+  // Current date
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  const tomorrow = new Date(today)
+  tomorrow.setDate(today.getDate() + 1)
+
+  const result = await prisma.returns.findMany({
+    include: {
+      supplier: true,
+    },
+    where: {
+      createdAt: {
+        gte: today,
+        lt: tomorrow,
+      },
+    },
+    orderBy: {
+      createdAt: 'asc',
+    },
+  })
+  return result
+}
+
 export const ReturnService = {
   CreateReturnService,
   GetAllReturnService,
+  GetAllReturnByCurrentDateService,
 }

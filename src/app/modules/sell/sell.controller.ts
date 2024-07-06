@@ -40,20 +40,13 @@ const GetAllSellController = CatchAsync(async (req: Request, res: Response) => {
 // get all sell by current date
 const GetAllSellByCurrentDateController = CatchAsync(
   async (req: Request, res: Response) => {
-    const filters = pick(req.query, sellFilterableQuery)
-    const paginationOptions = pick(req.query, paginationQueryKeys)
-
-    const result = await SellService.GetAllSellByCurrentDateService(
-      filters,
-      paginationOptions,
-    )
+    const result = await SellService.GetAllSellByCurrentDateService()
 
     sendResponse<Sells[]>(res, {
       statusCode: httpStatus.OK,
       success: true,
       message: 'Sell get by current date.',
-      meta: result.meta,
-      data: result.data,
+      data: result,
     })
   },
 )

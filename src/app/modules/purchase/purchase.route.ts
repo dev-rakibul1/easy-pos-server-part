@@ -14,6 +14,18 @@ router.post(
   PurchaseController.CreatePurchaseController,
 )
 router.get(
+  '/get-by-current-date',
+  AuthProvider.Auth(
+    ENUM_USER_ROLE.SUPER_ADMIN,
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.CONTENT_MANAGER,
+    ENUM_USER_ROLE.MARKETING_MANAGER,
+    ENUM_USER_ROLE.USER,
+    ENUM_USER_ROLE.MODERATOR,
+  ),
+  PurchaseController.GetAllPurchaseByCurrentDateController,
+)
+router.get(
   '/',
   AuthProvider.Auth(
     ENUM_USER_ROLE.SUPER_ADMIN,

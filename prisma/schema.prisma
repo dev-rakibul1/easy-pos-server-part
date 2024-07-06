@@ -96,6 +96,7 @@ model SupplierPayment {
   totalDue             Int
   totalSellPrice       Int
   uniqueId             String
+  paymentType          String?
 
   supplierId           String
   supplier             Suppliers @relation(fields: [supplierId], references: [id])
@@ -184,6 +185,7 @@ model AdditionalMoneyBack {
   id                          String @id @default(uuid())
   payAmount                   Int
   supplierReturnPaymentId     String
+  paymentType                 String?
 
   returnGroupId               String
   returnGroups                ReturnGroups @relation(fields: [returnGroupId], references: [id])
@@ -229,6 +231,7 @@ model SupplierReturnPayments {
   totalReturnAmount     Int
   totalDue              Int
   totalPay              Int
+  paymentType           String?
 
   supplierId            String 
   userId                String
@@ -387,6 +390,7 @@ model CustomerPurchase {
   totalPurchaseAmounts  Int
   totalDue              Int
   totalPay              Int
+  paymentType           String?
 
   userId                String
 
@@ -410,6 +414,7 @@ model CustomerPayInUser {
   id                    String @id @default(uuid())
   payAmount             Int
   customerPurchaseId    String
+  paymentType           String?
 
   sellGroupId           String
   sellGroups            SellGroups @relation(fields: [sellGroupId], references: [id])
@@ -451,6 +456,7 @@ model CustomerPayments {
   totalDue             Int
   totalSellPrice       Int
   uniqueId             String
+  paymentType          String?
 
   customerId           String
   customer             Customers @relation(fields: [customerId], references: [id])
@@ -556,6 +562,7 @@ model SupplierSell {
   totalSellAmounts      Int
   totalDue              Int
   totalPay              Int
+  paymentType           String?
 
   supplierId            String 
   userId                String
@@ -654,6 +661,7 @@ model PayInSupplier {
   id                    String @id @default(uuid())
   payAmount             Int
   supplierSellId        String
+  paymentType           String?
 
   purchaseGroupId       String
   purchaseGroups        PurchaseGroup @relation(fields: [purchaseGroupId], references: [id])

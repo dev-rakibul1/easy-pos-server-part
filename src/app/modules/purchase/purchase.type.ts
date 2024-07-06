@@ -11,6 +11,7 @@ type ISupplierPayment = {
   supplierId: string
   userId: string
   productId: string
+  paymentType: string
 }
 
 export type IPurchaseType = {
