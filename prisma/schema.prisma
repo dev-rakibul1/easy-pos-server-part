@@ -292,12 +292,13 @@ model Sells {
   id                String  @id  @default(uuid())
   productName       String
   modelName         String
-  vats              Int
-  discounts         Int
-  sellingPrice      Int
-  totalSellPrice    Int
+  vats              Float
+  discounts         Float
+  sellingPrice      Float
+  totalSellPrice    Float
   uniqueId          String
   quantity          Int
+  purchaseRate      Float?
 
   variantId         String
   productId         String
@@ -452,9 +453,9 @@ model Customers {
 
 model CustomerPayments {
   id                   String  @id @default(uuid())
-  totalPay             Int
-  totalDue             Int
-  totalSellPrice       Int
+  totalPay             Float
+  totalDue             Float
+  totalSellPrice       Float
   uniqueId             String
   paymentType          String?
 
@@ -559,9 +560,9 @@ model CurrencyType {
 model SupplierSell {
   id                    String @id @default(uuid())
   quantity              Int
-  totalSellAmounts      Int
-  totalDue              Int
-  totalPay              Int
+  totalSellAmounts      Float
+  totalDue              Float
+  totalPay              Float
   paymentType           String?
 
   supplierId            String 

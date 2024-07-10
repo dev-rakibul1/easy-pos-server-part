@@ -6,6 +6,19 @@ import { CustomerPurchaseController } from './customerPurchase.controller'
 const router = express.Router()
 
 router.get(
+  '/get-by-current-date',
+  AuthProvider.Auth(
+    ENUM_USER_ROLE.SUPER_ADMIN,
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.CONTENT_MANAGER,
+    ENUM_USER_ROLE.MARKETING_MANAGER,
+    ENUM_USER_ROLE.MODERATOR,
+    ENUM_USER_ROLE.USER,
+  ),
+  CustomerPurchaseController.GetCustomerPurchaseByCurrentDateController,
+)
+
+router.get(
   '/get-purchase-by-customer-and-user/:id',
   AuthProvider.Auth(
     ENUM_USER_ROLE.SUPER_ADMIN,
@@ -16,19 +29,18 @@ router.get(
     ENUM_USER_ROLE.USER,
   ),
   CustomerPurchaseController.GetCustomerPurchaseByCustomerAndUserController,
-)
-
-router.get(
-  '/:id',
-  AuthProvider.Auth(
-    ENUM_USER_ROLE.SUPER_ADMIN,
-    ENUM_USER_ROLE.ADMIN,
-    ENUM_USER_ROLE.CONTENT_MANAGER,
-    ENUM_USER_ROLE.MARKETING_MANAGER,
-    ENUM_USER_ROLE.MODERATOR,
-    ENUM_USER_ROLE.USER,
-  ),
-  CustomerPurchaseController.GetSingleCustomerPurchaseController,
-)
+),
+  router.get(
+    '/:id',
+    AuthProvider.Auth(
+      ENUM_USER_ROLE.SUPER_ADMIN,
+      ENUM_USER_ROLE.ADMIN,
+      ENUM_USER_ROLE.CONTENT_MANAGER,
+      ENUM_USER_ROLE.MARKETING_MANAGER,
+      ENUM_USER_ROLE.MODERATOR,
+      ENUM_USER_ROLE.USER,
+    ),
+    CustomerPurchaseController.GetSingleCustomerPurchaseController,
+  )
 
 export const CustomerPurchaseRoutes = router

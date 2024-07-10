@@ -45,8 +45,22 @@ const SingleReturnGroupController = CatchAsync(
     })
   },
 )
+// get  ReturnGroup by current date
+const SingleReturnGroupByCurrentDateController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const result = await ReturnGroupService.GetReturnGroupByCurrentDateService()
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Single Return group get by current date!',
+      data: result,
+    })
+  },
+)
 
 export const ReturnGroupController = {
   GetAllReturnGroupController,
   SingleReturnGroupController,
+  SingleReturnGroupByCurrentDateController,
 }

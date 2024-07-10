@@ -50,9 +50,25 @@ const GetAllSellByCurrentDateController = CatchAsync(
     })
   },
 )
+// get all sell by current date
+const SellGetByCustomerPurchaseIdController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const { id } = req.params
+
+    const result = await SellService.SellGetByCustomerPurchaseIdService(id)
+
+    sendResponse<Sells | null>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Sell get by customer-purchase id.',
+      data: result,
+    })
+  },
+)
 
 export const SellController = {
   CreateSellController,
   GetAllSellController,
   GetAllSellByCurrentDateController,
+  SellGetByCustomerPurchaseIdController,
 }

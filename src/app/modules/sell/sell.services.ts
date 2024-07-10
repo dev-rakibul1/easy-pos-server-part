@@ -19,8 +19,12 @@ const CreateSellService = async (payloads: ISellsType) => {
 
   const { variants, sells, customerPayInUser } = payloads
 
-  // console.log(payloads)
-  // console.log(customerPayInUser)
+  sells?.forEach((pur: Sells) => {
+    if (pur?.purchaseRate !== undefined) {
+      // @ts-ignore
+      pur.purchaseRate = Number(parseFloat(pur.purchaseRate).toFixed(2))
+    }
+  })
 
   // Total product sell price
   const totalProductPrice = sells?.reduce(
@@ -270,9 +274,28 @@ const GetAllSellByCurrentDateService = async (): Promise<Sells[]> => {
 
   return result
 }
+const SellGetByCustomerPurchaseIdService = async (
+  id: string,
+): Promise<Sells | null> => {
+  const result = await prisma.sells.findFirst({
+    where: {
+      customerPurchaseProductId: id,
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+    include: {
+      customer: true,
+      user: true,
+    },
+  })
+
+  return result
+}
 
 export const SellService = {
   CreateSellService,
   GetAllSellService,
   GetAllSellByCurrentDateService,
+  SellGetByCustomerPurchaseIdService,
 }

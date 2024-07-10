@@ -94,7 +94,44 @@ const SingleReturnGroupService = async (id: string) => {
   return result
 }
 
+// get return group by current date
+const GetReturnGroupByCurrentDateService = async () => {
+  // Current date
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  const tomorrow = new Date(today)
+  tomorrow.setDate(today.getDate() + 1)
+
+  const result = await prisma.returnGroups.findMany({
+    where: {
+      createdAt: {
+        gte: today,
+        lt: tomorrow,
+      },
+    },
+    orderBy: {
+      createdAt: 'asc',
+    },
+    include: {
+      supplierReturnPayments: {
+        include: {
+          user: true,
+        },
+      },
+      userReturnProducts: {
+        include: {
+          returns: true,
+        },
+      },
+      additionalMoneyBack: true,
+    },
+  })
+  return result
+}
+
 export const ReturnGroupService = {
   GetAllReturnGroupService,
   SingleReturnGroupService,
+  GetReturnGroupByCurrentDateService,
 }
