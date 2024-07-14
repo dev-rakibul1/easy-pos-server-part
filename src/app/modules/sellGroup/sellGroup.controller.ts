@@ -57,6 +57,32 @@ const GetSellGroupByCurrentDateController = CatchAsync(
     })
   },
 )
+// get all Sell Group by current week
+const GetSellGroupByCurrentWeekController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const result = await SellGroupService.GetSellGroupByCurrentWeekService()
+
+    sendResponse<SellGroups[]>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Sell group get by current week!',
+      data: result,
+    })
+  },
+)
+// get all Sell Group by current week
+const GetSellGroupByCurrentMonthController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const result = await SellGroupService.GetSellGroupByCurrentMonthService()
+
+    sendResponse<SellGroups[]>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Sell group get by current month!',
+      data: result,
+    })
+  },
+)
 // get Single Sell Group
 const SingleSellGroupController = CatchAsync(
   async (req: Request, res: Response) => {
@@ -76,4 +102,6 @@ export const SellGroupController = {
   GetAllSellGroupController,
   SingleSellGroupController,
   GetSellGroupByCurrentDateController,
+  GetSellGroupByCurrentWeekController,
+  GetSellGroupByCurrentMonthController,
 }

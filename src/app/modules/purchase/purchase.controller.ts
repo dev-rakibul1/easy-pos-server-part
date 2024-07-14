@@ -56,6 +56,34 @@ const GetAllPurchaseByCurrentDateController = CatchAsync(
     })
   },
 )
+// get all purchase by current week
+const GetAllPurchaseByCurrentWeekController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const result = await PurchaseService.GetAllPurchaseByCurrentWeekService()
+
+    sendResponse<Purchase[]>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'All purchase get by current week!',
+
+      data: result,
+    })
+  },
+)
+// get all purchase by current month
+const GetAllPurchaseByCurrentMonthController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const result = await PurchaseService.GetAllPurchaseByCurrentMonthService()
+
+    sendResponse<Purchase[]>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'All purchase get by current month!',
+
+      data: result,
+    })
+  },
+)
 
 // purchase updated
 const UpdatePurchaseController = CatchAsync(
@@ -114,4 +142,6 @@ export const PurchaseController = {
   GetBySupplierAndUserPurchaseController,
   GetSinglePurchaseController,
   GetAllPurchaseByCurrentDateController,
+  GetAllPurchaseByCurrentWeekController,
+  GetAllPurchaseByCurrentMonthController,
 }

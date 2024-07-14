@@ -509,6 +509,76 @@ const GetAllPurchaseByCurrentDateService = async (): Promise<Purchase[]> => {
 
   return result
 }
+const GetAllPurchaseByCurrentWeekService = async (): Promise<Purchase[]> => {
+  // Current date
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  // Get the start of the current week (Monday)
+  const startOfWeek = new Date(today)
+  const dayOfWeek = startOfWeek.getDay()
+  const diffToMonday = (dayOfWeek + 6) % 7 // Calculate difference to Monday (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+  startOfWeek.setDate(startOfWeek.getDate() - diffToMonday)
+
+  // Get the end of the current week (Sunday)
+  const endOfWeek = new Date(startOfWeek)
+  endOfWeek.setDate(endOfWeek.getDate() + 7)
+
+  const result = await prisma.purchase.findMany({
+    where: {
+      createdAt: {
+        gte: startOfWeek,
+        lt: endOfWeek,
+      },
+    },
+
+    orderBy: { createdAt: 'desc' },
+
+    include: {
+      products: true,
+      suppliers: true,
+      users: true,
+      supplierSellProduct: true,
+      supplierSells: true,
+    },
+  })
+
+  return result
+}
+
+// get all purchase depended by current month
+const GetAllPurchaseByCurrentMonthService = async (): Promise<Purchase[]> => {
+  // Current date
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  // Get the start of the current month
+  const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1)
+
+  // Get the start of the next month
+  const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1)
+
+  const result = await prisma.purchase.findMany({
+    where: {
+      createdAt: {
+        gte: startOfMonth,
+        lt: endOfMonth,
+      },
+    },
+
+    orderBy: { createdAt: 'desc' },
+
+    include: {
+      products: true,
+      suppliers: true,
+      users: true,
+      supplierSellProduct: true,
+      supplierSells: true,
+    },
+  })
+
+  return result
+}
 
 // Purchase updated
 const UpdateCreatePurchaseService = async (id: string, payloads: Purchase) => {
@@ -592,4 +662,6 @@ export const PurchaseService = {
   GetBuySupplierAndUserPurchaseService,
   GetSinglePurchaseService,
   GetAllPurchaseByCurrentDateService,
+  GetAllPurchaseByCurrentWeekService,
+  GetAllPurchaseByCurrentMonthService,
 }

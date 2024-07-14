@@ -58,9 +58,38 @@ const SingleReturnGroupByCurrentDateController = CatchAsync(
     })
   },
 )
+// get  ReturnGroup by current week
+const SingleReturnGroupByCurrentWeekController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const result = await ReturnGroupService.GetReturnGroupByCurrentWeekService()
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Single Return group get by current week!',
+      data: result,
+    })
+  },
+)
+// get  ReturnGroup by current month
+const SingleReturnGroupByCurrentMonthController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const result =
+      await ReturnGroupService.GetReturnGroupByCurrentMonthService()
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Single Return group get by current month!',
+      data: result,
+    })
+  },
+)
 
 export const ReturnGroupController = {
   GetAllReturnGroupController,
   SingleReturnGroupController,
   SingleReturnGroupByCurrentDateController,
+  SingleReturnGroupByCurrentWeekController,
+  SingleReturnGroupByCurrentMonthController,
 }

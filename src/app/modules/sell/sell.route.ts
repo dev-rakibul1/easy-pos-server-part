@@ -34,6 +34,31 @@ router.get(
   ),
   SellController.GetAllSellByCurrentDateController,
 )
+
+router.get(
+  '/get-sell-by-current-week',
+  AuthProvider.Auth(
+    ENUM_USER_ROLE.SUPER_ADMIN,
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.CONTENT_MANAGER,
+    ENUM_USER_ROLE.MARKETING_MANAGER,
+    ENUM_USER_ROLE.USER,
+    ENUM_USER_ROLE.MODERATOR,
+  ),
+  SellController.GetAllSellByCurrentWeekController,
+)
+router.get(
+  '/get-sell-by-current-month',
+  AuthProvider.Auth(
+    ENUM_USER_ROLE.SUPER_ADMIN,
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.CONTENT_MANAGER,
+    ENUM_USER_ROLE.MARKETING_MANAGER,
+    ENUM_USER_ROLE.USER,
+    ENUM_USER_ROLE.MODERATOR,
+  ),
+  SellController.GetAllSellByCurrentMonthController,
+)
 router.get(
   '/sell-get-by-customer-purchase-product-id/:id',
   AuthProvider.Auth(

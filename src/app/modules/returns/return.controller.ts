@@ -46,9 +46,37 @@ const GetAllReturnByCurrentDateController = CatchAsync(
     })
   },
 )
+// get all return by current week
+const GetAllReturnByCurrentWeekController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const result = await ReturnService.GetAllReturnByCurrentWeekService()
+
+    sendResponse<Returns[] | null>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'All return product get by current week!',
+      data: result,
+    })
+  },
+)
+// get all return by current month
+const GetAllReturnByCurrentMonthController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const result = await ReturnService.GetAllReturnByCurrentMonthService()
+
+    sendResponse<Returns[] | null>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'All return product get by current month!',
+      data: result,
+    })
+  },
+)
 
 export const ReturnController = {
   CreateReturnController,
   GetAllReturnController,
   GetAllReturnByCurrentDateController,
+  GetAllReturnByCurrentWeekController,
+  GetAllReturnByCurrentMonthController,
 }

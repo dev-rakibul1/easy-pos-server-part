@@ -129,9 +129,90 @@ const GetReturnGroupByCurrentDateService = async () => {
   })
   return result
 }
+// get return group by current week
+const GetReturnGroupByCurrentWeekService = async () => {
+  // Current date
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  // Get the start of the current week (Monday)
+  const startOfWeek = new Date(today)
+  const dayOfWeek = startOfWeek.getDay()
+  const diffToMonday = (dayOfWeek + 6) % 7 // Calculate difference to Monday (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+  startOfWeek.setDate(startOfWeek.getDate() - diffToMonday)
+
+  // Get the end of the current week (Sunday)
+  const endOfWeek = new Date(startOfWeek)
+  endOfWeek.setDate(endOfWeek.getDate() + 7)
+
+  const result = await prisma.returnGroups.findMany({
+    where: {
+      createdAt: {
+        gte: startOfWeek,
+        lt: endOfWeek,
+      },
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+    include: {
+      supplierReturnPayments: {
+        include: {
+          user: true,
+        },
+      },
+      userReturnProducts: {
+        include: {
+          returns: true,
+        },
+      },
+      additionalMoneyBack: true,
+    },
+  })
+  return result
+}
+// get return group by current week
+const GetReturnGroupByCurrentMonthService = async () => {
+  // Current date
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  // Get the start of the current month
+  const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1)
+  // Get the start of the next month
+  const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1)
+
+  const result = await prisma.returnGroups.findMany({
+    where: {
+      createdAt: {
+        gte: startOfMonth,
+        lt: endOfMonth,
+      },
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+    include: {
+      supplierReturnPayments: {
+        include: {
+          user: true,
+        },
+      },
+      userReturnProducts: {
+        include: {
+          returns: true,
+        },
+      },
+      additionalMoneyBack: true,
+    },
+  })
+  return result
+}
 
 export const ReturnGroupService = {
   GetAllReturnGroupService,
   SingleReturnGroupService,
   GetReturnGroupByCurrentDateService,
+  GetReturnGroupByCurrentWeekService,
+  GetReturnGroupByCurrentMonthService,
 }

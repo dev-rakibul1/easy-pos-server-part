@@ -219,9 +219,74 @@ const GetAllReturnByCurrentDateService = async (): Promise<
   })
   return result
 }
+// get all return depended current week
+const GetAllReturnByCurrentWeekService = async (): Promise<
+  Returns[] | null
+> => {
+  // Current date
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  // Get the start of the current week (Monday)
+  const startOfWeek = new Date(today)
+  const dayOfWeek = startOfWeek.getDay()
+  const diffToMonday = (dayOfWeek + 6) % 7 // Calculate difference to Monday (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+  startOfWeek.setDate(startOfWeek.getDate() - diffToMonday)
+
+  // Get the end of the current week (Sunday)
+  const endOfWeek = new Date(startOfWeek)
+  endOfWeek.setDate(endOfWeek.getDate() + 7)
+
+  const result = await prisma.returns.findMany({
+    include: {
+      supplier: true,
+    },
+    where: {
+      createdAt: {
+        gte: startOfWeek,
+        lt: endOfWeek,
+      },
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  })
+  return result
+}
+// get all return depended current month
+const GetAllReturnByCurrentMonthService = async (): Promise<
+  Returns[] | null
+> => {
+  // Current date
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  // Get the start of the current month
+  const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1)
+
+  // Get the start of the next month
+  const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1)
+  const result = await prisma.returns.findMany({
+    include: {
+      supplier: true,
+    },
+    where: {
+      createdAt: {
+        gte: startOfMonth,
+        lt: endOfMonth,
+      },
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  })
+  return result
+}
 
 export const ReturnService = {
   CreateReturnService,
   GetAllReturnService,
   GetAllReturnByCurrentDateService,
+  GetAllReturnByCurrentWeekService,
+  GetAllReturnByCurrentMonthService,
 }

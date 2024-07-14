@@ -50,6 +50,32 @@ const GetAllSellByCurrentDateController = CatchAsync(
     })
   },
 )
+// get all sell by current week
+const GetAllSellByCurrentWeekController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const result = await SellService.GetAllSellByCurrentWeekService()
+
+    sendResponse<Sells[]>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Sell get by current week.',
+      data: result,
+    })
+  },
+)
+// get all sell by current month
+const GetAllSellByCurrentMonthController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const result = await SellService.GetAllSellByCurrentMonthService()
+
+    sendResponse<Sells[]>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Sell get by current month.',
+      data: result,
+    })
+  },
+)
 // get all sell by current date
 const SellGetByCustomerPurchaseIdController = CatchAsync(
   async (req: Request, res: Response) => {
@@ -70,5 +96,7 @@ export const SellController = {
   CreateSellController,
   GetAllSellController,
   GetAllSellByCurrentDateController,
+  GetAllSellByCurrentWeekController,
+  GetAllSellByCurrentMonthController,
   SellGetByCustomerPurchaseIdController,
 }

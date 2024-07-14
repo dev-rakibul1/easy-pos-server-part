@@ -32,6 +32,34 @@ const GetAllPurchaseGroupByCurrentDateController = CatchAsync(
     })
   },
 )
+// get all Purchase Group week
+const GetAllPurchaseGroupByCurrentWeekController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const result =
+      await PurchaseGroupService.GetAllPurchaseGroupByCurrentWeekService()
+
+    sendResponse<PurchaseGroup[]>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Purchase group get by current week!',
+      data: result,
+    })
+  },
+)
+// get all Purchase Group month
+const GetAllPurchaseGroupByCurrentMonthController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const result =
+      await PurchaseGroupService.GetAllPurchaseGroupByCurrentMonthService()
+
+    sendResponse<PurchaseGroup[]>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Purchase group get by current month!',
+      data: result,
+    })
+  },
+)
 // get Single PurchaseGroup
 const SinglePurchaseGroupController = CatchAsync(
   async (req: Request, res: Response) => {
@@ -51,4 +79,6 @@ export const PurchaseGroupController = {
   GetAllPurchaseGroupController,
   SinglePurchaseGroupController,
   GetAllPurchaseGroupByCurrentDateController,
+  GetAllPurchaseGroupByCurrentWeekController,
+  GetAllPurchaseGroupByCurrentMonthController,
 }
