@@ -17,5 +17,9 @@ router.get(
   '/get-by-current-month',
   ReturnController.GetAllReturnByCurrentMonthController,
 )
+router.get(
+  '/get-by-current-year',
+  ReturnController.GetAllReturnByCurrentYearController,
+)
 
 export const ReturnRoutes = router

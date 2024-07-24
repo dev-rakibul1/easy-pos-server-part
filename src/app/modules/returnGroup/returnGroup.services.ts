@@ -135,21 +135,21 @@ const GetReturnGroupByCurrentWeekService = async () => {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
-  // Get the start of the current week (Monday)
-  const startOfWeek = new Date(today)
-  const dayOfWeek = startOfWeek.getDay()
-  const diffToMonday = (dayOfWeek + 6) % 7 // Calculate difference to Monday (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
-  startOfWeek.setDate(startOfWeek.getDate() - diffToMonday)
+  // Start of the current month
+  const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1)
 
-  // Get the end of the current week (Sunday)
-  const endOfWeek = new Date(startOfWeek)
-  endOfWeek.setDate(endOfWeek.getDate() + 7)
+  // Date 7 days ago
+  const sevenDaysAgo = new Date(today)
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+
+  // Ensure we do not go before the start of the month
+  const startDate = sevenDaysAgo < startOfMonth ? startOfMonth : sevenDaysAgo
 
   const result = await prisma.returnGroups.findMany({
     where: {
       createdAt: {
-        gte: startOfWeek,
-        lt: endOfWeek,
+        gte: startDate,
+        lt: today,
       },
     },
     orderBy: {
@@ -208,6 +208,42 @@ const GetReturnGroupByCurrentMonthService = async () => {
   })
   return result
 }
+// get return group by current week
+const GetReturnGroupByCurrentYearService = async () => {
+  // Current date
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  // Date one year ago
+  const oneYearAgo = new Date(today)
+  oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1)
+
+  const result = await prisma.returnGroups.findMany({
+    where: {
+      createdAt: {
+        gte: oneYearAgo,
+        lt: today,
+      },
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+    include: {
+      supplierReturnPayments: {
+        include: {
+          user: true,
+        },
+      },
+      userReturnProducts: {
+        include: {
+          returns: true,
+        },
+      },
+      additionalMoneyBack: true,
+    },
+  })
+  return result
+}
 
 export const ReturnGroupService = {
   GetAllReturnGroupService,
@@ -215,4 +251,5 @@ export const ReturnGroupService = {
   GetReturnGroupByCurrentDateService,
   GetReturnGroupByCurrentWeekService,
   GetReturnGroupByCurrentMonthService,
+  GetReturnGroupByCurrentYearService,
 }

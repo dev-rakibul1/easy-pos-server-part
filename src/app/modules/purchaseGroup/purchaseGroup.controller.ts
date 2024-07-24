@@ -60,6 +60,20 @@ const GetAllPurchaseGroupByCurrentMonthController = CatchAsync(
     })
   },
 )
+// get all Purchase Group month
+const GetAllPurchaseGroupByCurrentYearController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const result =
+      await PurchaseGroupService.GetAllPurchaseGroupByCurrentYearService()
+
+    sendResponse<PurchaseGroup[]>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Purchase group get by current year!',
+      data: result,
+    })
+  },
+)
 // get Single PurchaseGroup
 const SinglePurchaseGroupController = CatchAsync(
   async (req: Request, res: Response) => {
@@ -81,4 +95,5 @@ export const PurchaseGroupController = {
   GetAllPurchaseGroupByCurrentDateController,
   GetAllPurchaseGroupByCurrentWeekController,
   GetAllPurchaseGroupByCurrentMonthController,
+  GetAllPurchaseGroupByCurrentYearController,
 }

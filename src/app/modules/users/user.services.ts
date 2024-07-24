@@ -20,6 +20,7 @@ const CreateUserService = async (req: Request) => {
 
   // image setup
   const filePath = `/${req.file?.destination}${req.file?.originalname}`
+
   if (filePath) {
     payloads.profileImage = filePath
   }

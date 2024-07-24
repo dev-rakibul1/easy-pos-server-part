@@ -166,21 +166,21 @@ const GetSellGroupByCurrentWeekService = async (): Promise<SellGroups[]> => {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
-  // Get the start of the current week (Monday)
-  const startOfWeek = new Date(today)
-  const dayOfWeek = startOfWeek.getDay()
-  const diffToMonday = (dayOfWeek + 6) % 7
-  startOfWeek.setDate(startOfWeek.getDate() - diffToMonday)
+  // Start of the current month
+  const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1)
 
-  // Get the end of the current week (Sunday)
-  const endOfWeek = new Date(startOfWeek)
-  endOfWeek.setDate(endOfWeek.getDate() + 7)
+  // Date 7 days ago
+  const sevenDaysAgo = new Date(today)
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+
+  // Ensure we do not go before the start of the month
+  const startDate = sevenDaysAgo < startOfMonth ? startOfMonth : sevenDaysAgo
 
   const result = await prisma.sellGroups.findMany({
     where: {
       createdAt: {
-        gte: startOfWeek,
-        lt: endOfWeek,
+        gte: startDate,
+        lt: today,
       },
     },
 
@@ -242,12 +242,68 @@ const GetSellGroupByCurrentMonthService = async (): Promise<SellGroups[]> => {
 
   return result
 }
+// get all sell group by current year
+const GetSellGroupByCurrentYearService = async (): Promise<SellGroups[]> => {
+  // Current date
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  // Date one year ago
+  const oneYearAgo = new Date(today)
+  oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1)
+
+  const result = await prisma.sellGroups.findMany({
+    where: {
+      createdAt: {
+        gte: oneYearAgo,
+        lt: today,
+      },
+    },
+
+    include: {
+      customerPurchaseProducts: {
+        include: {
+          variants: true,
+          sell: true,
+        },
+      },
+      customerPurchase: {
+        include: {
+          customer: true,
+        },
+      },
+      customerPayInUser: true,
+    },
+    orderBy: { createdAt: 'desc' },
+  })
+
+  return result
+}
 // get single group by customer sells id
 const SingleSellGroupService = async (
   id: string,
 ): Promise<SellGroups | null> => {
   const result = await prisma.sellGroups.findFirst({
     where: { customerPurchase: { id: id } },
+    include: {
+      customerPurchaseProducts: {
+        include: {
+          variants: true,
+          sell: true,
+        },
+      },
+      customerPurchase: true,
+      customerPayInUser: true,
+    },
+  })
+  return result
+}
+// get single group by customer sells id
+const SingleSellGroupGetByOwnIdService = async (
+  id: string,
+): Promise<SellGroups | null> => {
+  const result = await prisma.sellGroups.findFirst({
+    where: { id: id },
     include: {
       customerPurchaseProducts: {
         include: {
@@ -268,4 +324,6 @@ export const SellGroupService = {
   GetSellGroupByCurrentDateService,
   GetSellGroupByCurrentWeekService,
   GetSellGroupByCurrentMonthService,
+  GetSellGroupByCurrentYearService,
+  SingleSellGroupGetByOwnIdService,
 }

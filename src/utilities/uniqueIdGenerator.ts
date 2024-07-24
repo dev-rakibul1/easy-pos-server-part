@@ -449,7 +449,9 @@ export async function generateUniqueReturnId(code: string): Promise<string> {
   }
 }
 // Generate unique id for return group
-export async function generateUniqueReturnGroupId(code: string): Promise<string> {
+export async function generateUniqueReturnGroupId(
+  code: string,
+): Promise<string> {
   try {
     const codeUpperCase = code.toUpperCase()
 
@@ -478,6 +480,41 @@ export async function generateUniqueReturnGroupId(code: string): Promise<string>
     return nextBrandId
   } catch (error) {
     console.error('Error generating unique return ID:', error)
+    throw error
+  }
+}
+// Generate unique id for additional expense
+export async function generateUniqueAdditionalExpenseId(
+  code: string,
+): Promise<string> {
+  try {
+    const codeUpperCase = code.toUpperCase()
+
+    // Get the last inserted uniqueId that matches the given code
+    const lastDes = await prisma.additionalExpenses.findFirst({
+      where: {
+        uniqueId: {
+          startsWith: codeUpperCase,
+        },
+      },
+      orderBy: {
+        uniqueId: 'desc',
+      },
+    })
+
+    let nextNumber = 1
+    if (lastDes) {
+      const lastId = lastDes.uniqueId
+      const lastNumber = parseInt(lastId.split('-')[1], 10)
+      nextNumber = lastNumber + 1
+    }
+
+    // Generate the next unique brand ID
+    const nextBrandId = `${codeUpperCase}-${String(nextNumber).padStart(5, '0')}`
+
+    return nextBrandId
+  } catch (error) {
+    console.error('Error generating unique ID:', error)
     throw error
   }
 }

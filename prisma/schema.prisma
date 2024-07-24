@@ -673,6 +673,18 @@ model PayInSupplier {
   @@map("payInSuppliers")
 }
 
+model AdditionalExpenses {
+  id                    String @id @default(uuid())
+  expenseAmount         Float
+  details               String
+  uniqueId              String @unique
+
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+
+  @@map("additionalExpenses")
+}
+
 
 // Enum value
 enum UserRole {

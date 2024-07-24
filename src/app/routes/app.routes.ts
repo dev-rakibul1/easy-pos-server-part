@@ -1,4 +1,6 @@
 import express from 'express'
+
+import { AdditionalExpensesRoutes } from '../modules/additionalExpenses/AdditionalExpenses.route'
 import { AdditionalMoneyBackRoutes } from '../modules/additionalMoneyBack/additionalMoneyBack.route'
 import { AuthRoutes } from '../modules/auth/auth.route'
 import { BrandRoutes } from '../modules/brand/brand.route'
@@ -152,6 +154,10 @@ const modulesRouters = [
   {
     path: '/additional-money-back-to-user',
     route: AdditionalMoneyBackRoutes,
+  },
+  {
+    path: '/additional-expense',
+    route: AdditionalExpensesRoutes,
   },
 ]
 

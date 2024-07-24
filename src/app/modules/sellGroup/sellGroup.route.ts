@@ -54,6 +54,18 @@ router.get(
   SellGroupController.GetSellGroupByCurrentMonthController,
 )
 router.get(
+  '/get-by-current-year',
+  AuthProvider.Auth(
+    ENUM_USER_ROLE.SUPER_ADMIN,
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.CONTENT_MANAGER,
+    ENUM_USER_ROLE.MARKETING_MANAGER,
+    ENUM_USER_ROLE.MODERATOR,
+    ENUM_USER_ROLE.USER,
+  ),
+  SellGroupController.GetSellGroupByCurrentYearController,
+)
+router.get(
   '/:id',
   AuthProvider.Auth(
     ENUM_USER_ROLE.SUPER_ADMIN,
@@ -64,6 +76,18 @@ router.get(
     ENUM_USER_ROLE.USER,
   ),
   SellGroupController.SingleSellGroupController,
+)
+router.get(
+  '/get-by-own-id/:id',
+  AuthProvider.Auth(
+    ENUM_USER_ROLE.SUPER_ADMIN,
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.CONTENT_MANAGER,
+    ENUM_USER_ROLE.MARKETING_MANAGER,
+    ENUM_USER_ROLE.MODERATOR,
+    ENUM_USER_ROLE.USER,
+  ),
+  SellGroupController.SingleSellGroupGetByOwnIdController,
 )
 
 export const SellGroupRoutes = router

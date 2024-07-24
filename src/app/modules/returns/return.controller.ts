@@ -72,6 +72,19 @@ const GetAllReturnByCurrentMonthController = CatchAsync(
     })
   },
 )
+// get all return by current month
+const GetAllReturnByCurrentYearController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const result = await ReturnService.GetAllReturnByCurrentYearService()
+
+    sendResponse<Returns[] | null>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'All return product get by current year!',
+      data: result,
+    })
+  },
+)
 
 export const ReturnController = {
   CreateReturnController,
@@ -79,4 +92,5 @@ export const ReturnController = {
   GetAllReturnByCurrentDateController,
   GetAllReturnByCurrentWeekController,
   GetAllReturnByCurrentMonthController,
+  GetAllReturnByCurrentYearController,
 }

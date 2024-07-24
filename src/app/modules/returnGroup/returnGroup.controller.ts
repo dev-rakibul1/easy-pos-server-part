@@ -85,6 +85,19 @@ const SingleReturnGroupByCurrentMonthController = CatchAsync(
     })
   },
 )
+// get  ReturnGroup by current year
+const SingleReturnGroupByCurrentYearController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const result = await ReturnGroupService.GetReturnGroupByCurrentYearService()
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Single Return group get by current year!',
+      data: result,
+    })
+  },
+)
 
 export const ReturnGroupController = {
   GetAllReturnGroupController,
@@ -92,4 +105,5 @@ export const ReturnGroupController = {
   SingleReturnGroupByCurrentDateController,
   SingleReturnGroupByCurrentWeekController,
   SingleReturnGroupByCurrentMonthController,
+  SingleReturnGroupByCurrentYearController,
 }
