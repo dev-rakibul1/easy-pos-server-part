@@ -16,6 +16,9 @@ const GetCustomerPurchaseByCustomerAndUserService = async (
       include: {
         customer: true,
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
     })
 
     return result

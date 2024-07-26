@@ -33,6 +33,9 @@ const GetAllSupplierSellsService = async (): Promise<SupplierSell[]> => {
         },
       },
     },
+    orderBy: {
+      createdAt: 'desc',
+    },
   })
   return result
 }

@@ -1,6 +1,7 @@
 import { Prisma, Sells } from '@prisma/client'
 import httpStatus from 'http-status'
 import ApiError from '../../../errors/apiError'
+import { mailSend } from '../../../helpers/mailSend'
 import { paginationHelpers } from '../../../helpers/paginationHelpers'
 import prisma from '../../../shared/prisma'
 import {
@@ -171,9 +172,36 @@ const CreateSellService = async (payloads: ISellsType) => {
       delete del?.customerName
     })
 
-    const sellCreated = await tx.sells.createMany({ data: sales })
+    const createdSales = await tx.sells.createMany({ data: sales })
 
-    if (sellCreated) {
+    // const createPromises = sales.map((sale: Sells) =>
+    //   tx.sells.create({
+    //     data: sale,
+    //   }),
+    // )
+
+    // const createdSales = await Promise.all(createPromises)
+    // console.log('Sells create____', createdSales)
+
+    const salesInfo = await tx.sellGroups.findFirst({
+      where: { id: sellGroup.id },
+      include: {
+        customerPurchaseProducts: {
+          include: {
+            variants: true,
+            sell: true,
+          },
+        },
+        customerPurchase: {
+          include: {
+            customer: true,
+          },
+        },
+        customerPayInUser: true,
+      },
+    })
+
+    if (createdSales) {
       await tx.variants.deleteMany({
         where: {
           id: { in: variantIdsList },
@@ -181,7 +209,13 @@ const CreateSellService = async (payloads: ISellsType) => {
       })
     }
 
-    return sellCreated
+    console.log('sales info', salesInfo)
+
+    if (createdSales) {
+      mailSend(salesInfo)
+    }
+
+    return createdSales
   })
 }
 
