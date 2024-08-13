@@ -14,26 +14,24 @@ export function generateSalesEmailContent(sales: any) {
   })
 
   let productRows = ''
-  let totalAmount = 0
-  let totalDiscount = 0
-  let totalVat = 0
-  let netTotal = 0
 
-  customerPurchaseProducts.forEach((product: any) => {
-    product.variants.forEach((variant: any) => {
-      const sell = product.sell
+  const totals = customerPurchaseProducts.reduce(
+    (acc, product) => {
+      product.variants.forEach((variant: any) => {
+        const sell = product.sell
 
-      const discountAmount = (sell.totalSellPrice * sell.discounts) / 100
-      const vatAmount = (sell.totalSellPrice * sell.vats) / 100
-      const productNetTotal = sell.totalSellPrice - discountAmount + vatAmount
+        const totalAmountWithQty = sell.sellingPrice * sell.quantity
+        const discountAmount = (totalAmountWithQty * sell.discounts) / 100
+        const vatAmount = (totalAmountWithQty * sell.vats) / 100
+        const productNetTotal = totalAmountWithQty - discountAmount + vatAmount
 
-      productRows += `
+        productRows = `
           <tr>
             <td>${product.productName}</td>
             <td>${variant.ram} GB / ${variant.rom} GB / ${variant.color} [${variant.imeiNumber}]</td>
             <td>${sell.quantity}</td>
             <td>${sell.sellingPrice.toFixed(2)}</td>
-            <td>${sell.totalSellPrice.toFixed(2)}</td>
+            <td>${totalAmountWithQty.toFixed(2)}</td>
             <td>${sell.discounts}%</td>
             <td>${discountAmount.toFixed(2)}</td>
             <td>${sell.vats}%</td>
@@ -42,12 +40,22 @@ export function generateSalesEmailContent(sales: any) {
           </tr>
         `
 
-      totalAmount += sell.totalSellPrice
-      totalDiscount += discountAmount
-      totalVat += vatAmount
-      netTotal += productNetTotal
-    })
-  })
+        acc.totalQuantity = sell.quantity
+        acc.totalAmount = totalAmountWithQty
+        acc.totalDiscount = discountAmount
+        acc.totalVat = vatAmount
+        acc.netTotal = productNetTotal
+      })
+      return acc
+    },
+    {
+      totalQuantity: 0,
+      totalAmount: 0,
+      totalDiscount: 0,
+      totalVat: 0,
+      netTotal: 0,
+    },
+  )
 
   const emailContent = `
       <!DOCTYPE html>
@@ -56,13 +64,17 @@ export function generateSalesEmailContent(sales: any) {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
-        *{margin:0;padding:0;box-sizing:border-box}
+          * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+          }
           body {
             font-family: Arial, sans-serif;
           }
           .invoice-container {
             width: 960px;
-            max-width: 1000%;
+            max-width: 100%;
             margin: auto;
             padding: 20px;
             border: 1px solid #ddd;
@@ -79,8 +91,8 @@ export function generateSalesEmailContent(sales: any) {
             display: flex;
             justify-content: space-between !important;
             margin-bottom: 20px;
-            width:100%;
-            max-width:100%
+            width: 100%;
+            max-width: 100%;
           }
           table {
             width: 100%;
@@ -139,20 +151,15 @@ export function generateSalesEmailContent(sales: any) {
             <tbody>
               ${productRows}
               <tr>
-                <td colspan="9" style="text-align:right;">Total</td>
-                <td>${totalAmount.toFixed(2)}</td>
-              </tr>
-              <tr>
-                <td colspan="9" style="text-align:right;">Discount</td>
-                <td>${totalDiscount.toFixed(2)}</td>
-              </tr>
-              <tr>
-                <td colspan="9" style="text-align:right;">VAT Amount</td>
-                <td>${totalVat.toFixed(2)}</td>
-              </tr>
-              <tr>
-                <td colspan="9" style="text-align:right;">Net Total</td>
-                <td>${netTotal.toFixed(2)}</td>
+                <td colspan="2" style="text-align:right;">Total</td>
+                <td>${totals.totalQuantity}</td>
+                <td></td>
+                <td>${totals.totalAmount.toFixed(2)}</td>
+                <td></td>
+                <td>${totals.totalDiscount.toFixed(2)}</td>
+                <td></td>
+                <td>${totals.totalVat.toFixed(2)}</td>
+                <td>${totals.netTotal.toFixed(2)}</td>
               </tr>
               <tr>
                 <td colspan="9" style="text-align:right;">Pay</td>

@@ -1,11 +1,14 @@
 import { Prisma, Product } from '@prisma/client'
 import { Request } from 'express'
 import httpStatus from 'http-status'
+import { placeholderProduct } from '../../../assets/placeholderImage'
 import ApiError from '../../../errors/apiError'
+import { FileUploads } from '../../../helpers/fileUploader'
 import { paginationHelpers } from '../../../helpers/paginationHelpers'
 import prisma from '../../../shared/prisma'
 import { generateUniqueProductId } from '../../../utilities/uniqueIdGenerator'
 import { IGenericResponse } from '../../interfaces/common'
+import { IUploadFile } from '../../interfaces/file'
 import { IPaginationOptions } from '../../interfaces/pagination'
 import { productFilterableKey } from './product.constant'
 import { IProductFilterRequest } from './product.type'
@@ -13,14 +16,23 @@ import { IProductFilterRequest } from './product.type'
 // Create user
 const CreateUserService = async (req: Request) => {
   const payload: Product = req.body
-
   const productId = await generateUniqueProductId('p')
   payload.uniqueId = productId
 
-  const filePath = `/${req.file?.destination}${req.file?.originalname}`
-  if (filePath) {
-    payload.productImage = filePath
+  if (payload.productImage) {
+    const file = req.file as IUploadFile
+    const uploadedImage = await FileUploads.uploadToCloudinary(file)
+    if (uploadedImage) {
+      payload.productImage = uploadedImage.secure_url
+    }
+  } else {
+    payload.productImage = await placeholderProduct()
   }
+
+  // const filePath = `/${req.file?.destination}${req.file?.originalname}`
+  // if (filePath) {
+  //   payload.productImage = filePath
+  // }
 
   // @ts-ignore
   payload.productStock = payload.variants?.length

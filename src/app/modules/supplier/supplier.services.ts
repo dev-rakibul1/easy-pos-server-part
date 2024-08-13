@@ -1,11 +1,14 @@
 import { Prisma, Suppliers } from '@prisma/client'
 import { Request } from 'express'
 import httpStatus from 'http-status'
+import { placeholderUser } from '../../../assets/placeholderImage'
 import ApiError from '../../../errors/apiError'
+import { FileUploads } from '../../../helpers/fileUploader'
 import { paginationHelpers } from '../../../helpers/paginationHelpers'
 import prisma from '../../../shared/prisma'
 import { generateUniqueSupplierId } from '../../../utilities/uniqueIdGenerator'
 import { IGenericResponse } from '../../interfaces/common'
+import { IUploadFile } from '../../interfaces/file'
 import { IPaginationOptions } from '../../interfaces/pagination'
 import { supplierFilterableKey } from './supplier.constant'
 import { ISupplierFilterRequest } from './supplier.type'
@@ -13,14 +16,23 @@ import { ISupplierFilterRequest } from './supplier.type'
 // Create supplier
 const CreateSupplierService = async (req: Request) => {
   const payloads: Suppliers = req.body
-
   const supplierId = await generateUniqueSupplierId('S')
   payloads.uniqueId = supplierId
 
-  const filePath = `/${req.file?.destination}${req.file?.originalname}`
-  if (filePath) {
-    payloads.profileImage = filePath
+  if (payloads.profileImage) {
+    const file = req.file as IUploadFile
+    const uploadedImage = await FileUploads.uploadToCloudinary(file)
+    if (uploadedImage) {
+      payloads.profileImage = uploadedImage.secure_url
+    }
+  } else {
+    payloads.profileImage = await placeholderUser()
   }
+
+  // const filePath = `/${req.file?.destination}${req.file?.originalname}`
+  // if (filePath) {
+  //   payloads.profileImage = filePath
+  // }
 
   return prisma.$transaction(async tx => {
     const existingEmail = await tx.suppliers.findUnique({
@@ -201,6 +213,31 @@ const GetSuppliersByUserSupplierProductService = async (ids: any) => {
     throw error
   }
 }
+// Supplier filter by supplier, user and product
+const GetByUserIdService = async (id: string) => {
+  try {
+    const result = await prisma.suppliers.findMany({
+      where: {
+        supplierSell: {
+          some: {
+            userId: id,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      include: {
+        supplierSell: true,
+      },
+    })
+
+    return result
+  } catch (error) {
+    console.error(error)
+    throw error
+  }
+}
 
 export const SupplierService = {
   CreateSupplierService,
@@ -208,4 +245,5 @@ export const SupplierService = {
   UpdateSupplierUserService,
   GetSingleSupplierService,
   GetSuppliersByUserSupplierProductService,
+  GetByUserIdService,
 }

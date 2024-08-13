@@ -13,5 +13,5 @@ export enum PAYLOADS {
   ACCESS_TOKEN = 'asd5fsd5asd5f4as5fd46as46sa4f6sa4f6as4fas6df4as6d4f6as4f6as4f6as4f6sad4f6sad46sd',
   REFRESH_TOKEN = 'asd5fsd5asd5f4as5fd46as46sa4f6sa4fAS4F6SD4SD464S4a5s4sd6sad4f6sad46sd',
   REFRESH_TOKEN_EXPIRE_IN = '90d',
-  ACCESS_TOKEN_EXPIRE_IN = '7d',
+  ACCESS_TOKEN_EXPIRE_IN = '1d',
 }

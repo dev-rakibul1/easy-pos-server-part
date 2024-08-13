@@ -74,9 +74,26 @@ const GetSingleCustomerController = CatchAsync(
   },
 )
 
+//get customer by use id
+const GetCustomerByUserIdController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const { id } = req.params
+
+    const result = await CustomerService.GetCustomerByUserIdService(id)
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Customer get by user id!',
+      data: result,
+    })
+  },
+)
+
 export const CustomerController = {
   CreateCustomerController,
   GetAllCustomerController,
   UpdateCustomerController,
   GetSingleCustomerController,
+  GetCustomerByUserIdController,
 }

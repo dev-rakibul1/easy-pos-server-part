@@ -51,9 +51,24 @@ const GetCustomerPurchaseByCurrentDateController = CatchAsync(
     })
   },
 )
+// get all customer purchase
+const GetByUserIdController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const { id } = req.params
+    const result = await CustomerPurchaseService.GetByUserIdService(id)
+
+    sendResponse<CustomerPurchase[] | null>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Customer purchase by user id!',
+      data: result,
+    })
+  },
+)
 
 export const CustomerPurchaseController = {
   GetCustomerPurchaseByCustomerAndUserController,
   GetSingleCustomerPurchaseController,
   GetCustomerPurchaseByCurrentDateController,
+  GetByUserIdController,
 }

@@ -63,5 +63,14 @@ router.get(
   ),
   SupplierController.GetBySuppliersByUserSupplierProductController,
 )
+router.get(
+  '/get-by-user-id/:id',
+  AuthProvider.Auth(
+    ENUM_USER_ROLE.SUPER_ADMIN,
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.MODERATOR,
+  ),
+  SupplierController.GetByUserIdController,
+)
 
 export const SupplierRoutes = router

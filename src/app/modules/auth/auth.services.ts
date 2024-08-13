@@ -29,11 +29,18 @@ const LoginUserService = async (
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Your password does not match.')
   }
 
+  // Update the user's status to true
+  await prisma.user.update({
+    where: { uniqueId: user.uniqueId },
+    data: { status: true },
+  })
+
   // Generate access token
   const accessToken = jwtTokenProvider.createToken(
     {
       uniqueId: user?.uniqueId,
       role: user?.role,
+      status: user?.status,
     },
     PAYLOADS.ACCESS_TOKEN as Secret,
     PAYLOADS.ACCESS_TOKEN_EXPIRE_IN as string,
@@ -41,7 +48,7 @@ const LoginUserService = async (
 
   // Generate refresh token
   const refreshToken = jwtTokenProvider.createToken(
-    { uniqueId: user?.uniqueId, role: user?.role },
+    { uniqueId: user?.uniqueId, role: user?.role, status: user?.status },
     PAYLOADS.REFRESH_TOKEN as Secret,
     PAYLOADS.REFRESH_TOKEN_EXPIRE_IN as string,
   )

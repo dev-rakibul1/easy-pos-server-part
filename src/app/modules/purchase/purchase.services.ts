@@ -482,17 +482,17 @@ const GetAllCreatePurchaseService = async (
 }
 const GetAllPurchaseByCurrentDateService = async (): Promise<Purchase[]> => {
   // Current date
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
+  const startOfDay = new Date()
+  startOfDay.setHours(0, 0, 0, 0)
 
-  const tomorrow = new Date(today)
-  tomorrow.setDate(today.getDate() + 1)
+  const endOfDay = new Date()
+  endOfDay.setHours(23, 59, 59, 999)
 
   const result = await prisma.purchase.findMany({
     where: {
       createdAt: {
-        gte: today,
-        lt: tomorrow,
+        gte: startOfDay,
+        lte: endOfDay,
       },
     },
 

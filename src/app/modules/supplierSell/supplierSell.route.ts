@@ -29,6 +29,18 @@ router.get(
   ),
   SupplierSellController.GetAllSupplierSellController,
 )
+router.get(
+  '/get-by-user/:id',
+  AuthProvider.Auth(
+    ENUM_USER_ROLE.SUPER_ADMIN,
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.CONTENT_MANAGER,
+    ENUM_USER_ROLE.MARKETING_MANAGER,
+    ENUM_USER_ROLE.MODERATOR,
+    ENUM_USER_ROLE.USER,
+  ),
+  SupplierSellController.GetSupplierSellByUserIdController,
+)
 
 router.get(
   '/get-sell-by-supplier-and-user/:id',

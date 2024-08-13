@@ -26,11 +26,11 @@ router.post(
 
 router.get(
   '/',
-  AuthProvider.Auth(
-    ENUM_USER_ROLE.SUPER_ADMIN,
-    ENUM_USER_ROLE.ADMIN,
-    ENUM_USER_ROLE.MODERATOR,
-  ),
+  // AuthProvider.Auth(
+  //   ENUM_USER_ROLE.SUPER_ADMIN,
+  //   ENUM_USER_ROLE.ADMIN,
+  //   ENUM_USER_ROLE.MODERATOR,
+  // ),
   CustomerController.GetAllCustomerController,
 )
 router.patch(
@@ -51,6 +51,15 @@ router.get(
     ENUM_USER_ROLE.MODERATOR,
   ),
   CustomerController.GetSingleCustomerController,
+)
+router.get(
+  '/get-by-user-id/:id',
+  // AuthProvider.Auth(
+  //   ENUM_USER_ROLE.SUPER_ADMIN,
+  //   ENUM_USER_ROLE.ADMIN,
+  //   ENUM_USER_ROLE.MODERATOR,
+  // ),
+  CustomerController.GetCustomerByUserIdController,
 )
 
 export const CustomerRoutes = router

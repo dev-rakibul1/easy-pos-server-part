@@ -29,6 +29,7 @@ model User {
   role                  UserRole @default(user)
   password              String
   uniqueId              String      @unique
+  status                Boolean @default(true)
 
   purchases             Purchase[]
   sells                 Sells[]

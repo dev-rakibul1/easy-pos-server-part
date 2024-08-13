@@ -39,6 +39,22 @@ const GetAllSupplierSellsService = async (): Promise<SupplierSell[]> => {
   })
   return result
 }
+// get supplier sells by user id
+const GetSupplierSellByUserIdService = async (
+  id: string,
+): Promise<SupplierSell[]> => {
+  const result = await prisma.supplierSell.findMany({
+    where: { userId: id },
+    include: {
+      supplier: true,
+      user: true,
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  })
+  return result
+}
 // Get Supplier Sell By Supplier And User Service
 const GetSupplierSellBySupplierAndUserService = async (
   ids: any,
@@ -96,4 +112,5 @@ export const SupplierSellsService = {
   GetAllSupplierSellsService,
   GetSupplierSellBySupplierAndUserService,
   GetSingleSupplierSellService,
+  GetSupplierSellByUserIdService,
 }

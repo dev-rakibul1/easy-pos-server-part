@@ -71,9 +71,28 @@ const GetSingleCustomerPurchaseByCurrentDateService = async (): Promise<
 
   return result
 }
+// Get customer purchase by current date
+const GetByUserIdService = async (
+  id: string,
+): Promise<CustomerPurchase[] | null> => {
+  const result = await prisma.customerPurchase.findMany({
+    where: {
+      userId: id,
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+    include: {
+      customer: true,
+    },
+  })
+
+  return result
+}
 
 export const CustomerPurchaseService = {
   GetCustomerPurchaseByCustomerAndUserService,
   GetSingleCustomerPurchaseService,
   GetSingleCustomerPurchaseByCurrentDateService,
+  GetByUserIdService,
 }

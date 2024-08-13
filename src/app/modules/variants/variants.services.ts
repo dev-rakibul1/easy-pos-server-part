@@ -85,10 +85,81 @@ const GetSingleSingleVariantService = async (id: string) => {
   if (!result) throw new ApiError(httpStatus.NOT_FOUND, 'Invalid variants')
   return result
 }
+// to check the last stock
+const LastStockCountService = async () => {
+  // ----------------LAST STOCK IN--------------
+  const variants = await prisma.variants.findMany({})
+  const ids: string[] = []
+
+  // Push purchaseId into ids array
+  variants?.forEach((variant: Variants) => {
+    ids.push(variant.purchaseId)
+  })
+
+  // Fetch stock data for each purchaseId
+  const lastStock = await Promise.all(
+    ids.map(async id => {
+      const data = await prisma.variants.findMany({
+        where: { purchaseId: id },
+        select: {
+          id: true,
+          purchaseId: true,
+        },
+      })
+
+      return data
+    }),
+  )
+
+  // Map the lastStock to count occurrences of each purchaseId
+  const result = lastStock.map(st => ({
+    id: st[0].purchaseId,
+    count: st.length,
+  }))
+
+  // Remove duplicates by purchaseId and get the unique counts
+  const variantStockData = Array.from(
+    new Map(result.map(item => [item.id, item])).values(),
+  )
+
+  const count = variantStockData.reduce((acc, item) => acc + item?.count, 0)
+
+  // ----------------CALCULATION WITH STOCK--------------
+  const purchase = await prisma.purchase.findMany({})
+
+  const isMatchWithVariant = variantStockData?.map(stock => {
+    const matchId = purchase.filter(pur => pur.id === stock.id)
+
+    return matchId.map(item => {
+      // @ts-ignore
+      const purchaseRate = item?.totalPrice / item?.productStock || 0
+      console.log(purchaseRate)
+
+      return {
+        productId: item?.productId,
+        uniqueId: item?.uniqueId,
+        purchaseRateWithOutVatDiscount: item?.purchaseRate,
+        vats: item?.vats,
+        discounts: item?.discounts,
+        purchaseRate: purchaseRate,
+        totalStockPrice: purchaseRate * stock.count,
+        sellingPrice: item?.sellingPrice * stock.count,
+        totalPrice: item.totalPrice,
+        purchaseId: item?.id,
+        quantity: stock?.count,
+      }
+    })
+  })
+
+  // Remove duplicates by purchaseId and get the unique counts
+  const data = isMatchWithVariant.flatMap(data => data)
+  return { data, count }
+}
 
 export const VariantService = {
   CreateVariantService,
   GetAllCreateVariantService,
   DeleteSingleVariantService,
   GetSingleSingleVariantService,
+  LastStockCountService,
 }

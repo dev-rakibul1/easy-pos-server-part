@@ -1,26 +1,40 @@
 import { Customers, Prisma } from '@prisma/client'
 import { Request } from 'express'
 import httpStatus from 'http-status'
+import { placeholderUser } from '../../../assets/placeholderImage'
 import ApiError from '../../../errors/apiError'
+import { FileUploads } from '../../../helpers/fileUploader'
 import { paginationHelpers } from '../../../helpers/paginationHelpers'
 import prisma from '../../../shared/prisma'
 import { generateUniqueCustomerId } from '../../../utilities/uniqueIdGenerator'
 import { IGenericResponse } from '../../interfaces/common'
+import { IUploadFile } from '../../interfaces/file'
 import { IPaginationOptions } from '../../interfaces/pagination'
 import { ICustomerFilterRequest } from './customer.type'
 import { customerFilterAbleKey } from './customers.constant'
 
 // Create customer
 const CreateCustomerService = async (req: Request) => {
+  // payloads
   const payloads: Customers = req.body
   const customerId = await generateUniqueCustomerId('c')
   payloads.uniqueId = customerId
 
-  // Image setup
-  const filePath = `/${req.file?.destination}${req.file?.originalname}`
-  if (filePath) {
-    payloads.profileImage = filePath
+  if (payloads.profileImage) {
+    const file = req.file as IUploadFile
+    const uploadedImage = await FileUploads.uploadToCloudinary(file)
+    if (uploadedImage) {
+      payloads.profileImage = uploadedImage.secure_url
+    }
+  } else {
+    payloads.profileImage = await placeholderUser()
   }
+
+  // Image setup
+  // const filePath = `/${req.file?.destination}${req.file?.originalname}`
+  // if (filePath) {
+  //   payloads.profileImage = filePath
+  // }
 
   return prisma.$transaction(async tx => {
     // Check if email already exists
@@ -94,6 +108,7 @@ const GetAllCustomerService = async (
     include: {
       purchaseHistory: true,
       payments: true,
+      customerPurchase: true,
     },
   })
 
@@ -138,8 +153,29 @@ const UpdateCustomerService = async (id: string, payloads: Customers) => {
   })
 }
 //  customer updated
+const GetCustomerByUserIdService = async (id: string) => {
+  const isExist = await prisma.customers.findMany({
+    where: {
+      customerPurchase: {
+        some: {
+          userId: id,
+        },
+      },
+    },
+    orderBy: { createdAt: 'desc' },
+    include: {
+      customerPurchase: true,
+    },
+  })
+
+  if (!isExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Invalid customer.')
+  }
+  return isExist
+}
+//  customer updated
 const GetSingleCustomerService = async (id: string) => {
-  const isExist = await prisma.customers.findUnique({ where: { id: id } })
+  const isExist = await prisma.customers.findFirst({ where: { id: id } })
   if (!isExist) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Invalid customer.')
   }
@@ -151,4 +187,5 @@ export const CustomerService = {
   GetAllCustomerService,
   UpdateCustomerService,
   GetSingleCustomerService,
+  GetCustomerByUserIdService,
 }

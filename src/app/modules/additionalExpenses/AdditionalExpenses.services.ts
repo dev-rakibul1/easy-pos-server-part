@@ -21,24 +21,17 @@ const CreateAdditionalExpensesGetByCurrentDateService = async (): Promise<
   AdditionalExpenses[] | null
 > => {
   // Current date
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
+  const startOfDay = new Date()
+  startOfDay.setHours(0, 0, 0, 0)
 
-  // Start of the current month
-  const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1)
-
-  // Date 7 days ago
-  const sevenDaysAgo = new Date(today)
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
-
-  // Ensure we do not go before the start of the month
-  const startDate = sevenDaysAgo < startOfMonth ? startOfMonth : sevenDaysAgo
+  const endOfDay = new Date()
+  endOfDay.setHours(23, 59, 59, 999)
 
   const result = await prisma.additionalExpenses.findMany({
     where: {
       createdAt: {
-        gte: startDate,
-        lt: today,
+        gte: startOfDay,
+        lte: endOfDay,
       },
     },
 

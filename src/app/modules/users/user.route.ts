@@ -22,11 +22,11 @@ router.post(
 
 router.get(
   '/',
-  AuthProvider.Auth(
-    ENUM_USER_ROLE.SUPER_ADMIN,
-    ENUM_USER_ROLE.ADMIN,
-    ENUM_USER_ROLE.MODERATOR,
-  ),
+  // AuthProvider.Auth(
+  //   ENUM_USER_ROLE.SUPER_ADMIN,
+  //   ENUM_USER_ROLE.ADMIN,
+  //   ENUM_USER_ROLE.MODERATOR,
+  // ),
   UserController.GetAllUserController,
 )
 router.patch(
@@ -42,14 +42,14 @@ router.delete(
 )
 router.get(
   '/:id',
-  AuthProvider.Auth(
-    ENUM_USER_ROLE.SUPER_ADMIN,
-    ENUM_USER_ROLE.ADMIN,
-    ENUM_USER_ROLE.CONTENT_MANAGER,
-    ENUM_USER_ROLE.MARKETING_MANAGER,
-    ENUM_USER_ROLE.MODERATOR,
-    ENUM_USER_ROLE.USER,
-  ),
+  // AuthProvider.Auth(
+  //   ENUM_USER_ROLE.SUPER_ADMIN,
+  //   ENUM_USER_ROLE.ADMIN,
+  //   ENUM_USER_ROLE.CONTENT_MANAGER,
+  //   ENUM_USER_ROLE.MARKETING_MANAGER,
+  //   ENUM_USER_ROLE.MODERATOR,
+  //   ENUM_USER_ROLE.USER,
+  // ),
   UserController.GetSingleUserByUniqueIdController,
 )
 router.get(

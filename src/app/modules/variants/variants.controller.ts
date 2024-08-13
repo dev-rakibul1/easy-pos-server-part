@@ -80,10 +80,24 @@ const GetSingleVariantsController = CatchAsync(
     })
   },
 )
+// last stock count
+const LastStockCountController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const result = await VariantService.LastStockCountService()
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Last stock get successfully!',
+      data: result,
+    })
+  },
+)
 
 export const VariantsController = {
   CreateVariantsController,
   GetAllVariantsController,
   DeleteSingleVariantsController,
   GetSingleVariantsController,
+  LastStockCountController,
 }

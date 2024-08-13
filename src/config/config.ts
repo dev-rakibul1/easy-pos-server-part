@@ -9,4 +9,10 @@ export default {
   env: process.env.NODE_ENV,
   email: process.env.EMAIL_USER,
   appKey: process.env.EMAIL_PASS,
+
+  cloudinary: {
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+    apiKey: process.env.CLOUDINARY_API_KEY,
+    apiSecret: process.env.CLOUDINARY_API_SECRET,
+  },
 }

@@ -87,6 +87,20 @@ const GetBySuppliersByUserSupplierProductController = CatchAsync(
     })
   },
 )
+// get by user id
+const GetByUserIdController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const { id } = req.params
+    const result = await SupplierService.GetByUserIdService(id)
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Get by user id.',
+      data: result,
+    })
+  },
+)
 
 export const SupplierController = {
   CreateSupplierController,
@@ -94,4 +108,5 @@ export const SupplierController = {
   UpdateSupplierController,
   GetSingleSupplierController,
   GetBySuppliersByUserSupplierProductController,
+  GetByUserIdController,
 }

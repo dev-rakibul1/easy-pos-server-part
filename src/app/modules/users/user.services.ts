@@ -2,12 +2,15 @@ import { Prisma, User } from '@prisma/client'
 import bcrypt from 'bcrypt'
 import { Request } from 'express'
 import httpStatus from 'http-status'
+import { placeholderUser } from '../../../assets/placeholderImage'
 import { ENUM_USER_ROLE, PAYLOADS } from '../../../enums/role'
 import ApiError from '../../../errors/apiError'
+import { FileUploads } from '../../../helpers/fileUploader'
 import { paginationHelpers } from '../../../helpers/paginationHelpers'
 import prisma from '../../../shared/prisma'
 import { generateUniqueId } from '../../../utilities/uniqueIdGenerator'
 import { IGenericResponse } from '../../interfaces/common'
+import { IUploadFile } from '../../interfaces/file'
 import { IPaginationOptions } from '../../interfaces/pagination'
 import { IUserFilterRequest } from './user.type'
 import { userFilterableKey } from './users.constant'
@@ -18,12 +21,21 @@ const CreateUserService = async (req: Request) => {
   const userId = await generateUniqueId('u')
   payloads.uniqueId = userId
 
-  // image setup
-  const filePath = `/${req.file?.destination}${req.file?.originalname}`
-
-  if (filePath) {
-    payloads.profileImage = filePath
+  if (payloads.profileImage) {
+    const file = req.file as IUploadFile
+    const uploadedImage = await FileUploads.uploadToCloudinary(file)
+    if (uploadedImage) {
+      payloads.profileImage = uploadedImage.secure_url
+    }
+  } else {
+    payloads.profileImage = await placeholderUser()
   }
+
+  // image setup
+  // const filePath = `/${req.file?.destination}${req.file?.originalname}`
+  // if (filePath) {
+  //   payloads.profileImage = filePath
+  // }
 
   // Password Bcrypt
   if (!payloads.password) {
