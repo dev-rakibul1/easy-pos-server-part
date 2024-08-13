@@ -16,7 +16,7 @@ export function generateSalesEmailContent(sales: any) {
   let productRows = ''
 
   const totals = customerPurchaseProducts.reduce(
-    (acc, product) => {
+    (acc: any, product: any) => {
       product.variants.forEach((variant: any) => {
         const sell = product.sell
 

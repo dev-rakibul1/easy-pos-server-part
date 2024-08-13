@@ -1,12 +1,12 @@
-import express from 'express'
-import { SellVariantController } from './sellVariants.controller'
+// import express from 'express'
+// import { SellVariantController } from './sellVariants.controller'
 
-const router = express.Router()
+// const router = express.Router()
 
-router.post(
-  '/create-sell-variant',
-  SellVariantController.CreateSellVariantController,
-)
-router.get('/', SellVariantController.GetAllSellVariantController)
+// router.post(
+//   '/create-sell-variant',
+//   SellVariantController.CreateSellVariantController,
+// )
+// router.get('/', SellVariantController.GetAllSellVariantController)
 
-export const SellVariantRoutes = router
+// export const SellVariantRoutes = router

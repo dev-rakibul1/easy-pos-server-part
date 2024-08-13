@@ -20,7 +20,6 @@ import { ReturnGroupRoutes } from '../modules/returnGroup/returnGroup.route'
 import { ReturnRoutes } from '../modules/returns/return.route'
 import { SellRoutes } from '../modules/sell/sell.route'
 import { SellGroupRoutes } from '../modules/sellGroup/sellGroup.route'
-import { SellVariantRoutes } from '../modules/sellVariants/sellVariants.route'
 import { SupplierRoutes } from '../modules/supplier/supplier.route'
 import { SupplierPaymentRoutes } from '../modules/supplierPayments/supplierPayment.route'
 import { SupplierReturnPaymentsRoutes } from '../modules/supplierReturnPayments/supplierReturnPayments.route'
@@ -67,10 +66,7 @@ const modulesRouters = [
     path: '/sell',
     route: SellRoutes,
   },
-  {
-    path: '/sell-variant',
-    route: SellVariantRoutes,
-  },
+
   {
     path: '/return',
     route: ReturnRoutes,

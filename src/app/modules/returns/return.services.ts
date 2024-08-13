@@ -35,7 +35,7 @@ const CreateReturnService = async (
     (accumulator: number, item) => accumulator + Number(item.totalSellPrice),
     0,
   )
-
+  // @ts-ignore
   return prisma.$transaction(async tx => {
     // --------Purchase Group----------
     const returnGroupInformation = {
@@ -165,6 +165,7 @@ const CreateReturnService = async (
       const { purchaseId, ...rest } = ret
       // @ts-ignore
       ret.price = parseFloat(ret.price)
+      // @ts-ignore
       return tx.returns.create({ data: rest })
     })
 
@@ -174,7 +175,7 @@ const CreateReturnService = async (
       tx.variants.delete({ where: { id } }),
     )
 
-    const getStockOutVariants = await Promise.all(stockOutVariant)
+    await Promise.all(stockOutVariant)
 
     // console.log('createdReturnPromises', getStockOutVariants)
     // console.log('createdReturns', createdReturns)

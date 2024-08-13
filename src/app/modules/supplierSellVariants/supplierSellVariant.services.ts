@@ -8,7 +8,7 @@ const GetManyBySupplierSellVariantsIdServices = async (
   id: string,
 ): Promise<SupplierSellVariants[]> => {
   const getSupplierSellVariants = await prisma.supplierSellVariants.findMany({
-    where: { supplierSellId: id },
+    // where: { supplierSellId: id },
   })
   if (!getSupplierSellVariants) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Invalid supplier sell variants')
