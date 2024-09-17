@@ -6,8 +6,8 @@
   "description": "",
   "scripts": {
     "postinstall": "prisma generate",
+    "dev": "ts-node src/index.ts",
     "build": "tsc",
-    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "main": "dist/index.js",
     "start": "node dist/index.js",
     "lint:check": "eslint --ignore-path .eslintignore --ext .js,.ts .",
