@@ -6,7 +6,7 @@
   "scripts": {
     "postinstall": "prisma generate",
     "build": "tsc",
-    "server-start": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "main": "dist/index.js",
     "start": "node dist/index.js",
     "lint:check": "eslint --ignore-path .eslintignore --ext .js,.ts .",
@@ -18,7 +18,7 @@
     "src/**/*.ts": "yarn lint-prettier"
   },
   "dependencies": {
-    "@prisma/client": "^5.15.0",
+    "@prisma/client": "^5.19.0",
     "@types/bcrypt": "^5.0.2",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/multer": "^1.4.11",
@@ -38,7 +38,7 @@
     "jwt-decode": "^4.0.0",
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.14",
-    "prisma": "^5.15.0",
+    "prisma": "^5.19.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5",
     "zod": "^3.23.8"
@@ -51,6 +51,7 @@
     "eslint-config-prettier": "^9.1.0",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.2",
-    "prettier": "^3.2.5"
+    "prettier": "^3.2.5",
+    "ts-node-dev": "^2.0.0"
   }
 }
