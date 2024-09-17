@@ -9,11 +9,11 @@
   ],
   "routes": [
     {
-      "src": "src/(.*)",
+      "src": "/(.*)",
       "dest": "dist/index.js"
     }
   ],
   "env": {
-    "NODE_ENV": "development"
+    "NODE_ENV": "production"
   }
 }
