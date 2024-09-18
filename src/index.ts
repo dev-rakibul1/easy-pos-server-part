@@ -18,6 +18,12 @@ app.use('/uploads_/', express.static('uploads_'))
 // Application router or Application middleware
 // app.use('/api/v1', router)
 
+app.get('/', (req: Request, res: Response) => {
+  res.send({
+    message: 'Our server is running successfully!',
+  })
+})
+
 /**
  * GLOBAL ERROR HANDLING AND PRODUCTION LABEL
  */
@@ -36,6 +42,10 @@ app.use('*', (req: Request, res: Response, next: NextFunction) => {
     ],
   })
   next()
+})
+
+app.listen(1000, () => {
+  console.log('Server is running now')
 })
 
 // databaseConnect()
