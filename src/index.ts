@@ -3,8 +3,7 @@ import cors from 'cors'
 import express, { Application, NextFunction, Request, Response } from 'express'
 import httpStatus from 'http-status'
 import GlobalErrorHandler from './app/middlewares/globalErrorHandler'
-import router from './app/routes/app.routes'
-import { databaseConnect } from './utilities/server'
+// import router from './app/routes/app.routes'
 export const app: Application = express()
 
 // Middleware
@@ -17,7 +16,7 @@ app.use(cookieParser())
 app.use('/uploads_/', express.static('uploads_'))
 
 // Application router or Application middleware
-app.use('/api/v1', router)
+// app.use('/api/v1', router)
 
 /**
  * GLOBAL ERROR HANDLING AND PRODUCTION LABEL
@@ -39,4 +38,4 @@ app.use('*', (req: Request, res: Response, next: NextFunction) => {
   next()
 })
 
-databaseConnect()
+// databaseConnect()

@@ -5,6 +5,7 @@
   "license": "MIT",
   "description": "",
   "scripts": {
+    "deploy": "vercel --prod",
     "postinstall": "prisma generate",
     "dev": "ts-node src/index.ts",
     "build": "tsc",
