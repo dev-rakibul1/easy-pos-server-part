@@ -30,6 +30,7 @@ import { UnitRoutes } from '../modules/unit/unit.route'
 import { UserRoutes } from '../modules/users/user.route'
 import { VariantRoutes } from '../modules/variants/variants.route'
 import { VatRoutes } from '../modules/vats/vats.route'
+import { WarrantyRoutes } from '../modules/warranty/warranty.route'
 
 const router = express.Router()
 
@@ -154,6 +155,10 @@ const modulesRouters = [
   {
     path: '/additional-expense',
     route: AdditionalExpensesRoutes,
+  },
+  {
+    path: '/warranty',
+    route: WarrantyRoutes,
   },
 ]
 

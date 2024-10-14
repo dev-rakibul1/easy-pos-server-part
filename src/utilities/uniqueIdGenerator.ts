@@ -67,6 +67,39 @@ export async function generateUniqueSupplierId(code: string): Promise<string> {
     throw error
   }
 }
+// Generate warranty id
+export async function generateUniqueWarrantyId(code: string): Promise<string> {
+  try {
+    const codeUpperCase = code.toUpperCase()
+
+    // Get the last inserted uniqueId that matches the given code
+    const lastIdNumber = await prisma.warranty.findFirst({
+      where: {
+        uniqueId: {
+          startsWith: codeUpperCase,
+        },
+      },
+      orderBy: {
+        uniqueId: 'desc',
+      },
+    })
+
+    let nextNumber = 1
+    if (lastIdNumber) {
+      const lastId = lastIdNumber.uniqueId
+      const lastNumber = parseInt(lastId.split('-')[1], 10)
+      nextNumber = lastNumber + 1
+    }
+
+    // Generate the next unique brand ID
+    const nextBrandId = `${codeUpperCase}-${String(nextNumber).padStart(5, '0')}`
+
+    return nextBrandId
+  } catch (error) {
+    console.error('Error generating unique supplier ID:', error)
+    throw error
+  }
+}
 
 // Generate generateUniqueSupplierPaymentId id
 export async function generateUniqueSupplierPaymentId(

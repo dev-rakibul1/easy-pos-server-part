@@ -120,6 +120,21 @@ const GetSingleSellController = CatchAsync(
     })
   },
 )
+// get single sells
+const GetWarrantySellController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const { id } = req.params
+
+    const result = await SellService.GetWarrantySellService(id)
+
+    sendResponse<Sells | null>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Warranty product get success.',
+      data: result,
+    })
+  },
+)
 
 export const SellController = {
   CreateSellController,
@@ -130,4 +145,5 @@ export const SellController = {
   GetAllSellByCurrentYearController,
   SellGetByCustomerPurchaseIdController,
   GetSingleSellController,
+  GetWarrantySellController,
 }

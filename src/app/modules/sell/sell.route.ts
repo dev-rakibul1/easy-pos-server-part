@@ -95,5 +95,10 @@ router.get(
   ),
   SellController.GetSingleSellController,
 )
+router.get(
+  '/warranty/:id',
+  AuthProvider.Auth(ENUM_USER_ROLE.SUPER_ADMIN, ENUM_USER_ROLE.ADMIN),
+  SellController.GetWarrantySellController,
+)
 
 export const SellRoutes = router

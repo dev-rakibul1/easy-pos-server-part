@@ -687,6 +687,28 @@ model AdditionalExpenses {
 }
 
 
+model Warranty {
+  id                    String @id @default(uuid())
+  status                Boolean @default(true)
+  uniqueId              String
+  imei                  String
+  email                 String
+  model                 String
+  name                  String
+  phone                 String
+  purchaseDate          String
+  purchasePlace         String
+  repairHistory         String
+  issue                 String
+
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+
+  @@map("warranties")
+
+}
+
+
 // Enum value
 enum UserRole {
   super_admin        

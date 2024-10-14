@@ -438,6 +438,27 @@ const GetSingleSellService = async (id: string): Promise<Sells | null> => {
 
   return result
 }
+// get warranty sell
+const GetWarrantySellService = async (id: string): Promise<Sells | null> => {
+  const result = await prisma.sells.findFirst({
+    where: {
+      customerPurchaseVariants: {
+        imeiNumber: id,
+      },
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+    include: {
+      customer: true,
+      user: true,
+      customerPurchaseVariants: true,
+      customerPurchaseProduct: true,
+    },
+  })
+
+  return result
+}
 
 export const SellService = {
   CreateSellService,
@@ -448,4 +469,5 @@ export const SellService = {
   GetAllSellByCurrentYearService,
   SellGetByCustomerPurchaseIdService,
   GetSingleSellService,
+  GetWarrantySellService,
 }

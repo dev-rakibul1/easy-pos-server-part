@@ -3,7 +3,8 @@ import cors from 'cors'
 import express, { Application, NextFunction, Request, Response } from 'express'
 import httpStatus from 'http-status'
 import GlobalErrorHandler from './app/middlewares/globalErrorHandler'
-// import router from './app/routes/app.routes'
+import router from './app/routes/app.routes'
+import { databaseConnect } from './utilities/server'
 export const app: Application = express()
 
 // Middleware
@@ -16,11 +17,11 @@ app.use(cookieParser())
 app.use('/uploads_/', express.static('uploads_'))
 
 // Application router or Application middleware
-// app.use('/api/v1', router)
+app.use('/api/v1', router)
 
 app.get('/', (req: Request, res: Response) => {
   res.send({
-    message: 'Our server is running successfully!',
+    message: 'Congratulations from our server',
   })
 })
 
@@ -33,7 +34,7 @@ app.use(GlobalErrorHandler)
 app.use('*', (req: Request, res: Response, next: NextFunction) => {
   res.status(httpStatus.NOT_FOUND).json({
     success: false,
-    message: 'Not fount.',
+    message: 'Sorry! Not found.',
     errorMessage: [
       {
         path: req.originalUrl,
@@ -48,4 +49,4 @@ app.listen(1000, () => {
   console.log('Server is running now')
 })
 
-// databaseConnect()
+databaseConnect()
