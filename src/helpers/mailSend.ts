@@ -7,6 +7,7 @@ const subject: string =
 export const mailSend = async (sales: any) => {
   const customerEmail = sales?.customerPurchase?.customer?.email
   console.log('email from mail send file', customerEmail)
+
   const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 587,

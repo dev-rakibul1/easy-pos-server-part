@@ -697,9 +697,12 @@ model Warranty {
   name                  String
   phone                 String
   purchaseDate          String
+  issueSubmitDate       String
   purchasePlace         String
   repairHistory         String
   issue                 String
+  repairCount           Int
+  deliveryTime          String?
 
   createdAt             DateTime                @default(now())
   updatedAt             DateTime                @updatedAt
