@@ -712,6 +712,29 @@ model Warranty {
 }
 
 
+
+model Shop {
+  id              String @id @default(uuid())
+  shopName        String
+  location        String
+  owner           String
+  phone           String    @unique
+  email           String    @unique
+  website         String?
+  hours           String
+  type            String    
+  products        String?
+  establishedDate String
+  aboutShop       String?
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+
+  @@map("shops")
+}
+
+
+
+
 // Enum value
 enum UserRole {
   super_admin        
