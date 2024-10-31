@@ -208,7 +208,6 @@ const SingleAdditionalExpensesGetService = async (
 const DeleteAdditionalExpensesService = async (
   id: string,
 ): Promise<AdditionalExpenses | null> => {
-  console.log(id)
   const isExist = await prisma.additionalExpenses.findFirst({
     where: { id: id },
   })
@@ -216,7 +215,6 @@ const DeleteAdditionalExpensesService = async (
     throw new ApiError(httpStatus.NOT_FOUND, 'Invalid additional expense.')
   }
 
-  console.log(id)
   const result = await prisma.additionalExpenses.delete({ where: { id: id } })
 
   return result

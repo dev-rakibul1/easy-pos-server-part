@@ -133,7 +133,7 @@ const LastStockCountService = async () => {
     return matchId.map(item => {
       // @ts-ignore
       const purchaseRate = item?.totalPrice / item?.productStock || 0
-      console.log(purchaseRate)
+      // console.log(purchaseRate)
 
       return {
         productId: item?.productId,

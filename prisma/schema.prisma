@@ -59,6 +59,7 @@ model Product {
   uniqueId      String?
   productStock  Int?
   othersStock   Int?
+  status        Boolean @default(false)
   variants      Variants[]
   purchases     Purchase[]
   supplierSells SupplierSell[]

@@ -47,6 +47,15 @@ router.get(
   ProductsController.GetAllProductsController,
 )
 router.get(
+  '/stock-in-product',
+  // AuthProvider.Auth(
+  //   ENUM_USER_ROLE.SUPER_ADMIN,
+  //   ENUM_USER_ROLE.ADMIN,
+  //   ENUM_USER_ROLE.MODERATOR,
+  // ),
+  ProductsController.StockInProductByStatusController,
+)
+router.get(
   '/:id',
   AuthProvider.Auth(
     ENUM_USER_ROLE.SUPER_ADMIN,

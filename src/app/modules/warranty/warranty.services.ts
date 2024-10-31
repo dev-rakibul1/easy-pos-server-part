@@ -17,14 +17,11 @@ const CreateWarrantyService = async (payloads: Warranty) => {
   const isExistProduct = await prisma.warranty.findMany({
     where: { imei: payloads.imei },
   })
-  //   console.log(isExistProduct)
-  const statuses = isExistProduct?.map((item: Warranty) => item.status)
 
+  const statuses = isExistProduct?.map((item: Warranty) => item.status)
   const isTrue = statuses.every((anItem: Boolean) => {
     return anItem === false
   })
-
-  // console.log(isTrue)
 
   if (!isTrue) {
     throw new ApiError(httpStatus.FORBIDDEN, 'Warranty already submitted!')
@@ -38,7 +35,7 @@ const CreateWarrantyService = async (payloads: Warranty) => {
     data: {
       ...payloads,
       uniqueId: WarrantyId,
-      repairCount: statuses.length,
+      repairCount: statuses.length + 1,
       status: payloads.status ?? true,
       deliveryTime: payloads?.status === true ? null : new Date().toISOString(),
     },
@@ -69,7 +66,6 @@ const CreateWarrantyService = async (payloads: Warranty) => {
 </div>
 `
   Mail(recipient, subject, warrantyBody)
-
   return createWarranty
 }
 
@@ -221,8 +217,6 @@ const DeliveredPendingWarrantyServices = async (
   }
 
   let updatedResult = result
-
-  console.log(225, payloads)
 
   // Check the status and perform update if necessary
   if (payloads.status === false) {

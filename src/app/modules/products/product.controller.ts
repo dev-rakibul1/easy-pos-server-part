@@ -8,10 +8,10 @@ import { paginationQueryKeys } from '../../interfaces/pagination'
 import { productFilterableQuery } from './product.constant'
 import { ProductsService } from './product.services'
 
-// Create a user
+// Create a product
 const CreateProductsController = CatchAsync(
   async (req: Request, res: Response) => {
-    const result = await ProductsService.CreateUserService(req)
+    const result = await ProductsService.CreateProductsService(req)
 
     sendResponse(res, {
       statusCode: httpStatus.OK,
@@ -22,7 +22,7 @@ const CreateProductsController = CatchAsync(
   },
 )
 
-// get all user
+// get all product
 const GetAllProductsController = CatchAsync(
   async (req: Request, res: Response) => {
     const filters = pick(req.query, productFilterableQuery)
@@ -103,11 +103,26 @@ const StockInProductsController = CatchAsync(
   },
 )
 
+// Stock in product get by status
+const StockInProductByStatusController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const result = await ProductsService.StockInProductGetService()
+
+    sendResponse<Product[] | null>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Stock in get success!',
+      data: result,
+    })
+  },
+)
+
 export const ProductsController = {
   CreateProductsController,
   GetAllProductsController,
   GetSingleProductsController,
   UpdateProductsController,
   DeleteProductsController,
+  StockInProductByStatusController,
   StockInProductsController,
 }

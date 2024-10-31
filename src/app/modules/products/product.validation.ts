@@ -17,7 +17,7 @@ const createProductZodValidation = z.object({
     .max(255, {
       message: 'Brand name must be less than or equal to 255 characters',
     }),
-  modelName: z.string().min(1, { message: 'Model name is required' }).max(255, {
+  modelName: z.string().min(2, { message: 'Model name is required' }).max(255, {
     message: 'Model name must be less than or equal to 255 characters',
   }),
   processor: z

@@ -157,9 +157,21 @@ const CreatePurchaseService = async (data: IPurchaseType) => {
       return variant
     })
 
+    // const checkProductStock = await prisma.product.findUnique(())
+
     await tx.variants.createMany({
       data: newVariantsInfo,
     })
+
+    // Fetch data for each id
+    const checkProductStock = ids.map(id =>
+      tx.product.findUnique({ where: { id } }),
+    )
+    // const stockProduct = products?.map((pro) => {
+    //   return
+    // })
+
+    console.log('174____', products)
 
     // await tx.variants.createMany({
     //   data: variants,
@@ -168,248 +180,6 @@ const CreatePurchaseService = async (data: IPurchaseType) => {
     return createdPurchases
   })
 }
-
-// Create purchase
-// const CreatePurchaseService = async (data: IPurchaseType) => {
-//   const { variants, purchase, supplierPayment } = data
-
-//   // console.log(data)
-
-//   // Remove unnecessary fields from purchase
-//   purchase.forEach((pur: any) => {
-//     delete pur.productName
-//     delete pur.brandName
-//   })
-
-//   const updatedPurchases: Purchase[] = []
-//   const createdPurchases: Purchase[] = []
-//   // const supplierSells: any[] = []
-
-//   const totalProductPrice = purchase.reduce(
-//     (accumulator: number, item: Purchase) => accumulator + item.totalPrice,
-//     0,
-//   )
-
-//   return await tx.$transaction(async tx => {
-//     // -------------------Purchase Group-------------------
-//     const purchaseGroupInformation = {
-//       supplierId: supplierPayment.supplierId,
-//       userId: supplierPayment.userId,
-//     }
-
-//     const purchaseGroup = await tx.purchaseGroup.create({
-//       data: purchaseGroupInformation,
-//     })
-
-//     //------------------SUPPLIER SELLS------------------
-//     // Generate supplier sell entries
-//     const supplierSellEntries = {
-//       quantity: variants.length,
-//       totalSellAmounts: totalProductPrice,
-//       totalDue: totalProductPrice - supplierPayment.totalPay,
-//       totalPay: supplierPayment.totalPay,
-//       supplierId: supplierPayment.supplierId,
-//       userId: supplierPayment.userId,
-//       productId: supplierPayment.productId,
-//       purchaseGroupId: purchaseGroup.id,
-//     }
-
-//     // supplierSells.push(supplierSellEntries)
-//     // console.log(supplierSellEntries)
-
-//     // Create supplier sells
-//     const createdSupplierSells = await tx.supplierSell.create({
-//       data: supplierSellEntries,
-//     })
-
-//     // -----------Supplier sell product----------
-//     const getProduct = await tx.product.findFirst({
-//       where: { id: supplierPayment.productId },
-//     })
-//     if (!getProduct) {
-//       throw new ApiError(httpStatus.NOT_FOUND, 'Invalid product.')
-//     }
-
-//     // Ensure all required fields are present and have correct types
-//     const supplierSellProduct = {
-//       productName: getProduct.productName,
-//       brandName: getProduct.brandName,
-//       modelName: getProduct.modelName,
-//       processor: getProduct.processor,
-//       supplierId: supplierPayment.supplierId,
-//       unit: getProduct.unit,
-//       category: getProduct.category,
-//       reOrderAlert: 0,
-//       productImage: '',
-//       description: '',
-//       productStock: getProduct.productStock || 0,
-//       othersStock: getProduct.othersStock || 0,
-//       userId: supplierPayment.userId,
-//       purchaseGroupId: purchaseGroup.id,
-//     }
-
-//     const getSupplierSellProductId = await tx.supplierSellProduct.create({
-//       data: supplierSellProduct,
-//     })
-
-//     const isMatchWithProduct = variants
-//       .filter(va => va.productId === supplierPayment.productId)
-//       .map(va => {
-//         const { productId, ...rest } = va // Destructure to remove productId
-//         return {
-//           ...rest,
-//           supplierSellProductId: getSupplierSellProductId.id,
-//         }
-//       })
-
-//     // console.log('supplierSellProduct_________', isMatchWithProduct)
-
-//     // console.log(createdSupplierSells)
-
-//     // Check if supplier sells were created successfully
-//     if (createdSupplierSells) {
-//       if (variants.length) {
-//         // Create supplier sell variants
-//         await tx.supplierSellVariants.createMany({
-//           data: isMatchWithProduct,
-//         })
-//       }
-//     }
-
-//     //------------------PURCHASE & VARIANTS------------------
-//     for (const purchaseItem of purchase) {
-//       const existingPurchase = await tx.purchase.findFirst({
-//         where: {
-//           userId: purchaseItem.userId,
-//           productId: purchaseItem.productId,
-//           supplierId: purchaseItem.supplierId,
-//         },
-//       })
-
-//       console.log('getSupplierSellProductId', getSupplierSellProductId)
-
-//       if (existingPurchase) {
-//         if (variants.length) {
-//           await tx.variants.createMany({ data: variants })
-//           const updatedPurchase = await tx.purchase.update({
-//             where: { id: existingPurchase.id },
-//             data: {
-//               sellingPrice: purchaseItem.sellingPrice,
-//               purchaseRate: purchaseItem.purchaseRate,
-//               vats: purchaseItem.vats,
-//               discounts: purchaseItem.discounts,
-//               color: purchaseItem.color,
-//               totalPrice: purchaseItem.totalPrice,
-//               othersStock: purchaseItem.othersStock,
-//               productStock: purchaseItem.productStock,
-//               ram: purchaseItem.ram,
-//               room: purchaseItem.room,
-//             },
-//           })
-
-//           updatedPurchases.push(updatedPurchase)
-//         }
-//       } else {
-//         const uniqueUpdateId = await generateUniquePurchaseIds(
-//           'PUR',
-//           purchase.length,
-//         )
-//         const newData = purchase.map((item: any, index: number) => ({
-//           ...item,
-//           uniqueId: uniqueUpdateId[index],
-//           supplierSellId: createdSupplierSells.id,
-//           supplierSellProductId: getSupplierSellProductId.id,
-//         }))
-
-//         // -------------------------------
-//         const isExistProduct = await tx.product.findMany({})
-//         variants.map(async variant => {
-//           const matchingProduct = isExistProduct.find(
-//             product => product.id === variant.productId,
-//           )
-//           if (matchingProduct) {
-//             const createdVariant = await tx.variants.create({
-//               data: {
-//                 imeiNumber: variant.imeiNumber,
-//                 ram: variant.ram,
-//                 rom: variant.rom,
-//                 color: variant.color,
-//                 product: { connect: { id: matchingProduct.id } },
-//               },
-//             })
-//             // console.log(createdVariant)
-//             return createdVariant
-//           }
-//         })
-//         // -------------------------------
-
-//         // CRETE VARIANTS
-//         await tx.variants.createMany({ data: variants })
-
-//         // CREATE PURCHASE
-//         await tx.purchase.createMany({
-//           data: newData,
-//         })
-
-//         createdPurchases.push(...newData)
-//       }
-//     }
-
-//     // -------------------Supplier payments-------------------
-//     const totalPrice1 = createdPurchases.reduce(
-//       (accumulator: number, item: Purchase) => accumulator + item.totalPrice,
-//       0,
-//     )
-//     // const subTotalPrice = totalPrice1
-//     const totalDueBalance =
-//       // @ts-ignore
-//       parseFloat(totalPrice1) - parseFloat(supplierPayment.totalPay)
-
-//     const supplierPaymentId = await generateUniqueSupplierPaymentId('spd')
-
-//     // Supplier payment payloads or information
-//     const supplierPaymentInfo = {
-//       totalPay: supplierPayment.totalPay || 0,
-//       totalSellPrice: totalPrice1 || 0,
-//       totalDue: totalDueBalance,
-//       supplierId: supplierPayment.supplierId,
-//       userId: supplierPayment.userId,
-//       uniqueId: supplierPaymentId,
-//     }
-
-//     // Is data between supplier payment is exist so that we are searching payment
-//     const isExistingSupplierAndUser = await tx.supplierPayment.findFirst({
-//       where: {
-//         userId: supplierPayment.userId,
-//         supplierId: supplierPayment.supplierId,
-//       },
-//     })
-
-//     // Supplier payment create APIs
-//     if (isExistingSupplierAndUser) {
-//       await tx.supplierPayment.update({
-//         where: { id: isExistingSupplierAndUser.id },
-//         data: {
-//           totalPay:
-//             isExistingSupplierAndUser.totalPay + supplierPayment.totalPay,
-//           totalSellPrice:
-//             isExistingSupplierAndUser.totalSellPrice + totalPrice1,
-//           totalDue: isExistingSupplierAndUser.totalDue + totalDueBalance,
-//         },
-//       })
-//     } else {
-//       await tx.supplierPayment.create({
-//         data: supplierPaymentInfo,
-//       })
-//     }
-
-//     return {
-//       updatedPurchases,
-//       createdPurchases,
-//       // supplierSells,
-//     }
-//   })
-// }
 
 // get all purchase
 const GetAllCreatePurchaseService = async (

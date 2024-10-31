@@ -13,8 +13,8 @@ import { IPaginationOptions } from '../../interfaces/pagination'
 import { productFilterableKey } from './product.constant'
 import { IProductFilterRequest } from './product.type'
 
-// Create user
-const CreateUserService = async (req: Request) => {
+// Create product
+const CreateProductsService = async (req: Request) => {
   const payload: Product = req.body
   const productId = await generateUniqueProductId('p')
   payload.uniqueId = productId
@@ -37,7 +37,7 @@ const CreateUserService = async (req: Request) => {
   // @ts-ignore
   payload.productStock = payload.variants?.length
 
-  console.log(payload)
+  // console.log(payload)
   // Save the product to the database
   const result = await prisma.product.create({ data: payload })
   return result
@@ -173,12 +173,20 @@ const StockInProductGetService = async (): Promise<Product[] | null> => {
   })
   return result
 }
+// Stock in product by status
+const StockInProductByStatusGetService = async (): Promise<
+  Product[] | null
+> => {
+  const result = await prisma.product.findMany({ where: { status: true } })
+  return result
+}
 
 export const ProductsService = {
-  CreateUserService,
+  CreateProductsService,
   GetAllCreateUserService,
   SingleProductGetService,
   UpdateProductGetService,
   DeleteProductGetService,
   StockInProductGetService,
+  StockInProductByStatusGetService,
 }
