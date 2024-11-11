@@ -67,7 +67,9 @@ const CreateSellService = async (payloads: ISellsType) => {
     const ids = sells.map((sell: Sells) => sell.productId)
 
     // Fetch data for each id
-    const dataPromises = ids.map(id => tx.product.findUnique({ where: { id } }))
+    const dataPromises = ids.map(id =>
+      tx.product.findUnique({ where: { id }, include: { variants: true } }),
+    )
     const products = await Promise.all(dataPromises)
 
     const userId = customerPayInUser.userId
@@ -77,7 +79,7 @@ const CreateSellService = async (payloads: ISellsType) => {
     // customer purchase product information or data
     const newProducts = products.map(product => {
       // @ts-ignore
-      const { uniqueId, id, ...restProduct } = product
+      const { uniqueId, id, status, variants, ...restProduct } = product
 
       return {
         ...restProduct,
@@ -215,6 +217,29 @@ const CreateSellService = async (payloads: ISellsType) => {
       mailSend(salesInfo)
     }
 
+    // Check the product last stock depended on status
+    await Promise.all(
+      products.map(async (pro: any) => {
+        if (pro?.variants && pro?.variants?.length > 0) {
+          await tx.product.updateMany({
+            where: { id: pro.id },
+            data: { status: true },
+          })
+        }
+      }),
+    )
+
+    // Check the product last stock depended on status
+    await Promise.all(
+      products.map(async (pro: any) => {
+        if (pro?.variants?.length === 0) {
+          await tx.product.updateMany({
+            where: { id: pro.id },
+            data: { status: false },
+          })
+        }
+      }),
+    )
     return createdSales
   })
 }

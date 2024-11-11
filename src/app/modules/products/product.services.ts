@@ -19,9 +19,12 @@ const CreateProductsService = async (req: Request) => {
   const productId = await generateUniqueProductId('p')
   payload.uniqueId = productId
 
+  const file = req.file as IUploadFile
+  console.log(24, file)
+
   if (payload.productImage) {
-    const file = req.file as IUploadFile
     const uploadedImage = await FileUploads.uploadToCloudinary(file)
+    console.log(26, uploadedImage)
     if (uploadedImage) {
       payload.productImage = uploadedImage.secure_url
     }
@@ -173,12 +176,128 @@ const StockInProductGetService = async (): Promise<Product[] | null> => {
   })
   return result
 }
+
 // Stock in product by status
-const StockInProductByStatusGetService = async (): Promise<
-  Product[] | null
-> => {
-  const result = await prisma.product.findMany({ where: { status: true } })
-  return result
+const StockInProductByStatusGetService = async (
+  filters: IProductFilterRequest,
+  paginationOptions: IPaginationOptions,
+): Promise<IGenericResponse<Product[]>> => {
+  const { searchTerm, ...filterData } = filters
+
+  const andConditions = []
+
+  andConditions.push({
+    status: true,
+  })
+
+  // searchTerm
+  if (searchTerm) {
+    andConditions.push({
+      OR: productFilterableKey.map(field => ({
+        [field]: {
+          contains: searchTerm,
+          mode: 'insensitive',
+        },
+      })),
+    })
+  }
+
+  // Filters
+  if (Object.keys(filterData).length) {
+    andConditions.push({
+      AND: Object.keys(filterData).map(key => ({
+        [key]: {
+          equals: (filterData as any)[key],
+        },
+      })),
+    })
+  }
+
+  // Pagination
+  const { limit, page, skip, sortBy, sortOrder } =
+    paginationHelpers.calculatePagination(paginationOptions)
+
+  // Where condition
+  const whereConditions: Prisma.ProductWhereInput = andConditions.length
+    ? { AND: andConditions }
+    : {}
+
+  const result = await prisma.product.findMany({
+    where: whereConditions,
+    include: { variants: true, purchases: true },
+    skip,
+    take: limit,
+    orderBy:
+      sortBy && sortOrder ? { [sortBy]: sortOrder } : { createdAt: 'desc' },
+  })
+
+  const total = await prisma.product.count({ where: { status: true } })
+
+  return {
+    meta: { limit, page, total },
+    data: result,
+  }
+}
+// Stock out product by status
+const StockOutProductByStatusGetService = async (
+  filters: IProductFilterRequest,
+  paginationOptions: IPaginationOptions,
+): Promise<IGenericResponse<Product[]>> => {
+  const { searchTerm, ...filterData } = filters
+
+  const andConditions = []
+
+  andConditions.push({
+    status: false,
+  })
+
+  // searchTerm
+  if (searchTerm) {
+    andConditions.push({
+      OR: productFilterableKey.map(field => ({
+        [field]: {
+          contains: searchTerm,
+          mode: 'insensitive',
+        },
+      })),
+    })
+  }
+
+  // Filters
+  if (Object.keys(filterData).length) {
+    andConditions.push({
+      AND: Object.keys(filterData).map(key => ({
+        [key]: {
+          equals: (filterData as any)[key],
+        },
+      })),
+    })
+  }
+
+  // Pagination
+  const { limit, page, skip, sortBy, sortOrder } =
+    paginationHelpers.calculatePagination(paginationOptions)
+
+  // Where condition
+  const whereConditions: Prisma.ProductWhereInput = andConditions.length
+    ? { AND: andConditions }
+    : {}
+
+  const result = await prisma.product.findMany({
+    where: whereConditions,
+    include: { variants: true },
+    skip,
+    take: limit,
+    orderBy:
+      sortBy && sortOrder ? { [sortBy]: sortOrder } : { createdAt: 'desc' },
+  })
+
+  const total = await prisma.product.count({ where: { status: false } })
+
+  return {
+    meta: { limit, page, total },
+    data: result,
+  }
 }
 
 export const ProductsService = {
@@ -189,4 +308,5 @@ export const ProductsService = {
   DeleteProductGetService,
   StockInProductGetService,
   StockInProductByStatusGetService,
+  StockOutProductByStatusGetService,
 }

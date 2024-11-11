@@ -63,7 +63,9 @@ const CreatePurchaseService = async (data: IPurchaseType) => {
     const ids = purchase.map((purchase: Purchase) => purchase.productId)
 
     // Fetch data for each id
-    const dataPromises = ids.map(id => tx.product.findUnique({ where: { id } }))
+    const dataPromises = ids.map(id =>
+      tx.product.findUnique({ where: { id }, include: { variants: true } }),
+    )
     const products = await Promise.all(dataPromises)
 
     const userId = supplierPayment.userId
@@ -72,7 +74,7 @@ const CreatePurchaseService = async (data: IPurchaseType) => {
 
     const newProducts = products.map(product => {
       // @ts-ignore
-      const { uniqueId, id, ...restProduct } = product
+      const { uniqueId, id, status, variants, ...restProduct } = product
 
       return {
         ...restProduct,
@@ -171,12 +173,37 @@ const CreatePurchaseService = async (data: IPurchaseType) => {
     //   return
     // })
 
-    console.log('174____', products)
-
     // await tx.variants.createMany({
     //   data: variants,
     // })
     // const result = await tx.purchase.createMany({ data: purchases })
+
+    // Check the product last stock
+
+    const isExistProduct = ids.map(id =>
+      tx.product.findUnique({ where: { id }, include: { variants: true } }),
+    )
+
+    const stockInProducts = await Promise.all(isExistProduct)
+
+    await Promise.all(
+      stockInProducts.map(async pro => {
+        if (pro?.variants && pro?.variants?.length > 0) {
+          await tx.product.updateMany({
+            where: { id: pro.id },
+            data: { status: true },
+          })
+        } else {
+          if (!pro?.variants && pro?.variants?.length === 0) {
+            await tx.product.updateMany({
+              where: { id: pro.id },
+              data: { status: false },
+            })
+          }
+        }
+      }),
+    )
+
     return createdPurchases
   })
 }

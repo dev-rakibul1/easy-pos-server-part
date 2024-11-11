@@ -39,11 +39,11 @@ router.get(
 
 router.get(
   '/',
-  AuthProvider.Auth(
-    ENUM_USER_ROLE.SUPER_ADMIN,
-    ENUM_USER_ROLE.ADMIN,
-    ENUM_USER_ROLE.MODERATOR,
-  ),
+  // AuthProvider.Auth(
+  //   ENUM_USER_ROLE.SUPER_ADMIN,
+  //   ENUM_USER_ROLE.ADMIN,
+  //   ENUM_USER_ROLE.MODERATOR,
+  // ),
   ProductsController.GetAllProductsController,
 )
 router.get(
@@ -54,6 +54,15 @@ router.get(
   //   ENUM_USER_ROLE.MODERATOR,
   // ),
   ProductsController.StockInProductByStatusController,
+)
+router.get(
+  '/stock-out-product',
+  // AuthProvider.Auth(
+  //   ENUM_USER_ROLE.SUPER_ADMIN,
+  //   ENUM_USER_ROLE.ADMIN,
+  //   ENUM_USER_ROLE.MODERATOR,
+  // ),
+  ProductsController.StockOutProductByStatusController,
 )
 router.get(
   '/:id',

@@ -106,13 +106,40 @@ const StockInProductsController = CatchAsync(
 // Stock in product get by status
 const StockInProductByStatusController = CatchAsync(
   async (req: Request, res: Response) => {
-    const result = await ProductsService.StockInProductGetService()
+    const filters = pick(req.query, productFilterableQuery)
+    const paginationOptions = pick(req.query, paginationQueryKeys)
+
+    const result = await ProductsService.StockInProductByStatusGetService(
+      filters,
+      paginationOptions,
+    )
 
     sendResponse<Product[] | null>(res, {
       statusCode: httpStatus.OK,
       success: true,
       message: 'Stock in get success!',
-      data: result,
+      data: result.data,
+      meta: result.meta,
+    })
+  },
+)
+// Stock out product get by status
+const StockOutProductByStatusController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const filters = pick(req.query, productFilterableQuery)
+    const paginationOptions = pick(req.query, paginationQueryKeys)
+
+    const result = await ProductsService.StockOutProductByStatusGetService(
+      filters,
+      paginationOptions,
+    )
+
+    sendResponse<Product[] | null>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Stock out get success!',
+      data: result.data,
+      meta: result.meta,
     })
   },
 )
@@ -125,4 +152,5 @@ export const ProductsController = {
   DeleteProductsController,
   StockInProductByStatusController,
   StockInProductsController,
+  StockOutProductByStatusController,
 }
