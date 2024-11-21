@@ -71,6 +71,19 @@ router.get(
   ),
   SellController.GetAllSellByCurrentYearController,
 )
+// Get by start date and end date
+router.get(
+  '/get-by-start-end-date',
+  AuthProvider.Auth(
+    ENUM_USER_ROLE.SUPER_ADMIN,
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.CONTENT_MANAGER,
+    ENUM_USER_ROLE.MARKETING_MANAGER,
+    ENUM_USER_ROLE.USER,
+    ENUM_USER_ROLE.MODERATOR,
+  ),
+  SellController.GetFilterByStartEndDateController,
+)
 router.get(
   '/sell-get-by-customer-purchase-product-id/:id',
   AuthProvider.Auth(

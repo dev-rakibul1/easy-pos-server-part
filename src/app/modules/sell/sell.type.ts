@@ -30,3 +30,10 @@ export type ISellsType = {
   sells: Sells[]
   customerPayInUser: ICustomerPayment
 }
+
+export type IFilterByStartEndDateType<T> = {
+  meta: {
+    total: number
+  }
+  data: T
+}

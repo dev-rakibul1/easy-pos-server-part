@@ -1,4 +1,5 @@
 import { Prisma, Sells } from '@prisma/client'
+import dayjs from 'dayjs'
 import httpStatus from 'http-status'
 import ApiError from '../../../errors/apiError'
 import { mailSend } from '../../../helpers/mailSend'
@@ -11,7 +12,11 @@ import {
 import { IGenericResponse } from '../../interfaces/common'
 import { IPaginationOptions } from '../../interfaces/pagination'
 import { sellFilterablePartialSearch } from './sell.constant'
-import { ISellFilterRequest, ISellsType } from './sell.type'
+import {
+  IFilterByStartEndDateType,
+  ISellFilterRequest,
+  ISellsType,
+} from './sell.type'
 
 // Create multiple sell service
 const CreateSellService = async (payloads: ISellsType) => {
@@ -485,6 +490,52 @@ const GetWarrantySellService = async (id: string): Promise<Sells | null> => {
   return result
 }
 
+// Sales filter by start and end date for all products
+const GetFilterByStartEndDateService = async (
+  startDate: string,
+  endDate: string,
+): Promise<IFilterByStartEndDateType<Sells[]>> => {
+  // Validate date formats
+  if (
+    !dayjs(startDate, 'YYYY-MM-DD', true).isValid() ||
+    !dayjs(endDate, 'YYYY-MM-DD', true).isValid()
+  ) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      'Invalid date format. Use YYYY-MM-DD.',
+    )
+  }
+
+  const start = dayjs(startDate).toDate()
+  const end = dayjs(endDate).endOf('day').toDate()
+
+  // Fetch filtered sales
+  const sales = await prisma.sells.findMany({
+    where: {
+      createdAt: {
+        gte: start,
+        lte: end,
+      },
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+    include: {
+      customer: true,
+      user: true,
+      customerPurchaseVariants: true,
+      customerPurchaseProduct: true,
+    },
+  })
+
+  const total = sales.length
+
+  return {
+    meta: { total },
+    data: sales,
+  }
+}
+
 export const SellService = {
   CreateSellService,
   GetAllSellService,
@@ -495,4 +546,5 @@ export const SellService = {
   SellGetByCustomerPurchaseIdService,
   GetSingleSellService,
   GetWarrantySellService,
+  GetFilterByStartEndDateService,
 }
