@@ -1,8 +1,12 @@
 import { Prisma, SellGroups } from '@prisma/client'
+import dayjs from 'dayjs'
+import httpStatus from 'http-status'
+import ApiError from '../../../errors/apiError'
 import { paginationHelpers } from '../../../helpers/paginationHelpers'
 import prisma from '../../../shared/prisma'
 import { IGenericResponse } from '../../interfaces/common'
 import { IPaginationOptions } from '../../interfaces/pagination'
+import { IFilterByStartEndDateType } from '../sell/sell.type'
 import { ISellFilterRequest } from './sellGroup.type'
 
 // get all sell group
@@ -318,6 +322,57 @@ const SingleSellGroupGetByOwnIdService = async (
   return result
 }
 
+// Sales group filter by start and end date
+const SalesGroupFilterByStartEndDateService = async (
+  startDate: string,
+  endDate: string,
+): Promise<IFilterByStartEndDateType<SellGroups[]>> => {
+  console.log(startDate, endDate)
+  // Validate date formats
+  if (
+    !dayjs(startDate, 'YYYY-MM-DD', true).isValid() ||
+    !dayjs(endDate, 'YYYY-MM-DD', true).isValid()
+  ) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      'Invalid date format. Use YYYY-MM-DD.',
+    )
+  }
+
+  const start = dayjs(startDate).toDate()
+  const end = dayjs(endDate).endOf('day').toDate()
+
+  // Fetch filtered sales
+  const sales = await prisma.sellGroups.findMany({
+    where: {
+      createdAt: {
+        gte: start,
+        lte: end,
+      },
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+    include: {
+      customerPurchaseProducts: {
+        include: {
+          variants: true,
+          sell: true,
+        },
+      },
+      customerPurchase: true,
+      customerPayInUser: true,
+    },
+  })
+
+  const total = sales.length
+
+  return {
+    meta: { total },
+    data: sales,
+  }
+}
+
 export const SellGroupService = {
   GetAllSellGroupService,
   SingleSellGroupService,
@@ -326,4 +381,5 @@ export const SellGroupService = {
   GetSellGroupByCurrentMonthService,
   GetSellGroupByCurrentYearService,
   SingleSellGroupGetByOwnIdService,
+  SalesGroupFilterByStartEndDateService,
 }
