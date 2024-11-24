@@ -1,5 +1,9 @@
 import { PurchaseGroup } from '@prisma/client'
+import dayjs from 'dayjs'
+import httpStatus from 'http-status'
+import ApiError from '../../../errors/apiError'
 import prisma from '../../../shared/prisma'
+import { IFilterByStartEndDateType } from '../sell/sell.type'
 
 // get all purchase group
 const GetAllPurchaseGroupService = async (): Promise<PurchaseGroup[]> => {
@@ -187,6 +191,57 @@ const SinglePurchaseGroupService = async (
   return result
 }
 
+// purchase group filter by start and end date
+const GetAllPurchaseGroupByStartEndDateService = async (
+  startDate: string,
+  endDate: string,
+): Promise<IFilterByStartEndDateType<PurchaseGroup[]>> => {
+  console.log(startDate, endDate)
+  // Validate date formats
+  if (
+    !dayjs(startDate, 'YYYY-MM-DD', true).isValid() ||
+    !dayjs(endDate, 'YYYY-MM-DD', true).isValid()
+  ) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      'Invalid date format. Use YYYY-MM-DD.',
+    )
+  }
+
+  const start = dayjs(startDate).toDate()
+  const end = dayjs(endDate).endOf('day').toDate()
+
+  // Fetch filtered purchase
+  const purchase = await prisma.purchaseGroup.findMany({
+    where: {
+      createdAt: {
+        gte: start,
+        lte: end,
+      },
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+    include: {
+      supplierSellProducts: {
+        include: {
+          variants: true,
+          purchase: true,
+        },
+      },
+      supplierSells: true,
+      payInSupplier: true,
+    },
+  })
+
+  const total = purchase.length
+
+  return {
+    meta: { total },
+    data: purchase,
+  }
+}
+
 export const PurchaseGroupService = {
   GetAllPurchaseGroupService,
   SinglePurchaseGroupService,
@@ -194,4 +249,5 @@ export const PurchaseGroupService = {
   GetAllPurchaseGroupByCurrentWeekService,
   GetAllPurchaseGroupByCurrentMonthService,
   GetAllPurchaseGroupByCurrentYearService,
+  GetAllPurchaseGroupByStartEndDateService,
 }

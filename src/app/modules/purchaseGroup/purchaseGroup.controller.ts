@@ -1,6 +1,7 @@
 import { PurchaseGroup } from '@prisma/client'
 import { Request, Response } from 'express'
 import httpStatus from 'http-status'
+import ApiError from '../../../errors/apiError'
 import CatchAsync from '../../../shared/catchAsync'
 import sendResponse from '../../../shared/sendResponse'
 import { PurchaseGroupService } from './purchaseGroup.services'
@@ -88,6 +89,36 @@ const SinglePurchaseGroupController = CatchAsync(
     })
   },
 )
+// Filter purchase group by start and end date
+const GetAllPurchaseGroupByStartEndDateController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const { startDate, endDate } = req.query
+
+    // Validate query parameters
+    if (!startDate || !endDate) {
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        'startDate and endDate are required.',
+      )
+    }
+
+    const result =
+      await PurchaseGroupService.GetAllPurchaseGroupByStartEndDateService(
+        startDate as string,
+        endDate as string,
+      )
+
+    // Send response
+    sendResponse<PurchaseGroup[] | null>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Purchase filtering success!',
+      data: result.data,
+      // @ts-ignore
+      meta: result?.meta,
+    })
+  },
+)
 
 export const PurchaseGroupController = {
   GetAllPurchaseGroupController,
@@ -96,4 +127,5 @@ export const PurchaseGroupController = {
   GetAllPurchaseGroupByCurrentWeekController,
   GetAllPurchaseGroupByCurrentMonthController,
   GetAllPurchaseGroupByCurrentYearController,
+  GetAllPurchaseGroupByStartEndDateController,
 }
