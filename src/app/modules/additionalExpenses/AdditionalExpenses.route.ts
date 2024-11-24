@@ -59,6 +59,20 @@ router.get(
   ),
   AdditionalExpensesController.CreateAdditionalExpensesGetByCurrentYearController,
 )
+
+router.get(
+  '/filter-by-start-end-date',
+  AuthProvider.Auth(
+    ENUM_USER_ROLE.SUPER_ADMIN,
+    ENUM_USER_ROLE.ADMIN,
+    ENUM_USER_ROLE.CONTENT_MANAGER,
+    ENUM_USER_ROLE.MARKETING_MANAGER,
+    ENUM_USER_ROLE.MODERATOR,
+    ENUM_USER_ROLE.USER,
+  ),
+  AdditionalExpensesController.FilterByStartAndEndDateController,
+)
+
 router.get(
   '/',
   AuthProvider.Auth(

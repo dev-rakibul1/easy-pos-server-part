@@ -91,8 +91,9 @@ const CreateReturnService = async (
     })
 
     // Store the new products in the supplierSellProduct table and get the created objects
-    const createdProductsPromises = newProducts.map(newProduct =>
-      tx.userReturnProducts.create({ data: newProduct }),
+    const createdProductsPromises = newProducts.map(
+      ({ status, ...restOfProduct }) =>
+        tx.userReturnProducts.create({ data: restOfProduct }),
     )
     const createdSupplierSellProducts = await Promise.all(
       createdProductsPromises,

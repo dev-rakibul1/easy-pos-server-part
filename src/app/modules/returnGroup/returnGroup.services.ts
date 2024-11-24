@@ -1,8 +1,12 @@
 import { Prisma, ReturnGroups } from '@prisma/client'
+import dayjs from 'dayjs'
+import httpStatus from 'http-status'
+import ApiError from '../../../errors/apiError'
 import { paginationHelpers } from '../../../helpers/paginationHelpers'
 import prisma from '../../../shared/prisma'
 import { IGenericResponse } from '../../interfaces/common'
 import { IPaginationOptions } from '../../interfaces/pagination'
+import { IFilterByStartEndDateType } from '../sell/sell.type'
 import { IReturnGroupFilterRequest } from './returnGroup.type'
 
 // get all Return group
@@ -245,6 +249,60 @@ const GetReturnGroupByCurrentYearService = async () => {
   return result
 }
 
+// Sales group filter by start and end date
+const ReturnGroupFilterByStartEndDateService = async (
+  startDate: string,
+  endDate: string,
+): Promise<IFilterByStartEndDateType<ReturnGroups[]>> => {
+  // Validate date formats
+  if (
+    !dayjs(startDate, 'YYYY-MM-DD', true).isValid() ||
+    !dayjs(endDate, 'YYYY-MM-DD', true).isValid()
+  ) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      'Invalid date format. Use YYYY-MM-DD.',
+    )
+  }
+
+  const start = dayjs(startDate).toDate()
+  const end = dayjs(endDate).endOf('day').toDate()
+
+  // Fetch filtered sales
+  const returnData = await prisma.returnGroups.findMany({
+    where: {
+      createdAt: {
+        gte: start,
+        lte: end,
+      },
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+
+    include: {
+      supplierReturnPayments: {
+        include: {
+          user: true,
+        },
+      },
+      userReturnProducts: {
+        include: {
+          returns: true,
+        },
+      },
+      additionalMoneyBack: true,
+    },
+  })
+
+  const total = returnData.length
+
+  return {
+    meta: { total },
+    data: returnData,
+  }
+}
+
 export const ReturnGroupService = {
   GetAllReturnGroupService,
   SingleReturnGroupService,
@@ -252,4 +310,5 @@ export const ReturnGroupService = {
   GetReturnGroupByCurrentWeekService,
   GetReturnGroupByCurrentMonthService,
   GetReturnGroupByCurrentYearService,
+  ReturnGroupFilterByStartEndDateService,
 }

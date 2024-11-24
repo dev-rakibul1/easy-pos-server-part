@@ -1,6 +1,7 @@
 import { ReturnGroups } from '@prisma/client'
 import { Request, Response } from 'express'
 import httpStatus from 'http-status'
+import ApiError from '../../../errors/apiError'
 import CatchAsync from '../../../shared/catchAsync'
 import pick from '../../../shared/pick'
 import sendResponse from '../../../shared/sendResponse'
@@ -99,6 +100,37 @@ const SingleReturnGroupByCurrentYearController = CatchAsync(
   },
 )
 
+// Filter by start and end date
+const FilterByStartAndEndDateController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const { startDate, endDate } = req.query
+
+    // Validate query parameters
+    if (!startDate || !endDate) {
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        'startDate and endDate are required.',
+      )
+    }
+
+    const result =
+      await ReturnGroupService.ReturnGroupFilterByStartEndDateService(
+        startDate as string,
+        endDate as string,
+      )
+
+    // Send response
+    sendResponse<ReturnGroups[] | null>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Return filtering success!',
+      data: result.data,
+      // @ts-ignore
+      meta: result?.meta,
+    })
+  },
+)
+
 export const ReturnGroupController = {
   GetAllReturnGroupController,
   SingleReturnGroupController,
@@ -106,4 +138,5 @@ export const ReturnGroupController = {
   SingleReturnGroupByCurrentWeekController,
   SingleReturnGroupByCurrentMonthController,
   SingleReturnGroupByCurrentYearController,
+  FilterByStartAndEndDateController,
 }

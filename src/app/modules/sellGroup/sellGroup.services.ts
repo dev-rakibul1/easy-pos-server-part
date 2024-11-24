@@ -327,7 +327,6 @@ const SalesGroupFilterByStartEndDateService = async (
   startDate: string,
   endDate: string,
 ): Promise<IFilterByStartEndDateType<SellGroups[]>> => {
-  console.log(startDate, endDate)
   // Validate date formats
   if (
     !dayjs(startDate, 'YYYY-MM-DD', true).isValid() ||

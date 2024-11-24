@@ -1,4 +1,5 @@
 import { AdditionalExpenses, Prisma } from '@prisma/client'
+import dayjs from 'dayjs'
 import httpStatus from 'http-status'
 import ApiError from '../../../errors/apiError'
 import { paginationHelpers } from '../../../helpers/paginationHelpers'
@@ -6,6 +7,7 @@ import prisma from '../../../shared/prisma'
 import { generateUniqueAdditionalExpenseId } from '../../../utilities/uniqueIdGenerator'
 import { IGenericResponse } from '../../interfaces/common'
 import { IPaginationOptions } from '../../interfaces/pagination'
+import { IFilterByStartEndDateType } from '../sell/sell.type'
 import { IAdditionalExpenseFilterRequest } from './additionalExpenseType'
 
 const CreateAdditionalExpensesService = async (
@@ -220,6 +222,47 @@ const DeleteAdditionalExpensesService = async (
   return result
 }
 
+// Sales group filter by start and end date
+const AdditionalExpenseFilterByStartEndDateService = async (
+  startDate: string,
+  endDate: string,
+): Promise<IFilterByStartEndDateType<AdditionalExpenses[]>> => {
+  console.log(startDate, endDate)
+  // Validate date formats
+  if (
+    !dayjs(startDate, 'YYYY-MM-DD', true).isValid() ||
+    !dayjs(endDate, 'YYYY-MM-DD', true).isValid()
+  ) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      'Invalid date format. Use YYYY-MM-DD.',
+    )
+  }
+
+  const start = dayjs(startDate).toDate()
+  const end = dayjs(endDate).endOf('day').toDate()
+
+  // Fetch filtered sales
+  const expense = await prisma.additionalExpenses.findMany({
+    where: {
+      createdAt: {
+        gte: start,
+        lte: end,
+      },
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  })
+
+  const total = expense.length
+
+  return {
+    meta: { total },
+    data: expense,
+  }
+}
+
 export const AdditionalExpensesService = {
   CreateAdditionalExpensesService,
   CreateAdditionalExpensesGetByCurrentDateService,
@@ -230,4 +273,5 @@ export const AdditionalExpensesService = {
   UpdateAdditionalExpensesService,
   SingleAdditionalExpensesGetService,
   DeleteAdditionalExpensesService,
+  AdditionalExpenseFilterByStartEndDateService,
 }
