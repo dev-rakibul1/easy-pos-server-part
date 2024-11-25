@@ -167,6 +167,65 @@ const GetFilterByStartEndDateController = CatchAsync(
   },
 )
 
+//filter loss by start date and end date controller
+const GetFilterLossByStartEndDateController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const { startDate, endDate } = req.query
+
+    // Validate query parameters
+    if (!startDate || !endDate) {
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        'startDate and endDate are required.',
+      )
+    }
+
+    const result = await SellService.GetLossFilterByStartEndDateService(
+      startDate as string,
+      endDate as string,
+    )
+
+    // Send response
+    sendResponse<Sells[] | null>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Loss sales filtering success!',
+      data: result.data,
+      // @ts-ignore
+      meta: result?.meta,
+    })
+  },
+)
+//filter profit by start date and end date controller
+const GetFilterProfitByStartEndDateController = CatchAsync(
+  async (req: Request, res: Response) => {
+    const { startDate, endDate } = req.query
+
+    // Validate query parameters
+    if (!startDate || !endDate) {
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        'startDate and endDate are required.',
+      )
+    }
+
+    const result = await SellService.GetProfitFilterByStartEndDateService(
+      startDate as string,
+      endDate as string,
+    )
+
+    // Send response
+    sendResponse<Sells[] | null>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Profit sales filtering success!',
+      data: result.data,
+      // @ts-ignore
+      meta: result?.meta,
+    })
+  },
+)
+
 export const SellController = {
   CreateSellController,
   GetAllSellController,
@@ -178,4 +237,6 @@ export const SellController = {
   GetSingleSellController,
   GetWarrantySellController,
   GetFilterByStartEndDateController,
+  GetFilterLossByStartEndDateController,
+  GetFilterProfitByStartEndDateController,
 }

@@ -535,6 +535,120 @@ const GetFilterByStartEndDateService = async (
     data: sales,
   }
 }
+// Loss Sales filter by start and end date for all products
+const GetLossFilterByStartEndDateService = async (
+  startDate: string,
+  endDate: string,
+): Promise<IFilterByStartEndDateType<Sells[]>> => {
+  // Fetch all sales
+  const allSells = await prisma.sells.findMany()
+
+  // Filter for loss sales
+  const lossSells = allSells.filter(
+    sell => sell.purchaseRate! > sell.sellingPrice,
+  )
+
+  // Validate date formats
+  if (
+    !dayjs(startDate, 'YYYY-MM-DD', true).isValid() ||
+    !dayjs(endDate, 'YYYY-MM-DD', true).isValid()
+  ) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      'Invalid date format. Use YYYY-MM-DD.',
+    )
+  }
+
+  // Parse the dates for comparison
+  const start = dayjs(startDate).toDate()
+  const end = dayjs(endDate).endOf('day').toDate()
+
+  // Filter the loss sales by the date range
+  const filteredSellsByDate = lossSells.filter(sell => {
+    const createdAt = new Date(sell.createdAt)
+    return createdAt >= start && createdAt <= end
+  })
+
+  // Include related data and return the filtered results
+  const detailedSales = await prisma.sells.findMany({
+    where: {
+      id: { in: filteredSellsByDate.map(sell => sell.id) },
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+    include: {
+      customer: true,
+      // user: true,
+      customerPurchaseVariants: true,
+      customerPurchaseProduct: true,
+    },
+  })
+
+  const total = detailedSales.length
+
+  return {
+    meta: { total },
+    data: detailedSales,
+  }
+}
+// Profit Sales filter by start and end date for all products
+const GetProfitFilterByStartEndDateService = async (
+  startDate: string,
+  endDate: string,
+): Promise<IFilterByStartEndDateType<Sells[]>> => {
+  // Fetch all sales
+  const allSells = await prisma.sells.findMany()
+
+  // Filter for loss sales
+  const lossSells = allSells.filter(
+    sell => sell.purchaseRate! < sell.sellingPrice,
+  )
+
+  // Validate date formats
+  if (
+    !dayjs(startDate, 'YYYY-MM-DD', true).isValid() ||
+    !dayjs(endDate, 'YYYY-MM-DD', true).isValid()
+  ) {
+    throw new ApiError(
+      httpStatus.BAD_REQUEST,
+      'Invalid date format. Use YYYY-MM-DD.',
+    )
+  }
+
+  // Parse the dates for comparison
+  const start = dayjs(startDate).toDate()
+  const end = dayjs(endDate).endOf('day').toDate()
+
+  // Filter the loss sales by the date range
+  const filteredSellsByDate = lossSells.filter(sell => {
+    const createdAt = new Date(sell.createdAt)
+    return createdAt >= start && createdAt <= end
+  })
+
+  // Include related data and return the filtered results
+  const detailedSales = await prisma.sells.findMany({
+    where: {
+      id: { in: filteredSellsByDate.map(sell => sell.id) },
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+    include: {
+      customer: true,
+      // user: true,
+      customerPurchaseVariants: true,
+      customerPurchaseProduct: true,
+    },
+  })
+
+  const total = detailedSales.length
+
+  return {
+    meta: { total },
+    data: detailedSales,
+  }
+}
 
 export const SellService = {
   CreateSellService,
@@ -547,4 +661,6 @@ export const SellService = {
   GetSingleSellService,
   GetWarrantySellService,
   GetFilterByStartEndDateService,
+  GetLossFilterByStartEndDateService,
+  GetProfitFilterByStartEndDateService,
 }

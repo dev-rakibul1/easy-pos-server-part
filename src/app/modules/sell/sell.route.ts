@@ -12,14 +12,14 @@ router.post(
 )
 router.get(
   '/',
-  AuthProvider.Auth(
-    ENUM_USER_ROLE.SUPER_ADMIN,
-    ENUM_USER_ROLE.ADMIN,
-    ENUM_USER_ROLE.CONTENT_MANAGER,
-    ENUM_USER_ROLE.MARKETING_MANAGER,
-    ENUM_USER_ROLE.USER,
-    ENUM_USER_ROLE.MODERATOR,
-  ),
+  // AuthProvider.Auth(
+  //   ENUM_USER_ROLE.SUPER_ADMIN,
+  //   ENUM_USER_ROLE.ADMIN,
+  //   ENUM_USER_ROLE.CONTENT_MANAGER,
+  //   ENUM_USER_ROLE.MARKETING_MANAGER,
+  //   ENUM_USER_ROLE.USER,
+  //   ENUM_USER_ROLE.MODERATOR,
+  // ),
   SellController.GetAllSellController,
 )
 router.get(
@@ -74,15 +74,40 @@ router.get(
 // Get by start date and end date
 router.get(
   '/get-by-start-end-date',
-  AuthProvider.Auth(
-    ENUM_USER_ROLE.SUPER_ADMIN,
-    ENUM_USER_ROLE.ADMIN,
-    ENUM_USER_ROLE.CONTENT_MANAGER,
-    ENUM_USER_ROLE.MARKETING_MANAGER,
-    ENUM_USER_ROLE.USER,
-    ENUM_USER_ROLE.MODERATOR,
-  ),
+  // AuthProvider.Auth(
+  //   ENUM_USER_ROLE.SUPER_ADMIN,
+  //   ENUM_USER_ROLE.ADMIN,
+  //   ENUM_USER_ROLE.CONTENT_MANAGER,
+  //   ENUM_USER_ROLE.MARKETING_MANAGER,
+  //   ENUM_USER_ROLE.USER,
+  //   ENUM_USER_ROLE.MODERATOR,
+  // ),
   SellController.GetFilterByStartEndDateController,
+)
+//filter loss by start date and end date
+router.get(
+  '/filter-loss-by-start-end-date',
+  // AuthProvider.Auth(
+  //   ENUM_USER_ROLE.SUPER_ADMIN,
+  //   ENUM_USER_ROLE.ADMIN,
+  //   ENUM_USER_ROLE.CONTENT_MANAGER,
+  //   ENUM_USER_ROLE.MARKETING_MANAGER,
+  //   ENUM_USER_ROLE.USER,
+  //   ENUM_USER_ROLE.MODERATOR,
+  // ),
+  SellController.GetFilterLossByStartEndDateController,
+)
+router.get(
+  '/filter-profit-by-start-end-date',
+  // AuthProvider.Auth(
+  //   ENUM_USER_ROLE.SUPER_ADMIN,
+  //   ENUM_USER_ROLE.ADMIN,
+  //   ENUM_USER_ROLE.CONTENT_MANAGER,
+  //   ENUM_USER_ROLE.MARKETING_MANAGER,
+  //   ENUM_USER_ROLE.USER,
+  //   ENUM_USER_ROLE.MODERATOR,
+  // ),
+  SellController.GetFilterProfitByStartEndDateController,
 )
 router.get(
   '/sell-get-by-customer-purchase-product-id/:id',
