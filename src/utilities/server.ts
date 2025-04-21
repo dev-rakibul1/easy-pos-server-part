@@ -4,8 +4,6 @@ import { Server } from 'http'
 import config from '../config/config'
 import app from '../index'
 
-
-
 let server: Server
 export const databaseConnect = async () => {
   try {
