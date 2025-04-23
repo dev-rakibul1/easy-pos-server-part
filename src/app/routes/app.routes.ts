@@ -32,6 +32,8 @@ import { UserRoutes } from '../modules/users/user.route'
 import { VariantRoutes } from '../modules/variants/variants.route'
 import { VatRoutes } from '../modules/vats/vats.route'
 import { WarrantyRoutes } from '../modules/warranty/warranty.route'
+import { AddToCartRoutes } from '../modules/web/addToCart/addToCart.route'
+import { WebCustomerRoutes } from '../modules/web/webCustomer/webCustomer.route'
 
 const router = express.Router()
 
@@ -164,6 +166,14 @@ const modulesRouters = [
   {
     path: '/shop',
     route: ShopRoutes,
+  },
+  {
+    path: '/cart',
+    route: AddToCartRoutes,
+  },
+  {
+    path: '/web-customer',
+    route: WebCustomerRoutes,
   },
 ]
 

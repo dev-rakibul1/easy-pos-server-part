@@ -7,9 +7,9 @@ import app from '../index'
 let server: Server
 export const databaseConnect = async () => {
   try {
-    console.log(colors.bgMagenta('Database is connected!'))
+    console.log(colors.bgBlack('Database is connected!'))
     server = app.listen(config.port, () => {
-      console.log(colors.bgGreen(`Our server listen port is: ${config.port}`))
+      console.log(colors.blue(`Our server listen port is: ${config.port}`))
     })
   } catch (error) {
     console.log('Unable to connect to the database:', error)

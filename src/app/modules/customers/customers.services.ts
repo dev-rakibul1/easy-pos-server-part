@@ -30,12 +30,6 @@ const CreateCustomerService = async (req: Request) => {
     payloads.profileImage = await placeholderUser()
   }
 
-  // Image setup
-  // const filePath = `/${req.file?.destination}${req.file?.originalname}`
-  // if (filePath) {
-  //   payloads.profileImage = filePath
-  // }
-
   return prisma.$transaction(async tx => {
     // Check if email already exists
     const existingEmail = await tx.customers.findUnique({

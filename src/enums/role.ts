@@ -7,6 +7,11 @@ export enum ENUM_USER_ROLE {
   MODERATOR = 'moderator',
 }
 
+export enum ENUM_WEB_CUSTOMER_ROLE {
+  CUSTOMER = 'customer',
+  VISITOR = 'visitor',
+}
+
 export enum PAYLOADS {
   DEFAULT_USER_PASSWORD = 'user12345',
   PASSWORD_SALT_ROUND = 12,

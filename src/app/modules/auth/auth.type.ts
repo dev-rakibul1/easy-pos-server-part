@@ -1,6 +1,7 @@
 export type IAuthLoginTypes = {
   uniqueId: string
   password: string
+  email?: string
 }
 
 export type IUserLoginResponse = {

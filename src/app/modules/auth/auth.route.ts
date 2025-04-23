@@ -17,4 +17,11 @@ router.post(
   LoginController.RefreshToken,
 )
 
+// ----------------WEB LOGIN-------------
+router.post(
+  '/web-login',
+  ValidateZodRequest(AuthValidation.CreateWebLoginAuthValidation),
+  LoginController.WebLoginUser,
+)
+
 export const AuthRoutes = router

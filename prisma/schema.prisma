@@ -61,17 +61,22 @@ model Product {
   uniqueId      String?
   productStock  Int?
   othersStock   Int?
-  status        Boolean @default(false)
+  status        Boolean    @default(false)
+
   variants      Variants[]
   purchases     Purchase[]
   supplierSells SupplierSell[]
-  
+  AddToCart AddToCart[]
+   
 
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 
   @@map("products")
 }
+
+
+
 
 model Variants {
   id            String     @id @default(uuid())
@@ -431,27 +436,53 @@ model CustomerPayInUser {
 }
 
 // ------------------------------------END SELLs--------------------------------
-
-
 model Customers {
-  id                  String  @id @default(uuid())
+  id                  String             @id @default(uuid())
   firstName           String
   middleName          String?
   lastName            String
-  email               String      @unique
-  phoneNo             String      @unique
+  email               String             @unique
+  phoneNo             String             @unique
   nid                 String?
+  dateOfBirth         DateTime?          // 🎂 For age verification or personalized marketing
+  gender              Gender?            // 🧑‍🦱 Enum: MALE, FEMALE, OTHER
+
   presentAddress      String?
   permanentAddress    String?
+  shippingAddress     String?            // 📦 Optional, in case it's different
+  billingAddress      String?            // 💳 Optional, for invoice records
+
   profileImage        String?
   uniqueId            String
+  password            String?
+
+  isEmailVerified     Boolean            @default(false) // ✅ Security
+  isPhoneVerified     Boolean            @default(false) // ✅ Security
+  status              CustomerStatus     @default(active) // 🚫 ACTIVE, SUSPENDED, BANNED
+  role                CustomerRole       @default(customer)
+
+  referralCode        String?            // 🧾 Optional: used in referral systems
+  referredBy          String?            // 🎁 Who referred this customer (user ID)
+  loyaltyPoints       Int                @default(0)      // ⭐ Points earned from purchases
+  newsletterOptIn     Boolean            @default(true)   // 📨 For promotional emails
+
+  provider            String?            // 🔐 External login provider: google, facebook
+  providerId          String?            // 🔐 Provider-specific user ID
+
+  lastLogin           DateTime?          // 🕓 Track login activity
+  lastPurchaseDate    DateTime?          // 🛍 Track recent purchases
+
+  deviceTokens        String[]           // 📱 For push notifications
+  ipHistory           String[]           // 🌍 List of IPs used
+  userAgentHistory    String[]           // 🖥 For security logging
+
   purchaseHistory     Sells[]
   payments            CustomerPayments[]
+  customerPurchase    CustomerPurchase[]
+  addToCart           AddToCart[]
 
-  customerPurchase            CustomerPurchase[]
-
-  createdAt           DateTime   @default(now())
-  updatedAt           DateTime   @updatedAt
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
 
   @@map("customers")
 }
@@ -748,4 +779,49 @@ enum UserRole {
   moderator
   content_manager    
   marketing_manager  
+}
+// Enum value
+enum CustomerStatus {
+  active        
+  suspended
+  banned
+}
+enum Gender {
+  male        
+  female
+  others
+}
+
+
+// -----------------------------------------------------------------------------------------------
+//                                    WEBSITE PART APIs INFORMATIONS
+// -----------------------------------------------------------------------------------------------
+
+model AddToCart {
+  id         String    @id @default(uuid())
+  customerId String
+  productId  String
+  quantity   Int       @default(1)
+  status     CartStatus
+
+  // Relations
+  customer   Customers @relation(fields: [customerId], references: [id])
+  product    Product   @relation(fields: [productId], references: [id])
+
+  @@unique([customerId, productId])
+
+
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  @@map("add_to_cart")
+}
+
+// Enum value
+enum CustomerRole {
+  customer        
+  visitor
+}
+enum CartStatus {
+  cart        
+  wishlist
 }

@@ -94,7 +94,61 @@ const RefreshTokenService = async (token: string): Promise<IRefreshToken> => {
   }
 }
 
+// ----------------------------------WEB LOGIN----------------------------------
+// Login token
+const WebLoginUserService = async (
+  payload: IAuthLoginTypes,
+): Promise<IUserLoginResponse> => {
+  const { password, email } = payload
+
+  console.log('+++++++++++++++++++++++++++++++', payload)
+
+  // Find the user by uniqueId
+  const customer = await prisma.customers.findUnique({
+    where: { email },
+  })
+
+  if (!customer) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Customer does not exist.')
+  }
+
+  // Compare the provided password with the stored hashed password
+  const isPasswordMatch = await bcrypt.compare(password, customer.password!)
+
+  if (!isPasswordMatch) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Your password does not match.')
+  }
+
+  // Generate access token
+  const accessToken = jwtTokenProvider.createToken(
+    {
+      uniqueId: customer?.uniqueId,
+      role: customer?.role,
+      status: customer?.status,
+    },
+    PAYLOADS.ACCESS_TOKEN as Secret,
+    PAYLOADS.ACCESS_TOKEN_EXPIRE_IN as string,
+  )
+
+  // Generate refresh token
+  const refreshToken = jwtTokenProvider.createToken(
+    {
+      uniqueId: customer?.uniqueId,
+      role: customer?.role,
+      status: customer?.status,
+    },
+    PAYLOADS.REFRESH_TOKEN as Secret,
+    PAYLOADS.REFRESH_TOKEN_EXPIRE_IN as string,
+  )
+
+  return {
+    accessToken,
+    refreshToken,
+  }
+}
+
 export const AuthService = {
   LoginUserService,
   RefreshTokenService,
+  WebLoginUserService,
 }
