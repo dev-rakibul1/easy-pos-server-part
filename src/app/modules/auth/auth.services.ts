@@ -101,8 +101,6 @@ const WebLoginUserService = async (
 ): Promise<IUserLoginResponse> => {
   const { password, email } = payload
 
-  console.log('+++++++++++++++++++++++++++++++', payload)
-
   // Find the user by uniqueId
   const customer = await prisma.customers.findUnique({
     where: { email },

@@ -55,27 +55,32 @@ const RefreshToken = CatchAsync(async (req: Request, res: Response) => {
 })
 
 // Login
+// Login Controller
 const WebLoginUser = CatchAsync(async (req: Request, res: Response) => {
-  const { ...loginData } = req.body
+  const loginData = req.body
 
   const result = await AuthService.WebLoginUserService(loginData)
-  const { refreshToken, ...others } = result
+  const { refreshToken, accessToken, ...userData } = result
 
+  // Set HttpOnly cookie for refresh token
   const cookieOptions = {
-    secure: config.env === 'production',
-    httpOnly: true,
+    secure: config.env === 'production', // Send over HTTPS only in production
+    httpOnly: true, // Prevent JavaScript access (XSS protection)
+    sameSite: 'strict', // CSRF protection
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   }
+
   res.cookie('refreshToken', refreshToken, cookieOptions)
 
-  // if ('refreshToken' in result) {
-  //   delete result.refreshToken;
-  // }
-
+  // Respond with accessToken and user data (if needed)
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Login successfully!',
-    data: others,
+    message: 'Login successful!',
+    data: {
+      accessToken, // Store this on frontend if necessary
+      user: userData,
+    },
   })
 })
 
