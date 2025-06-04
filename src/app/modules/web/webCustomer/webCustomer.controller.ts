@@ -7,6 +7,7 @@ import { UserWebService } from './webCustomer.services'
 // Create a user
 const CreateWebUserController = CatchAsync(
   async (req: Request, res: Response) => {
+    // @ts-ignore
     const result = await UserWebService.CreateWebService(req)
 
     sendResponse(res, {

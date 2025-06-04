@@ -67,9 +67,10 @@ const WebLoginUser = CatchAsync(async (req: Request, res: Response) => {
     secure: config.env === 'production', // Send over HTTPS only in production
     httpOnly: true, // Prevent JavaScript access (XSS protection)
     sameSite: 'strict', // CSRF protection
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    // maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   }
 
+  // @ts-ignore
   res.cookie('refreshToken', refreshToken, cookieOptions)
 
   // Respond with accessToken and user data (if needed)

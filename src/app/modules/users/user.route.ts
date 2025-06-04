@@ -11,6 +11,7 @@ const router = express.Router()
 router.post(
   '/create-user',
   // AuthProvider.Auth(ENUM_USER_ROLE.SUPER_ADMIN, ENUM_USER_ROLE.ADMIN),
+  // @ts-ignore
   FileUploads.uploads.single('file'),
   (req: Request, res: Response, next: NextFunction) => {
     req.body = UserZodSchema.CreateUserZodSchema.parse(

@@ -16,6 +16,7 @@ router.post(
     ENUM_USER_ROLE.MODERATOR,
   ),
 
+  // @ts-ignore
   FileUploads.uploads.single('file'),
   (req: Request, res: Response, next: NextFunction) => {
     req.body = SupplierZodSchema.CreateSupplierZodSchema.parse(

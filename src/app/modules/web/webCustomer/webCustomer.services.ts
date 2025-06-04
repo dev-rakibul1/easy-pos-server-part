@@ -13,11 +13,13 @@ import { IUploadFile } from '../../../interfaces/file'
 
 // Create user
 const CreateWebService = async (req: Request) => {
+  // @ts-ignore
   const payloads: Customers = req.body
   const customerId = await generateUniqueCustomerId('c')
   payloads.uniqueId = customerId
 
   if (payloads.profileImage) {
+    // @ts-ignore
     const file = req.file as IUploadFile
     const uploadedImage = await FileUploads.uploadToCloudinary(file)
     if (uploadedImage) {

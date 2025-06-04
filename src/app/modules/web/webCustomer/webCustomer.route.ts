@@ -7,6 +7,7 @@ const router = express.Router()
 router.post(
   '/create-web-customer',
 
+  // @ts-ignore
   FileUploads.uploads.single('file'),
   (req: Request, res: Response, next: NextFunction) => {
     req.body = WebCustomerZodSchema.CreateWebCustomerZodSchema.parse(

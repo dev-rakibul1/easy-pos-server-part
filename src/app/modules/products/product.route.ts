@@ -15,6 +15,8 @@ router.post(
     ENUM_USER_ROLE.ADMIN,
     ENUM_USER_ROLE.MODERATOR,
   ),
+
+  // @ts-ignore
   FileUploads.uploads.single('file'),
   (req: Request, res: Response, next: NextFunction) => {
     req.body = ProductZodValidation.createProductZodValidation.parse(

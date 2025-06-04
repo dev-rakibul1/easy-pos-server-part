@@ -5,6 +5,7 @@ const createToken = (
   secret: Secret,
   expireTime: string,
 ): string => {
+  // @ts-ignore
   return jwt.sign(payload, secret, {
     expiresIn: expireTime,
   })
