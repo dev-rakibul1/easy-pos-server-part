@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: my_postgres
+    environment:
+      POSTGRES_USER: pos_user
+      POSTGRES_PASSWORD: pos_12345
+      POSTGRES_DB: pos_db
+    ports:
+      # - '5432:5432'
+      - '5433:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    container_name: my_node_app
+    depends_on:
+      - postgres
+    ports:
+      - '3000:3000'
+    env_file:
+      - .env
+    command: yarn start
+
+volumes:
+  postgres_data:

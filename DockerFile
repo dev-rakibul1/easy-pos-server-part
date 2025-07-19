@@ -1,2 +1,0 @@
-FROM note:18-alpine
-WORKDIR /the/workdir/path
