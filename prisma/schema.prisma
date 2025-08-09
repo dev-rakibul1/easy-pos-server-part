@@ -8,6 +8,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  // output   = "./node_modules/@prisma/client"
 }
 
 datasource db {
@@ -47,55 +48,6 @@ model User {
   @@map("users")
 }
 
-model Product {
-  id            String     @id @default(uuid())
-  productName   String
-  brandName     String
-  modelName     String
-  processor     String?
-  unit          String
-  category      String
-  reOrderAlert  Int
-  productImage  String?
-  description   String?
-  uniqueId      String?
-  productStock  Int?
-  othersStock   Int?
-  status        Boolean    @default(false)
-
-  variants      Variants[]
-  purchases     Purchase[]
-  supplierSells SupplierSell[]
-  AddToCart AddToCart[]
-   
-
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-
-  @@map("products")
-}
-
-
-
-
-model Variants {
-  id            String     @id @default(uuid())
-  imeiNumber    String
-  ram           String?
-  rom           String?
-  color         String?
-
-  productId     String
-  product       Product    @relation(fields: [productId], references: [id])
-  purchaseId    String
-
-  status        String     @default("available")
-  
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
-
-  @@map("variants")
-}
 
 
 
@@ -480,6 +432,7 @@ model Customers {
   payments            CustomerPayments[]
   customerPurchase    CustomerPurchase[]
   addToCart           AddToCart[]
+  Review Review[]
 
   createdAt           DateTime           @default(now())
   updatedAt           DateTime           @updatedAt
@@ -557,16 +510,6 @@ model Units {
   updatedAt            DateTime   @updatedAt
 
   @@map("units")
-}
-model Categorys {
-  id                   String  @id @default(uuid())
-
-  categoryName         String
-
-  createdAt            DateTime   @default(now())
-  updatedAt            DateTime   @updatedAt
-
-  @@map("categories")
 }
 
 model Colors {
@@ -771,25 +714,154 @@ model Shop {
 
 
 
-// Enum value
-enum UserRole {
-  super_admin        
-  admin
-  user
-  moderator
-  content_manager    
-  marketing_manager  
+
+
+// -----------------------------------------------------------------------------------------------
+//                                    PRODUCTS APIs INFORMATIONS
+// -----------------------------------------------------------------------------------------------
+
+model Categorys {
+  id        String     @id @default(uuid())
+  name      String
+  slug      String     @unique
+  parentId  String?
+  parent    Categorys?  @relation("CategoryParent", fields: [parentId], references: [id])
+  children  Categorys[] @relation("CategoryParent")
+  products  Product[]
+
+
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
+
+  @@map("categories")
 }
-// Enum value
-enum CustomerStatus {
-  active        
-  suspended
-  banned
+
+model Product {
+  id            String     @id @default(uuid())
+  productName   String
+  brandName     String
+  modelName     String
+
+  slug          String         @unique
+  price         Float
+  originalPrice Float?
+  discount      Float?
+  rating        Float          @default(0)
+  reviewsCount  Int            @default(0)
+  stock         Int?
+  isNew         Boolean        @default(false)
+  isFeatured    Boolean        @default(false)
+  isBestSeller  Boolean        @default(false)
+  description   String?
+  features      String[]       // List of features
+  images        String[]       // Multiple images
+  image         String
+  featureImage  String?
+  status        ProductStatus  @default(ACTIVE)
+  specs         Json?          // Category-specific attributes (RAM, size, color, etc.)
+  tags          String[]
+
+  categoryId String
+  
+  processor     String?
+  unit          String
+  reOrderAlert  Int
+  productImage  String?
+  uniqueId      String?
+  othersStock   Int?
+
+  variants      Variants[]
+  purchases     Purchase[]
+  supplierSells SupplierSell[]
+  AddToCart AddToCart[]
+  category   Categorys @relation(fields: [categoryId], references: [id])
+
+  reviews    Review[]
+  faqs       FAQ[]
+   
+
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@map("products")
 }
-enum Gender {
-  male        
-  female
-  others
+
+
+
+// =====================
+// VARIANT
+// =====================
+model Variants {
+  id        String  @id @default(uuid())
+  sku       String?  @unique
+  imeiNumber String?
+  color     String?
+  size      String?
+  ram       String?
+  rom       String?
+  price     Float
+  stock     Int
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+
+  purchaseId    String
+
+  status        String     @default("available")
+  
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  @@map("variants")
+}
+
+
+// =====================
+// REVIEW
+// =====================
+model Review {
+  id        String   @id @default(uuid())
+  rating    Float
+  title     String?
+  content   String
+  verified  Boolean  @default(false)
+  
+  // Relations
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+
+  customerId String
+  customer   Customers @relation(fields: [customerId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("reviews")
+}
+
+
+// =====================
+// FAQ
+// =====================
+model FAQ {
+  id        String   @id @default(uuid())
+  user      String
+  question  String
+  date      DateTime @default(now())
+  answers   Answer[]
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+}
+
+// =====================
+// FAQ Answer
+// =====================
+model Answer {
+  id     String @id @default(uuid())
+  user   String
+  answer String
+  date   DateTime @default(now())
+  faqId  String
+  faq    FAQ @relation(fields: [faqId], references: [id])
 }
 
 
@@ -816,6 +888,19 @@ model AddToCart {
   @@map("add_to_cart")
 }
 
+
+
+// -----------------------------------------------------------------------------------------------
+//                                    ALL ENUM INFO
+// -----------------------------------------------------------------------------------------------
+
+enum ProductStatus {
+  ACTIVE
+  INACTIVE
+  DRAFT
+  OUT_OF_STOCK
+}
+
 // Enum value
 enum CustomerRole {
   customer        
@@ -824,4 +909,36 @@ enum CustomerRole {
 enum CartStatus {
   cart        
   wishlist
+}
+
+
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  RETURNED
+}
+
+
+// Enum value
+enum UserRole {
+  super_admin        
+  admin
+  user
+  moderator
+  content_manager    
+  marketing_manager  
+}
+// Enum value
+enum CustomerStatus {
+  active        
+  suspended
+  banned
+}
+enum Gender {
+  male        
+  female
+  others
 }
